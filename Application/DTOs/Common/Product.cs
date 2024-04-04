@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Services.Compound
+namespace Application.DTOs.Common
 {
-    public class ProductoService
+    public  class Product
     {
+
     }
 }
