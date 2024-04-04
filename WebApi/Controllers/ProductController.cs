@@ -13,14 +13,14 @@ namespace WebApiHttp.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductService _transactionService;
+        private readonly IProductService _productService;
         private readonly IHandle _handle;
         private readonly IOptionsMonitor<BusinessSettings> _optionsMonitor;
         private readonly ValidationSettings? _validationSettings;
 
-        public ProductController(IProductService transactionService, IHandle handle, IOptionsMonitor<BusinessSettings> optionsMonitor)
+        public ProductController(IProductService productService, IHandle handle, IOptionsMonitor<BusinessSettings> optionsMonitor)
         {
-            _transactionService = transactionService;
+            _productService = productService;
             _handle = handle;
             _optionsMonitor = optionsMonitor;
             _validationSettings = JsonConvert.DeserializeObject<ValidationSettings>(_optionsMonitor.CurrentValue.ValidationSettings);
