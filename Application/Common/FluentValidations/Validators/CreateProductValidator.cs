@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ProyectoBack.Validator
 {
-    public class CreateProductValidator : AbstractValidator<CreateProduct>
+    public class CreateProductValidator : AbstractValidator<Product>
     {
         public CreateProductValidator() 
         {

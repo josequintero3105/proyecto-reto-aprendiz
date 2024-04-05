@@ -7,7 +7,7 @@ using Application.DTOs.PlantillaEntitys;
 
 namespace Application.DTOs
 {
-    public class CreateProduct
+    public class Product
     {
         public string Name { get; set; }
         public double Price { get; set; }

@@ -6,6 +6,8 @@ using Application.Interfaces.Common;
 using Application.Common.Utilities;
 using Newtonsoft.Json;
 using Application.DTOs;
+using ProyectoBack.Validator;
+using Application.Common.FluentValidations.Extentions;
 
 namespace WebApiHttp.Controllers
 {
@@ -24,6 +26,15 @@ namespace WebApiHttp.Controllers
             _handle = handle;
             _optionsMonitor = optionsMonitor;
             _validationSettings = JsonConvert.DeserializeObject<ValidationSettings>(_optionsMonitor.CurrentValue.ValidationSettings);
+        }
+
+        [HttpPost()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Create([FromBody] Product body)
+        {
+            Func<ValidationSettings, Task> validator = body.ValidateAndThrowsAsync<Product, CreateProductValidator>;
+            var product = await _productService.InsertProduct(body);
+            return Ok(product);
         }
     }
 }

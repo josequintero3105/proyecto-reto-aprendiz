@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.DTOs;
 using Application.DTOs.Handle;
+using Application.DTOs.PlantillaEntitys;
 
 namespace Application.Interfaces.Common
 {
@@ -31,7 +33,7 @@ namespace Application.Interfaces.Common
         /// <param name="validator">The validator.</param>
         /// <param name="validationSettings">The validation settings.</param>
         /// <returns></returns>
-        Task<Y> HandleRequestContextCatchException<T, Y>(Func<T, Task<Y>> useCaseFunction, T entity, Func<ValidationSettings, Task> validator, ValidationSettings validationSettings);
+        Task<Exception> HandleRequestContextCatchException(Product entity, Func<ValidationSettings, Task> validator, ValidationSettings validationSettings);
 
         Task<Y> HandleRequestContextException<T, Y>(Func<T, Task<Y>> useCaseFunction, T entity);
 

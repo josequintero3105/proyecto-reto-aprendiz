@@ -1,10 +1,12 @@
-﻿using Application.DTOs;
+﻿using System.Reflection.Metadata;
+using Application.DTOs;
+using Application.DTOs.PlantillaEntitys;
 
 namespace Application.Interfaces.Services
 {
     public interface IProductService
     {
-        public Task InsertProduct(CreateProduct product);
-        public Task UpdateProduct(CreateProduct product);
+        public Task<Entity> InsertProduct(Product product);
+        public Task<Entity> UpdateProduct(Product product);
     }
 }
