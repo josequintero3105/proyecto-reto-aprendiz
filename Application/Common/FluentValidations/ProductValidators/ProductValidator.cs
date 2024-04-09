@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
 using FluentValidation;
 
-namespace ProyectoBack.Validator
+namespace Application.Common.FluentValidations.ProductValidators
 {
     public class ProductValidator : AbstractValidator<Product>
     {

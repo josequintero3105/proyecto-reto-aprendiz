@@ -14,7 +14,7 @@ namespace Application.Common.Helpers.Exceptions
 
         public string Code { get; set; }
 
-        public static CommonExceptions Throw(CommonExceptionTypes exceptionType, BusinessSettings settings)
+        public static CommonExceptions Throw(CommonExceptionTypes exceptionType)
         {
             ServiceException serviceExceptionDefault = new()
             {
@@ -24,10 +24,9 @@ namespace Application.Common.Helpers.Exceptions
                 Description = "Este error se genera cuando no existe la propiedad en el archivo de configuración del servicio (appsettings) que contiene el listado de códigos de error."
             };
 
-            ServiceException serviceException = settings.ServiceExceptions?.FirstOrDefault(_ => _.Id.Equals(exceptionType.ToString()))
-                ?? serviceExceptionDefault;
+            
 
-            return new(serviceException.Message, serviceException.Code);
+            return new(serviceExceptionDefault.Message, serviceExceptionDefault.Code);
         }
     }
 }

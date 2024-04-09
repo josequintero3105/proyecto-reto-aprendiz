@@ -8,9 +8,7 @@ namespace Application.DTOs.Handle
 {
     public class ValidationSettings
     {
-        /// <summary>
-        /// RegexJustNumber
-        /// </summary>
-        public string JustNumberAllow { get; set; }
+        
+
     }
 }

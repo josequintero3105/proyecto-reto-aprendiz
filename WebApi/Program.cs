@@ -6,6 +6,7 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Infrastructure;
+using Application.Common.Helpers.Handle;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,7 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductService, ProductService>();
-//builder.Services.AddSingleton<IHandle>();
+builder.Services.AddSingleton<IHandle, Handler>();
 IWebHostEnvironment environment = builder.Environment;
 IConfiguration configuration = builder.Configuration;
 

@@ -7,7 +7,7 @@ using Application.Common.Utilities;
 using Newtonsoft.Json;
 using Application.DTOs;
 using Application.Common.FluentValidations.Extentions;
-using ProyectoBack.Validator;
+using Application.Common.FluentValidations.ProductValidators;
 
 namespace WebApiHttp.Controllers
 {
@@ -17,23 +17,22 @@ namespace WebApiHttp.Controllers
     {
         private readonly IProductService _productService;
         private readonly IHandle _handle;
-        private readonly IOptionsMonitor<BusinessSettings> _optionsMonitor;
-        private readonly ValidationSettings? _validationSettings;
+        
+        
 
-        public ProductController(IProductService productService, IHandle handle, IOptionsMonitor<BusinessSettings> optionsMonitor)
+        public ProductController(IProductService productService, IHandle handle)
         {
             _productService = productService;
             _handle = handle;
-            _optionsMonitor = optionsMonitor;
-            _validationSettings = JsonConvert.DeserializeObject<ValidationSettings>(_optionsMonitor.CurrentValue.ValidationSettings);
+            
         }
 
         [HttpPost()]
         [ProducesResponseType(200)]
         public async Task<IActionResult> Create([FromBody] Product body)
         {
-            Func<ValidationSettings, Task> validator = body.ValidateAndThrowsAsync<Product, ProductValidator>;
-            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body, validator, _validationSettings);
+            body.ValidateAndThrowsAsync<Product, ProductValidator>();
+            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body);
             return Ok(entity);
         }
 
@@ -41,10 +40,9 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Update([FromBody] Product body)
         {
-            Func<ValidationSettings, Task> validator = body.ValidateAndThrowsAsync<Product, ProductValidator>;
-            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body, validator, _validationSettings);
-            var product = await _productService.UpdateProduct(body);
-            return Ok(product);
+            body.ValidateAndThrowsAsync<Product, ProductValidator>();
+            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body);
+            return Ok(entity);
         }
     }
 }

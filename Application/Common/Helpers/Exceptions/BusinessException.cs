@@ -13,7 +13,7 @@ namespace Application.Common.Helpers.Exceptions
             : base(message) => Code = code;
 
         public string Code { get; set; }
-        public static BusinessException Throw(BusinessSettings settings, string code)
+        public static BusinessException Throw(string code)
         {
             ServiceException serviceExceptionDefault = new()
             {
@@ -22,11 +22,9 @@ namespace Application.Common.Helpers.Exceptions
                 Message = "Error desconocido.",
                 Description = "Este error se genera cuando no existe la propiedad en el archivo de configuración del servicio (appsettings) que contiene el listado de códigos de error."
             };
-            ServiceException serviceException =
-                settings.ServiceExceptions?.FirstOrDefault(_ => _.Id.Equals(code))
-                ?? serviceExceptionDefault;
+            
 
-            return new(serviceException.Message, serviceException.Code);
+            return new(serviceExceptionDefault.Message, serviceExceptionDefault.Code);
         }
     }
 }
