@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Application.DTOs;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.ProductValidators;
+using Application.Services;
 
 namespace WebApiHttp.Controllers
 {
@@ -17,12 +18,10 @@ namespace WebApiHttp.Controllers
     {
         private readonly IProductService _productService;
         private readonly IHandle _handle;
-        
-        
 
-        public ProductController(IProductService productService, IHandle handle)
+        public ProductController(IHandle handle)
         {
-            _productService = productService;
+            _productService = new ProductService();
             _handle = handle;
             
         }
@@ -31,7 +30,7 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Create([FromBody] Product body)
         {
-            body.ValidateAndThrowsAsync<Product, ProductValidator>();
+            await body.ValidateAndThrowsAsync<Product, ProductValidator>();
             var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body);
             return Ok(entity);
         }
@@ -40,7 +39,7 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Update([FromBody] Product body)
         {
-            body.ValidateAndThrowsAsync<Product, ProductValidator>();
+            await body.ValidateAndThrowsAsync<Product, ProductValidator>();
             var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body);
             return Ok(entity);
         }

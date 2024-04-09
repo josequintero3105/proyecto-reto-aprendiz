@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Common.Helpers.Exceptions;
 using FluentValidation;
 
 namespace Application.Common.FluentValidations.ProductValidators
@@ -7,10 +8,28 @@ namespace Application.Common.FluentValidations.ProductValidators
     {
         public ProductValidator()
         {
-            RuleFor(p => p.Name).NotEmpty().WithMessage("El campo del nombre no puede quedar vacio");
-            RuleFor(p => p.Quantity).NotNull().WithMessage("Debe haber un numero valido");
-            RuleFor(p => p.Description).NotEmpty().WithMessage("El campo no puede ser vacio");
-            RuleFor(p => p.Category).NotEmpty().WithMessage("El campo no puede ser vacio");
+            RuleFor(p => p.Name)
+                .NotEmpty()
+                .WithErrorCode(Convert.ToInt32(DriverBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(DriverBusinessException.NotAllowSpecialCharacters));
+            RuleFor(p => p.Price)
+                .NotNull()
+                .NotEmpty()
+                .WithErrorCode(DriverBusinessException.JustNumberAllowInPhone.ToString())
+                .WithMessage(nameof(DriverBusinessException.JustNumberAllowInPhone));
+            RuleFor(p => p.Quantity)
+                .NotNull()
+                .NotEmpty()
+                .WithErrorCode(DriverBusinessException.JustNumberAllowInPhone.ToString())
+                .WithMessage(nameof(DriverBusinessException.JustNumberAllowInPhone));
+            RuleFor(p => p.Description)
+                .NotEmpty()
+                .WithErrorCode(Convert.ToInt32(DriverBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(DriverBusinessException.NotAllowSpecialCharacters));
+            RuleFor(p => p.Category)
+                .NotEmpty()
+                .WithErrorCode(Convert.ToInt32(DriverBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(DriverBusinessException.NotAllowSpecialCharacters));
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Application.Services
 
         public async Task<Entity> UpdateProduct(Product product)
         {
-            throw new NotImplementedException();
+            return new Entity();
         }
     }
 }

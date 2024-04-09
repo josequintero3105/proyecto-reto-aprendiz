@@ -36,7 +36,7 @@ string MongoConnectionSecret = builder.Configuration.GetValue<string>(builder.Co
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddMongoDataBase(MongoConnectionSecret, builder.Configuration.GetSection("AppSettings:Database").Value, builder.Configuration.GetSection("AppSettings:CollectionName").Value);
+builder.Services.AddMongoDataBase(MongoConnectionSecret, builder.Configuration.GetSection("AppSettings:Database").Value, builder.Configuration.GetSection("AppSettings:CollectionName").Value);
 
 builder.Services.AddHealthChecks();
 

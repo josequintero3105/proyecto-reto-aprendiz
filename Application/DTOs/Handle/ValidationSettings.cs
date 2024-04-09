@@ -8,7 +8,9 @@ namespace Application.DTOs.Handle
 {
     public class ValidationSettings
     {
-        
-
+        /// <summary>
+        ///     RegexGuid
+        /// </summary>
+        public string RegexGuid { get; set; }
     }
 }
