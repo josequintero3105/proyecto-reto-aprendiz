@@ -1,3 +1,7 @@
+using System.Reflection.Metadata;
+using Application.Interfaces.Common;
+using Application.Interfaces.Services;
+using Application.Services;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
@@ -10,6 +14,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IProductService, ProductService>();
+//builder.Services.AddSingleton<IHandle>();
 IWebHostEnvironment environment = builder.Environment;
 IConfiguration configuration = builder.Configuration;
 
@@ -25,7 +31,6 @@ builder.Host.ConfigureAppConfiguration((context, config) =>
 });
 #endregion ProgramConfiguration
 builder.Services.AddControllers();
-string ServiceBusConnectionSecret = builder.Configuration.GetValue<string>(builder.Configuration.GetSection("Secrets:ServiceBusConnection").Value);
 string MongoConnectionSecret = builder.Configuration.GetValue<string>(builder.Configuration.GetSection("Secrets:MongoConnection").Value);
 
 builder.Services.AddEndpointsApiExplorer();

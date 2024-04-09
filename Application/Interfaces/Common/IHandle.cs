@@ -33,7 +33,7 @@ namespace Application.Interfaces.Common
         /// <param name="validator">The validator.</param>
         /// <param name="validationSettings">The validation settings.</param>
         /// <returns></returns>
-        Task<Exception> HandleRequestContextCatchException(Product entity, Func<ValidationSettings, Task> validator, ValidationSettings validationSettings);
+        Task<Y> HandleRequestContextCatchException<T, Y>(Func<T, Task<Y>> useCaseFunction, T entity, Func<ValidationSettings, Task> validator, ValidationSettings validationSettings);
 
         Task<Y> HandleRequestContextException<T, Y>(Func<T, Task<Y>> useCaseFunction, T entity);
 

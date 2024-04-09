@@ -6,8 +6,8 @@ using Application.Interfaces.Common;
 using Application.Common.Utilities;
 using Newtonsoft.Json;
 using Application.DTOs;
-using ProyectoBack.Validator;
 using Application.Common.FluentValidations.Extentions;
+using ProyectoBack.Validator;
 
 namespace WebApiHttp.Controllers
 {
@@ -32,8 +32,18 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Create([FromBody] Product body)
         {
-            Func<ValidationSettings, Task> validator = body.ValidateAndThrowsAsync<Product, CreateProductValidator>;
-            var product = await _productService.InsertProduct(body);
+            Func<ValidationSettings, Task> validator = body.ValidateAndThrowsAsync<Product, ProductValidator>;
+            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body, validator, _validationSettings);
+            return Ok(entity);
+        }
+
+        [HttpPut()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Update([FromBody] Product body)
+        {
+            Func<ValidationSettings, Task> validator = body.ValidateAndThrowsAsync<Product, ProductValidator>;
+            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body, validator, _validationSettings);
+            var product = await _productService.UpdateProduct(body);
             return Ok(product);
         }
     }
