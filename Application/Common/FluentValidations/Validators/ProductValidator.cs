@@ -1,8 +1,9 @@
 ﻿using Application.DTOs;
+using Application.DTOs.PlantillaEntitys;
 using Common.Helpers.Exceptions;
 using FluentValidation;
 
-namespace Application.Common.FluentValidations.ProductValidators
+namespace Application.Common.FluentValidations.Validators
 {
     public class ProductValidator : AbstractValidator<Product>
     {
@@ -30,6 +31,23 @@ namespace Application.Common.FluentValidations.ProductValidators
                 .NotEmpty()
                 .WithErrorCode(Convert.ToInt32(DriverBusinessException.NotAllowSpecialCharacters).ToString())
                 .WithMessage(nameof(DriverBusinessException.NotAllowSpecialCharacters));
+            RuleFor(transaction => transaction.Data)
+                .NotNull()
+                .WithErrorCode(Convert.ToInt32(DriverBusinessException.DataCannotBeNull).ToString())
+                .WithMessage(nameof(DriverBusinessException.DataCannotBeNull))
+                .NotEmpty()
+                .WithErrorCode(Convert.ToInt32(DriverBusinessException.DataCannotBeEmpty).ToString())
+                .WithMessage(nameof(DriverBusinessException.DataCannotBeEmpty))
+                .ChildRules(Entity =>
+                {
+                    Entity.RuleFor(id => id.Id)
+                    .NotEmpty()
+                    .WithErrorCode(Convert.ToInt32(DriverBusinessException.TransactionIdCanNotBeEmpty).ToString())
+                    .WithMessage(nameof(DriverBusinessException.TransactionIdCanNotBeEmpty))
+                    .NotNull()
+                    .WithErrorCode(Convert.ToInt32(DriverBusinessException.TransactionIdCanNotBeEmpty).ToString())
+                    .WithMessage(nameof(DriverBusinessException.TransactionIdCanNotBeEmpty));
+                });
         }
     }
 }

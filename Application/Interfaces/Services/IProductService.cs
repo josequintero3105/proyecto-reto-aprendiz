@@ -7,6 +7,6 @@ namespace Application.Interfaces.Services
     public interface IProductService
     {
         public Task<Entity> InsertProduct(Product product);
-        public Task<Entity> UpdateProduct(Product product);
+        
     }
 }

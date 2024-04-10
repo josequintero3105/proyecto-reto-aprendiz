@@ -7,8 +7,9 @@ using Application.Common.Utilities;
 using Newtonsoft.Json;
 using Application.DTOs;
 using Application.Common.FluentValidations.Extentions;
-using Application.Common.FluentValidations.ProductValidators;
+using Application.Common.FluentValidations.Validators;
 using Application.Services;
+using Application.Common.Helpers.Handle;
 
 namespace WebApiHttp.Controllers
 {
@@ -19,10 +20,10 @@ namespace WebApiHttp.Controllers
         private readonly IProductService _productService;
         private readonly IHandle _handle;
 
-        public ProductController(IHandle handle)
+        public ProductController()
         {
             _productService = new ProductService();
-            _handle = handle;
+            _handle = new Handler();
             
         }
 

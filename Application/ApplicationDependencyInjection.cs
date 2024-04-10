@@ -5,9 +5,11 @@ using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Common.Helpers.Commands;
 using Application.Common.Helpers.Handle;
 using Application.DTOs;
 using Application.Interfaces.Common;
+using Application.Interfaces.Infrastructure.Commands;
 using Application.Interfaces.Services;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,7 @@ namespace Application
         {
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IHandle, Handler>();
+            
             return services;
         }
 

@@ -17,7 +17,7 @@ namespace Application.Tests
         public ProductServiceTest()
         {
             _productService = new ProductService();
-            _productController = new ProductController(_handle);
+            _productController = new ProductController();
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace Application.Tests
 
             // Act
             MockProductService.Setup(sp => sp.InsertProduct(product));
-            ProductController _productController = new ProductController(_handle);
+            ProductController _productController = new ProductController();
             var result = _productController.Create(product);
 
             // Assert
