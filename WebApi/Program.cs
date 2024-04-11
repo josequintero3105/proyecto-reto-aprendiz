@@ -1,22 +1,26 @@
 using System.Reflection.Metadata;
-using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Application.Services;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Infrastructure;
-using Application.Common.Helpers.Handle;
+using Application;
+using WebApi.Configuration;
+using Application.Interfaces.Infrastructure.Mongo;
+using Infrastructure.Services.MongoDB.Adapters;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Comentario en progrmam
+// Comments in program
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.RegisterAutoMapper();
+builder.Services.RegisterServices();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddSingleton<IHandle, Handler>();
+builder.Services.AddScoped<IProductRepository, ProductAdapter>();
 IWebHostEnvironment environment = builder.Environment;
 IConfiguration configuration = builder.Configuration;
 
@@ -24,7 +28,7 @@ IConfiguration configuration = builder.Configuration;
 builder.Host.ConfigureAppConfiguration((context, config) =>
 {
     IConfigurationRoot configurationRoot = config
-        .AddJsonFile("config/appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{environment.ApplicationName}.json", optional: true, reloadOnChange: true)
         .AddEnvironmentVariables()
         .Build();
@@ -32,15 +36,21 @@ builder.Host.ConfigureAppConfiguration((context, config) =>
 });
 #endregion ProgramConfiguration
 builder.Services.AddControllers();
-string MongoConnectionSecret = builder.Configuration.GetValue<string>(builder.Configuration.GetSection("Secrets:MongoConnection").Value);
-
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.RegisterAutoMapper();
+builder.Services.RegisterServices();
 builder.Services.AddSwaggerGen();
-builder.Services.AddMongoDataBase(MongoConnectionSecret, builder.Configuration.GetSection("AppSettings:Database").Value, builder.Configuration.GetSection("AppSettings:CollectionName").Value);
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductAdapter>();
+builder.Services.AddMongoDataBase(
+    builder.Configuration.GetSection("AppSettings:ConnectionString").Value,
+    builder.Configuration.GetSection("AppSettings:Database").Value,
+    builder.Configuration.GetSection("AppSettings:CollectionName").Value
+);
 
 builder.Services.AddHealthChecks();
 
-// Configuraciones de aplicación
+// Application configures
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();

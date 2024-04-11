@@ -6,9 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Commands;
-using Application.Common.Helpers.Handle;
 using Application.DTOs;
-using Application.Interfaces.Common;
 using Application.Interfaces.Infrastructure.Commands;
 using Application.Interfaces.Services;
 using Application.Services;
@@ -18,14 +16,6 @@ namespace Application
 {
     public static class ApplicationDependencyInjection
     {
-        public static IServiceCollection AddUseCases(this IServiceCollection services)
-        {
-            services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IHandle, Handler>();
-            
-            return services;
-        }
-
         public static IServiceCollection RegisterAutoMapper(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(MappingProfile));

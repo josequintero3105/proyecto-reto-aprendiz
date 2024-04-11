@@ -9,10 +9,9 @@ namespace WebApi.Configuration
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration, string servicesBusConnection)
+        public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(MappingProfile));
-            services.AddUseCases();
             return services;
         }
 

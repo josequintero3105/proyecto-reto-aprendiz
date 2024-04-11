@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
 using Application.Common.Validations.Extensions;
-using Application.DTOs.Handle;
 using FluentValidation;
 using FluentValidation.Results;
 

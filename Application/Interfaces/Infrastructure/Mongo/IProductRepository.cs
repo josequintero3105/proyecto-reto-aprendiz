@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
 using Application.DTOs.Commands;
-using Application.DTOs.PlantillaEntitys;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Infrastructure.Mongo
 {
-    public interface IMongoRepository
+    public interface IProductRepository
     {
-        Task<CommandResponse<Product>> SaveProductAsync(Product product);
+        Task<CommandResponse<Product>> CreateProductAsync(Product product);
+        Task<CommandResponse<Product>> UpdateProductAsync(Product product);
     }
 }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Application.DTOs.Handle;
 using Microsoft.Extensions.Options;
 using Application.Interfaces.Services;
-using Application.Interfaces.Common;
 using Application.Common.Utilities;
 using Newtonsoft.Json;
 using Application.DTOs;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Services;
-using Application.Common.Helpers.Handle;
+using FluentValidation.Results;
+using Core.Entities.MongoDB;
+using Application.Interfaces.Infrastructure.Mongo;
 
 namespace WebApiHttp.Controllers
 {
@@ -18,31 +18,39 @@ namespace WebApiHttp.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        private readonly IHandle _handle;
-
-        public ProductController()
+        /// <summary>
+        /// 
+        /// </summary>
+        public ProductController(IProductService productService)
         {
-            _productService = new ProductService();
-            _handle = new Handler();
-            
+            _productService = productService;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
         [HttpPost()]
         [ProducesResponseType(200)]
         public async Task<IActionResult> Create([FromBody] Product body)
         {
             await body.ValidateAndThrowsAsync<Product, ProductValidator>();
-            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body);
-            return Ok(entity);
+            await _productService.CreateProduct(body);
+            return Ok(body);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="body"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
         public async Task<IActionResult> Update([FromBody] Product body)
         {
             await body.ValidateAndThrowsAsync<Product, ProductValidator>();
-            var entity = await _handle.HandleRequestContextCatchException(_productService.InsertProduct, body);
-            return Ok(entity);
+            await _productService.UpdateProduct(body);
+            return Ok(body);
         }
     }
 }

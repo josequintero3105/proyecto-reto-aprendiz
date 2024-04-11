@@ -9,18 +9,22 @@ using Application.Interfaces.Infrastructure.Mongo;
 using Core.Entities.MongoDB;
 using MongoDB.Bson;
 using AutoMapper;
+using MongoDB.Driver;
 
 namespace Infrastructure.Services.MongoDB.Adapters
 {
-    public class MongoAdapter : IMongoRepository
+    public class ProductAdapter : IProductRepository
     {
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly IContext _context;
         private readonly IMapper _mapper;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="context"></param>
-        public MongoAdapter(IContext context, IMapper mapper)
+        public ProductAdapter(IContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -31,17 +35,35 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <param name="stringMongoConnection"></param>
         /// <param name="dataBaseName"></param>
         /// <param name="collectionName"></param>
-        public MongoAdapter(string stringMongoConnection, string dataBaseName, IMapper mapper, string collectionName) 
+        public ProductAdapter(string stringMongoConnection, string dataBaseName, string collectionName, IMapper mapper) 
         {
             _context = DataBaseContext.GetMongoDatabase(stringMongoConnection, dataBaseName, collectionName);
             _mapper = mapper;
         }
-
-        public async Task<CommandResponse<Product>> SaveProductAsync(Product product)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        public async Task<CommandResponse<Product>> CreateProductAsync(Product product)
         {
             CommandResponse<Product> commandResponse = new();
             ProductCollection productCollection = _mapper.Map<ProductCollection>(product);
             await _context.ProductCollection.InsertOneAsync(productCollection);
+            commandResponse.ToBsonDocument();
+            return commandResponse;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        public async Task<CommandResponse<Product>> UpdateProductAsync(Product product)
+        {
+            ProductCollection productCollection = _mapper.Map<ProductCollection>(product);
+            var IdFinded = Builders<ProductCollection>.Filter.Eq(s => s.Id, productCollection.Id);
+            CommandResponse<Product> commandResponse = new();
+            await _context.ProductCollection.ReplaceOneAsync(IdFinded, productCollection);
             commandResponse.ToBsonDocument();
             return commandResponse;
         }
