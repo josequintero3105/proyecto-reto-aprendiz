@@ -20,11 +20,9 @@ namespace Application.Common.Helpers.Exceptions
             {
                 Id = "DefaultException",
                 Code = "409.500",
-                Message = "Error desconocido.",
+                Message = "Unknow error",
                 Description = "Este error se genera cuando no existe la propiedad en el archivo de configuración del servicio (appsettings) que contiene el listado de códigos de error."
             };
-
-            
 
             return new(serviceExceptionDefault.Message, serviceExceptionDefault.Code);
         }

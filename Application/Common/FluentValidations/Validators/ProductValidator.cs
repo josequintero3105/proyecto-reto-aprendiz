@@ -10,19 +10,25 @@ namespace Application.Common.FluentValidations.Validators
         {
             RuleFor(p => p.Name)
                 .NotEmpty()
-                .WithMessage(nameof(DriverBusinessException.NotAllowSpecialCharacters));
+                .WithMessage("The product name cannot be empty")
+                .MaximumLength(50)
+                .WithMessage("The product contains more chracteres over the limit");
             RuleFor(p => p.Price)
-                .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .WithMessage("The product price cannot be empty");
             RuleFor(p => p.Quantity)
-                .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .WithMessage("The product quantity cannot be empty");
             RuleFor(p => p.Description)
                 .NotEmpty()
-                .WithMessage(nameof(DriverBusinessException.NotAllowSpecialCharacters));
+                .WithMessage("The product description cannot be empty")
+                .MaximumLength(200)
+                .WithMessage("The description cannot be empty");
             RuleFor(p => p.Category)
                 .NotEmpty()
-                .WithMessage(nameof(DriverBusinessException.NotAllowSpecialCharacters));
+                .WithMessage("The product category cannot be empty")
+                .MaximumLength(50)
+                .WithMessage("The product category cotains more characters over the limit");
         }
     }
 }

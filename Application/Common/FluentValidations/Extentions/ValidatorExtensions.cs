@@ -31,7 +31,5 @@ namespace Application.Common.FluentValidations.Extentions
                 throw new BusinessException(validationResult.Errors[0].ErrorMessage, validationResult.Errors[0].ErrorCode);
             }
         }
-
-        
     }
 }
