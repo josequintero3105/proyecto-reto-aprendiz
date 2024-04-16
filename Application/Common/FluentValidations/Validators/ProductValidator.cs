@@ -9,6 +9,8 @@ namespace Application.Common.FluentValidations.Validators
         public ProductValidator()
         {
             RuleFor(p => p.Name)
+                .Matches("^[a-zA-Z0-9 ]+$")
+                .WithMessage("The product name should not has special characters")
                 .NotEmpty()
                 .WithMessage("The product name cannot be empty")
                 .MaximumLength(50)
@@ -20,11 +22,15 @@ namespace Application.Common.FluentValidations.Validators
                 .NotEmpty()
                 .WithMessage("The product quantity cannot be empty");
             RuleFor(p => p.Description)
+                .Matches("^[a-zA-Z0-9 ]+$")
+                .WithMessage("The product description should not has special characters")
                 .NotEmpty()
                 .WithMessage("The product description cannot be empty")
                 .MaximumLength(200)
                 .WithMessage("The description cannot be empty");
             RuleFor(p => p.Category)
+                .Matches("^[a-zA-Z0-9 ]+$")
+                .WithMessage("The product category should not has special characters")
                 .NotEmpty()
                 .WithMessage("The product category cannot be empty")
                 .MaximumLength(50)
