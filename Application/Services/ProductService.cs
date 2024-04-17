@@ -61,10 +61,11 @@ namespace Application.Services
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task UpdateProduct(ProductCollection product)
+        public async Task UpdateProduct(Product product)
         {
             try
             {
+                await product.ValidateAndThrowsAsync<Product, ProductValidator>();
                 await _productRepository.UpdateProductAsync(product);
             }
             catch(BusinessException)

@@ -42,32 +42,31 @@ namespace Infrastructure.Services.MongoDB.Adapters
             _context = DataBaseContext.GetMongoDatabase(stringMongoConnection, dataBaseName, collectionName);
             _mapper = mapper;
         }
+
         /// <summary>
         /// Business logic create product
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        public async Task<CommandResponse<Product>> CreateProductAsync(Product product)
+        public async Task<Product> CreateProductAsync(Product product)
         {
-            CommandResponse<Product> commandResponse = new();
             ProductCollection productCollection = _mapper.Map<ProductCollection>(product);
             await _context.ProductCollection.InsertOneAsync(productCollection);
-            commandResponse.ToBsonDocument();
-            return commandResponse;
+            return _mapper.Map<Product>(product);
         }
+
         /// <summary>
         /// Business logic
         /// </summary>
-        /// <param name="productCollection"></param>
+        /// <param name="productToUpdate"></param>
         /// <returns></returns>
-        public async Task<CommandResponse<Product>> UpdateProductAsync(ProductCollection productCollection)
+        public async Task<bool> UpdateProductAsync(Product productToUpdate)
         {
-            Product product = _mapper.Map<Product>(productCollection);
-            var IdFinded = Builders<ProductCollection>.Filter.Eq(s => s._id, productCollection._id);
+            ProductCollection ProductCollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
+            var IdFinded = Builders<ProductCollection>.Filter.Eq(s => s._id, ProductCollectionToUpdate._id);
             CommandResponse<Product> commandResponse = new();
-            await _context.ProductCollection.ReplaceOneAsync(IdFinded, productCollection);
-            commandResponse.ToBsonDocument();
-            return commandResponse;
+            var result = await _context.ProductCollection.ReplaceOneAsync(IdFinded, ProductCollectionToUpdate);
+            return result.ModifiedCount == 1;
         }
     }
 }

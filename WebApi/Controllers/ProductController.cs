@@ -40,8 +40,9 @@ namespace WebApiHttp.Controllers
         public async Task<IActionResult> Create([FromBody] Product body)
         {
             await _productService.CreateProduct(body);
-            return Ok(body);
+            return Ok(true);
         }
+
         /// <summary>
         /// Method Put Update Product
         /// </summary>
@@ -50,11 +51,11 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] ProductCollection body, string _id)
+        public async Task<IActionResult> Update([FromBody] Product body, string _id)
         {
-            body._id = new MongoDB.Bson.ObjectId(_id);
+            body._id = new MongoDB.Bson.ObjectId(_id).ToString();
             await _productService.UpdateProduct(body);
-            return Ok(body);
+            return Ok(true);
         }
     }
 }

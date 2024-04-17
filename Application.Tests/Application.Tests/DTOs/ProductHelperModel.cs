@@ -13,6 +13,19 @@ namespace Application.Tests.Application.Tests.DTOs
 {
     public static class ProductHelperModel
     {
+        public static Product GetProductForCreation()
+        {
+            return new Product
+            {
+                Name = "Test",
+                Price = 10.000,
+                Quantity = 1,
+                Description = "Test Description",
+                Category = "Testing",
+                State = true
+            };
+        }
+        
         public static Product GetProductForCreationWithProductNameEmpty() => new Product()
         {
             Name = "",
@@ -29,6 +42,26 @@ namespace Application.Tests.Application.Tests.DTOs
             Price = 10.000,
             Quantity = 1,
             Description = "Test Description",
+            Category = "Testing",
+            State = true
+        };
+
+        public static Product GetProductForCreationWithProductDescriptionEmpty() => new Product()
+        {
+            Name = "Test",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "",
+            Category = "Testing",
+            State = true
+        };
+
+        public static Product GetProductForCreationWithProductDescriptionWrongFormat() => new Product()
+        {
+            Name = "Test",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "+,-.'?",
             Category = "Testing",
             State = true
         };
@@ -50,6 +83,16 @@ namespace Application.Tests.Application.Tests.DTOs
             Quantity = 1,
             Description = "Test Description",
             Category = "+,-.'?",
+            State = true
+        };
+
+        public static Product GetProductForCreationWithoutProductPrice() => new Product()
+        {
+            Name = "Test",
+            Price = 0,
+            Quantity = 1,
+            Description = "Test Description",
+            Category = "Testing",
             State = true
         };
     }

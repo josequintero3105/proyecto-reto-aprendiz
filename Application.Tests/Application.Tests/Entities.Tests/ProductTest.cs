@@ -20,18 +20,20 @@ using Infrastructure.Services.MongoDB.Adapters;
 using AutoMapper;
 using Core.Entities.MongoDB;
 using Microsoft.AspNetCore.Mvc;
+using RestApi.Filters;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace Application.Tests.Application.Tests.Services
 {
-    public class ProductServiceTest
+    public class ProductTest
     {
         
         private IProductService _productService;
         private readonly ProductController _productController;
-        private readonly Mock<IProductRepository> _productRepositoryMock;
+        private readonly Mock<IProductRepository> _productRepositoryMock = new();
         private readonly Mock<IProductService> _productServiceMock = new();
 
-        public ProductServiceTest()
+        public ProductTest()
         {
             _productRepositoryMock = new Mock<IProductRepository>();
             _productService = new ProductService(_productRepositoryMock.Object);
@@ -68,10 +70,24 @@ namespace Application.Tests.Application.Tests.Services
         }
 
         [Fact]
-        public async void CreateProduct_When_ProductCategoryWrongFormat_Then_ExpectsBusinessException()
+        public async void CreateProduct_When_ProductDescriptionIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductCategoryWrongFormat();
+            Product product = ProductHelperModel.GetProductForCreationWithProductDescriptionEmpty();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _productService.CreateProduct(product));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void CreateProduct_When_ProductDescriptionWrongFormat_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForCreationWithProductDescriptionWrongFormat();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -96,18 +112,62 @@ namespace Application.Tests.Application.Tests.Services
         }
 
         [Fact]
-        public async void CreateProduct_With_AllFields_Then_ExpectsVerify()
+        public async void CreateProduct_When_ProductCategoryWrongFormat_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForCreationWithProductCategoryWrongFormat();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _productService.CreateProduct(product));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void CreateProduct_When_ProductFieldsNotEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForCreation();
+            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(product))
+                .ReturnsAsync(product).Verifiable();
+
+            // Act
+            await _productService.CreateProduct(product);
+
+            // Assert
+            Assert.IsType<Product>(product);
+        }
+
+        [Fact]
+        public async void CreateProduct_When_ProductPriceEqualToZero_Then_ExpectsVerifyToCreateNewProduct()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForCreationWithoutProductPrice();
+            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(product))
+                .ReturnsAsync(product).Verifiable();
+
+            // Act
+            await _productController.Create(product);
+
+            // Assert
+            Assert.True(product.Price == 0);
+        }
+
+        [Fact]
+        public async void CreateProduct_With_NoFieldsEmpty_Then_ExpectsVerify()
         {
             // Arrange
             Product product = new Product();
-            product.Name = "Producto prueba";
+            product.Name = "Producto de prueba";
             product.Price = 10.000;
             product.Quantity = 10;
             product.Description = "Descripcion de prueba";
             product.Category = "Categoria";
             product.State = true;
 
-            _productServiceMock.Setup(x => x.CreateProduct(It.Is<Product>
+            _productRepositoryMock.Setup(x => x.CreateProductAsync(It.Is<Product>
                 (x => x.Name == product.Name &&
                 x.Price == product.Price &&
                 x.Quantity == product.Quantity &&
@@ -117,7 +177,7 @@ namespace Application.Tests.Application.Tests.Services
                 .Verifiable();
 
             // Act
-            await _productController.Create(product);
+            await _productService.CreateProduct(product);
 
             // Assert
             _productServiceMock.Verify();
