@@ -46,13 +46,13 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <summary>
         /// Business logic create product
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="productToCreate"></param>
         /// <returns></returns>
-        public async Task<Product> CreateProductAsync(Product product)
+        public async Task<Product> CreateProductAsync(Product productToCreate)
         {
-            ProductCollection productCollection = _mapper.Map<ProductCollection>(product);
-            await _context.ProductCollection.InsertOneAsync(productCollection);
-            return _mapper.Map<Product>(product);
+            ProductCollection productCollectionToCreate = _mapper.Map<ProductCollection>(productToCreate);
+            await _context.ProductCollection.InsertOneAsync(productCollectionToCreate);
+            return _mapper.Map<Product>(productToCreate);
         }
 
         /// <summary>
@@ -62,10 +62,9 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <returns></returns>
         public async Task<bool> UpdateProductAsync(Product productToUpdate)
         {
-            ProductCollection ProductCollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
-            var IdFinded = Builders<ProductCollection>.Filter.Eq(s => s._id, ProductCollectionToUpdate._id);
-            CommandResponse<Product> commandResponse = new();
-            var result = await _context.ProductCollection.ReplaceOneAsync(IdFinded, ProductCollectionToUpdate);
+            ProductCollection productCollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
+            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", productCollectionToUpdate._id);
+            var result = await _context.ProductCollection.ReplaceOneAsync(IdFinded, productCollectionToUpdate);
             return result.ModifiedCount == 1;
         }
     }

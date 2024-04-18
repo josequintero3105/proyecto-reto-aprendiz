@@ -40,22 +40,21 @@ namespace WebApiHttp.Controllers
         public async Task<IActionResult> Create([FromBody] Product body)
         {
             await _productService.CreateProduct(body);
-            return Ok(true);
+            return Ok(body);
         }
 
         /// <summary>
         /// Method Put Update Product
         /// </summary>
         /// <param name="body"></param>
-        /// <param name="_id"></param>
+        
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] Product body, string _id)
+        public async Task<IActionResult> Update([FromBody] Product body)
         {
-            body._id = new MongoDB.Bson.ObjectId(_id).ToString();
             await _productService.UpdateProduct(body);
-            return Ok(true);
+            return Ok(body);
         }
     }
 }

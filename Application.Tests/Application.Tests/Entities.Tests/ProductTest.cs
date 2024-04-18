@@ -22,6 +22,7 @@ using Core.Entities.MongoDB;
 using Microsoft.AspNetCore.Mvc;
 using RestApi.Filters;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Tests.Application.Tests.Services
 {
@@ -32,11 +33,12 @@ namespace Application.Tests.Application.Tests.Services
         private readonly ProductController _productController;
         private readonly Mock<IProductRepository> _productRepositoryMock = new();
         private readonly Mock<IProductService> _productServiceMock = new();
+        private readonly ILogger<ProductService> _logger;
 
         public ProductTest()
         {
             _productRepositoryMock = new Mock<IProductRepository>();
-            _productService = new ProductService(_productRepositoryMock.Object);
+            _productService = new ProductService(_productRepositoryMock.Object, _logger);
             _productServiceMock = new Mock<IProductService>();
             _productController = new ProductController(_productServiceMock.Object);
         }
