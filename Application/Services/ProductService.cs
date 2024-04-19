@@ -13,6 +13,7 @@ using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
+using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
 using FluentValidation.Results;
 using FluentValidation.TestHelper;
@@ -37,28 +38,57 @@ namespace Application.Services
             _productRepository = productRepository;
             _logger = logger;
         }
+
+        private async Task ControlCreateProduct(Product product)
+        {
+            try
+            {
+                await product.ValidateAndThrowsAsync<Product, ProductValidator>();
+                await _productRepository.CreateProductAsync(product);
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating product: {product}"
+                    , bex.Code, bex.Message, product);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating product: {product} ", ex.Message, product);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
         /// <summary>
         /// Calling the business logic from ProductAdapter
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// <exception cref="BusinessException"></exception>
         public async Task CreateProduct(Product product)
+        {
+            await ControlCreateProduct(product);
+        }
+
+        private async Task ControlUpdateProduct(Product product)
         {
             try
             {
                 await product.ValidateAndThrowsAsync<Product, ProductValidator>();
-                await _productRepository.CreateProductAsync(product);
-            } 
-            catch(BusinessException bex)
+                await _productRepository.UpdateProductAsync(product);
+            }
+            catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {code}-{message}", bex.Code, bex.Message);
-                throw new BusinessException(bex.Message, bex.Code);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} updating product: {product}",
+                    bex.Code, bex.Message, product);
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw;
+                _logger.LogError(ex, "Error: {message} updating product: {product} ", ex.Message, product);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
             }
         }
         /// <summary>
@@ -66,24 +96,11 @@ namespace Application.Services
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
         /// <exception cref="Exception"></exception>
         public async Task UpdateProduct(Product product)
         {
-            try
-            {
-                await product.ValidateAndThrowsAsync<Product, ProductValidator>();
-                await _productRepository.UpdateProductAsync(product);
-            }
-            catch(BusinessException bex)
-            {
-                _logger.LogError(bex, "Error: {code}-{message}", bex.Code, bex.Message);
-                throw new BusinessException(bex.Message, bex.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw;
-            }
+            await ControlUpdateProduct(product);
         }
     }
 }

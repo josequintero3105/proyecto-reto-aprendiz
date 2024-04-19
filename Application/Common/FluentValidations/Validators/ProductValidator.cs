@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using System.Net.NetworkInformation;
+using Application.DTOs;
 using Common.Helpers.Exceptions;
 using FluentValidation;
 
@@ -10,31 +11,42 @@ namespace Application.Common.FluentValidations.Validators
         {
             RuleFor(p => p.Name)
                 .NotEmpty()
-                .WithMessage("The product name cannot be empty")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductNameCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductNameCannotBeEmpty))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithMessage("The product name should not has special characters")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters))
                 .MaximumLength(50)
-                .WithMessage("The product contains more chracteres over the limit");
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CharactersLimitReached).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CharactersLimitReached));
             RuleFor(p => p.Price)
-                .NotEmpty()
-                .WithMessage("The product price cannot be empty");
+                .NotNull()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductPriceCannotBeNull).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductPriceCannotBeNull));
             RuleFor(p => p.Quantity)
-                .NotEmpty()
-                .WithMessage("The product quantity cannot be empty");
+                .NotNull()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductQuantityCannotBeNull).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductQuantityCannotBeNull));
             RuleFor(p => p.Description)
                 .NotEmpty()
-                .WithMessage("The product description cannot be empty")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductDescriptionCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductDescriptionCannotBeEmpty))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithMessage("The product description should not has special characters")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters))
                 .MaximumLength(200)
-                .WithMessage("The description cannot be empty");
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CharactersLimitReached).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CharactersLimitReached));
             RuleFor(p => p.Category)
                 .NotEmpty()
-                .WithMessage("The product category cannot be empty")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductCategoryCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductCategoryCannotBeEmpty))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithMessage("The product category should not has special characters")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters))
                 .MaximumLength(50)
-                .WithMessage("The product category cotains more characters over the limit");
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CharactersLimitReached).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CharactersLimitReached));
         }
     }
 }

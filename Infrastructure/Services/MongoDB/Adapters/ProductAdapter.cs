@@ -56,7 +56,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Business logic
+        /// Business logic update product
         /// </summary>
         /// <param name="productToUpdate"></param>
         /// <returns></returns>

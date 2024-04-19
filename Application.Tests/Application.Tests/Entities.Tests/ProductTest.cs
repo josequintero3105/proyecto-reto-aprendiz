@@ -31,16 +31,26 @@ namespace Application.Tests.Application.Tests.Services
         
         private IProductService _productService;
         private readonly ProductController _productController;
+        private IProductRepository _productRepository;
+        /// <summary>
+        /// Mocks
+        /// </summary>
         private readonly Mock<IProductRepository> _productRepositoryMock = new();
         private readonly Mock<IProductService> _productServiceMock = new();
-        private readonly ILogger<ProductService> _logger;
+        private readonly Mock<IMongoCollection<ProductCollection>> _collectionMock = new();
+        private readonly Mock<IMapper> _mapperMock = new();
+        private readonly Mock<ILogger<ProductService>> _loggerMock = new();
+        private readonly Mock<IContext> _contextMock = new();
 
         public ProductTest()
         {
             _productRepositoryMock = new Mock<IProductRepository>();
-            _productService = new ProductService(_productRepositoryMock.Object, _logger);
+            _productRepository = new ProductAdapter(_contextMock.Object, _mapperMock.Object);
+            _productService = new ProductService(_productRepositoryMock.Object, _loggerMock.Object);
             _productServiceMock = new Mock<IProductService>();
             _productController = new ProductController(_productServiceMock.Object);
+            _collectionMock = new Mock<IMongoCollection<ProductCollection>>();
+            _mapperMock = new Mock<IMapper>();
         }
         
         [Fact]
@@ -128,7 +138,7 @@ namespace Application.Tests.Application.Tests.Services
         }
 
         [Fact]
-        public async void CreateProduct_When_ProductFieldsNotEmpty_Then_ExpectsBusinessException()
+        public async void CreateProduct_When_ProductFieldsNotEmpty_Then_ResultEqualProduct()
         {
             // Arrange
             Product product = ProductHelperModel.GetProductForCreation();
@@ -183,6 +193,100 @@ namespace Application.Tests.Application.Tests.Services
 
             // Assert
             _productServiceMock.Verify();
+        }
+
+        [Fact]
+        public async Task UpdateProduct_When_ObjectIdMongoIsValid_Then_ResultEqualProduct()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForUpdate();
+            ProductCollection productCollection = ProductCollectionHelperModel.GetProductForUpdate();
+
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+            _productRepositoryMock.Setup(repo => repo.UpdateProductAsync(product)).Verifiable();
+
+            // Act
+            await _productService.UpdateProduct(product);
+
+            // Assert
+            Assert.IsType<Product>(product);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_ProductNameIsEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForCreationWithProductNameEmpty();
+            ProductCollection productCollection = new ProductCollection();
+
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _productService.UpdateProduct(product));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async Task UpdateProduct_ProductDescriptionIsEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForCreationWithProductDescriptionEmpty();
+            ProductCollection productCollection = new ProductCollection();
+
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _productService.UpdateProduct(product));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async Task UpdateProduct_ProductCategoryIsEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForCreationWithProductCategoryEmpty();
+            ProductCollection productCollection = new ProductCollection();
+
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _productService.UpdateProduct(product));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async Task UpdateProduct_When_ProductMongoExists_Then_ReturnResultTrue()
+        {
+            // Arrange
+            Product product = ProductHelperModel.GetProductForUpdate();
+            ProductCollection productCollection = ProductCollectionHelperModel.GetProductForUpdate();
+
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+
+            var mockUpdateResult = new Mock<ReplaceOneResult>();
+            mockUpdateResult.Setup(x => x.ModifiedCount).Returns(1);
+
+            
+            _collectionMock.Setup(x => x.ReplaceOneAsync(
+                It.IsAny<FilterDefinition<ProductCollection>>(),
+                It.IsAny<ProductCollection>(),
+                It.IsAny<ReplaceOptions>(),
+                It.IsAny<CancellationToken>())).ReturnsAsync(mockUpdateResult.Object);
+
+            // Act
+            var result = await _productRepository.UpdateProductAsync(product);
+
+            // Assert
+            Assert.True(result);
         }
     }
 }

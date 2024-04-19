@@ -25,9 +25,24 @@ namespace Application.Tests.Application.Tests.DTOs
                 State = true
             };
         }
-        
+
+        public static Product GetProductForUpdate()
+        {
+            return new Product
+            {
+                _id = "661805457b1da8ba4cb52995",
+                Name = "Test",
+                Price = 10.000,
+                Quantity = 1,
+                Description = "Test Description",
+                Category = "Testing",
+                State = true
+            };
+        }
+
         public static Product GetProductForCreationWithProductNameEmpty() => new Product()
         {
+            _id = "661805457b1da8ba4cb52995",
             Name = "",
             Price = 10.000,
             Quantity = 1,
@@ -38,6 +53,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductNameWrongFormat() => new Product()
         {
+            _id = "661805457b1da8ba4cb52995",
             Name = "+,-.'?",
             Price = 10.000,
             Quantity = 1,
@@ -48,6 +64,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductDescriptionEmpty() => new Product()
         {
+            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -58,6 +75,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductDescriptionWrongFormat() => new Product()
         {
+            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -68,6 +86,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductCategoryEmpty() => new Product()
         {
+            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -78,6 +97,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductCategoryWrongFormat() => new Product()
         {
+            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -88,6 +108,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithoutProductPrice() => new Product()
         {
+            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 0,
             Quantity = 1,
