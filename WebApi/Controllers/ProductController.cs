@@ -27,6 +27,7 @@ namespace WebApiHttp.Controllers
         /// <summary>
         /// Constructor
         /// <paramref name="productService"/>
+        /// <paramref name="handle"/>
         /// </summary>
         public ProductController(IProductService productService, IHandle handle)
         {
@@ -42,7 +43,6 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Create([FromBody] Product body)
         {
-            //await _productService.CreateProduct(body);
             await _handle.HandleRequestContextCatchException(_productService.CreateProduct(body));
             return Ok(body);
         }
@@ -51,13 +51,11 @@ namespace WebApiHttp.Controllers
         /// Method Put Update Product
         /// </summary>
         /// <param name="body"></param>
-        
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
         public async Task<IActionResult> Update([FromBody] Product body)
         {
-            //await _productService.UpdateProduct(body);
             await _handle.HandleRequestContextCatchException(_productService.UpdateProduct(body));
             return Ok(body);
         }

@@ -24,6 +24,7 @@ using RestApi.Filters;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.Extensions.Logging;
 using Application.Interfaces.Common;
+using Xunit.Sdk;
 
 namespace Application.Tests.Application.Tests.Services
 {
@@ -43,7 +44,10 @@ namespace Application.Tests.Application.Tests.Services
         private readonly Mock<ILogger<ProductService>> _loggerMock = new();
         private readonly Mock<IContext> _contextMock = new();
         private readonly Mock<IHandle> _handleMock = new();
-
+        private readonly Mock<IAsyncCursor<ProductCollection>> _mockValues = new();
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ProductTest()
         {
             _productRepositoryMock = new Mock<IProductRepository>();
@@ -53,6 +57,7 @@ namespace Application.Tests.Application.Tests.Services
             _productController = new ProductController(_productServiceMock.Object, _handleMock.Object);
             _collectionMock = new Mock<IMongoCollection<ProductCollection>>();
             _mapperMock = new Mock<IMapper>();
+            _mockValues = new Mock<IAsyncCursor<ProductCollection>>();
         }
         
         [Fact]

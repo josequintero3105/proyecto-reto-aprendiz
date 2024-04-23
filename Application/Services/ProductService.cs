@@ -39,6 +39,12 @@ namespace Application.Services
             _logger = logger;
         }
 
+        /// <summary>
+        /// Private method controls the process of create a product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
         private async Task ControlCreateProduct(Product product)
         {
             try
@@ -59,18 +65,20 @@ namespace Application.Services
                     nameof(GateWayBusinessException.NotControlerException));
             }
         }
-        /// <summary>
-        /// Calling the business logic from ProductAdapter
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// <exception cref="BusinessException"></exception>
+       
         public async Task CreateProduct(Product product)
         {
             await ControlCreateProduct(product);
         }
 
+
+        /// <summary>
+        /// Calling the business logic from the ProductAdapter
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        /// <exception cref="Exception"></exception>
         private async Task ControlUpdateProduct(Product product)
         {
             try
@@ -91,13 +99,7 @@ namespace Application.Services
                     nameof(GateWayBusinessException.NotControlerException));
             }
         }
-        /// <summary>
-        /// Calling the business logic from the ProductAdapter
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        /// <exception cref="BusinessException"></exception>
-        /// <exception cref="Exception"></exception>
+        
         public async Task UpdateProduct(Product product)
         {
             await ControlUpdateProduct(product);
