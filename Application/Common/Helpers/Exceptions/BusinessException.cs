@@ -7,6 +7,7 @@ using Application.Common.Utilities;
 
 namespace Application.Common.Helpers.Exceptions
 {
+    [Serializable]
     public class BusinessException : Exception
     {
         public BusinessException(string message, string code) : base(message) => Code = code;
@@ -21,6 +22,7 @@ namespace Application.Common.Helpers.Exceptions
                 Message = "Error desconocido.",
                 Description = "Este error se genera cuando no existe la propiedad en el archivo de configuración del servicio (appsettings) que contiene el listado de códigos de error."
             };
+            
             return new(serviceExceptionDefault.Message, serviceExceptionDefault.Code);
         }
     }

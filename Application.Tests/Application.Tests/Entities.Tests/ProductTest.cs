@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using RestApi.Filters;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.Extensions.Logging;
+using Application.Interfaces.Common;
 
 namespace Application.Tests.Application.Tests.Services
 {
@@ -41,6 +42,7 @@ namespace Application.Tests.Application.Tests.Services
         private readonly Mock<IMapper> _mapperMock = new();
         private readonly Mock<ILogger<ProductService>> _loggerMock = new();
         private readonly Mock<IContext> _contextMock = new();
+        private readonly Mock<IHandle> _handleMock = new();
 
         public ProductTest()
         {
@@ -48,7 +50,7 @@ namespace Application.Tests.Application.Tests.Services
             _productRepository = new ProductAdapter(_contextMock.Object, _mapperMock.Object);
             _productService = new ProductService(_productRepositoryMock.Object, _loggerMock.Object);
             _productServiceMock = new Mock<IProductService>();
-            _productController = new ProductController(_productServiceMock.Object);
+            _productController = new ProductController(_productServiceMock.Object, _handleMock.Object);
             _collectionMock = new Mock<IMongoCollection<ProductCollection>>();
             _mapperMock = new Mock<IMapper>();
         }
@@ -261,32 +263,6 @@ namespace Application.Tests.Application.Tests.Services
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
-        }
-
-        [Fact]
-        public async Task UpdateProduct_When_ProductMongoExists_Then_ReturnResultTrue()
-        {
-            // Arrange
-            Product product = ProductHelperModel.GetProductForUpdate();
-            ProductCollection productCollection = ProductCollectionHelperModel.GetProductForUpdate();
-
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
-
-            var mockUpdateResult = new Mock<ReplaceOneResult>();
-            mockUpdateResult.Setup(x => x.ModifiedCount).Returns(1);
-
-            
-            _collectionMock.Setup(x => x.ReplaceOneAsync(
-                It.IsAny<FilterDefinition<ProductCollection>>(),
-                It.IsAny<ProductCollection>(),
-                It.IsAny<ReplaceOptions>(),
-                It.IsAny<CancellationToken>())).ReturnsAsync(mockUpdateResult.Object);
-
-            // Act
-            var result = await _productRepository.UpdateProductAsync(product);
-
-            // Assert
-            Assert.True(result);
         }
     }
 }

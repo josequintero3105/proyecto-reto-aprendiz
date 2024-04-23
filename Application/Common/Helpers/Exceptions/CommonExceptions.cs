@@ -14,7 +14,7 @@ namespace Application.Common.Helpers.Exceptions
 
         public string Code { get; set; }
 
-        public static CommonExceptions Throw(CommonExceptionTypes exceptionType)
+        public static CommonExceptions Throw(BusinessExceptionTypes exceptionType)
         {
             ServiceException serviceExceptionDefault = new()
             {

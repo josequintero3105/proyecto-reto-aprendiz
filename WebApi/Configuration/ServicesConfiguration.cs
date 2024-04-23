@@ -4,6 +4,7 @@ using Application.Common.Utilities;
 using Application.DTOs;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Filters;
+using RestApi.Filters;
 
 namespace WebApi.Configuration
 {
@@ -19,6 +20,16 @@ namespace WebApi.Configuration
         {
             configuration.AddJsonFile("config/appsettings.json", optional: true, reloadOnChange: true);
             return configuration;
+        }
+
+        public static IServiceCollection UseRestApiFilters(this IServiceCollection services)
+        {
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<ExceptionFilter>();
+                options.Filters.Add<SuccessFilter>();
+            });
+            return services;
         }
     }
 }

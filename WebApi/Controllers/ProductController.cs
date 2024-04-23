@@ -8,6 +8,7 @@ using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Core.Entities.MongoDB;
 using Application.Interfaces.Infrastructure.Mongo;
+using Application.Interfaces.Common;
 
 namespace WebApiHttp.Controllers
 {
@@ -22,13 +23,15 @@ namespace WebApiHttp.Controllers
         /// Variables
         /// </summary>
         private readonly IProductService _productService;
+        private readonly IHandle _handle;
         /// <summary>
         /// Constructor
         /// <paramref name="productService"/>
         /// </summary>
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IHandle handle)
         {
             _productService = productService;
+            _handle = handle;
         }
         /// <summary>
         /// Method Post Create Product
@@ -39,7 +42,8 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Create([FromBody] Product body)
         {
-            await _productService.CreateProduct(body);
+            //await _productService.CreateProduct(body);
+            await _handle.HandleRequestContextCatchException(_productService.CreateProduct(body));
             return Ok(body);
         }
 
@@ -53,7 +57,8 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Update([FromBody] Product body)
         {
-            await _productService.UpdateProduct(body);
+            //await _productService.UpdateProduct(body);
+            await _handle.HandleRequestContextCatchException(_productService.UpdateProduct(body));
             return Ok(body);
         }
     }

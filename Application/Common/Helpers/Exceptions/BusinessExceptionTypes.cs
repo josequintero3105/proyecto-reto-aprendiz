@@ -2,7 +2,7 @@
 
 namespace Common.Helpers.Exceptions;
 
-public enum CommonExceptionTypes
+public enum BusinessExceptionTypes
 {
     [Description("Not Controller Exception.")]
     NotControlledException,
