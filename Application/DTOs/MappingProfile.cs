@@ -13,6 +13,7 @@ namespace Application.DTOs
         public MappingProfile() 
         {
             CreateMap<Product, ProductCollection>().ReverseMap();
+            CreateMap<ProductUpdate, ProductCollection>().ReverseMap();
         }
     }
 }

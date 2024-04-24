@@ -79,12 +79,17 @@ namespace Application.Services
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task ControlUpdateProduct(Product product)
+        private async Task ControlUpdateProduct(ProductUpdate product)
         {
             try
             {
-                await product.ValidateAndThrowsAsync<Product, ProductValidator>();
-                await _productRepository.UpdateProductAsync(product);
+                await product.ValidateAndThrowsAsync<ProductUpdate, ProductUpdateValidator>();
+                var update = await _productRepository.UpdateProductAsync(product);
+                if (update == false)
+                {
+                    throw new BusinessException(nameof(GateWayBusinessException.ProductIdIsNotValid),
+                    nameof(GateWayBusinessException.ProductIdIsNotValid));
+                }
             }
             catch (BusinessException bex)
             {
@@ -100,7 +105,7 @@ namespace Application.Services
             }
         }
         
-        public async Task UpdateProduct(Product product)
+        public async Task UpdateProduct(ProductUpdate product)
         {
             await ControlUpdateProduct(product);
         }

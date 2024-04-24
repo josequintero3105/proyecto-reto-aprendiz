@@ -60,12 +60,20 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="productToUpdate"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateProductAsync(Product productToUpdate)
+        public async Task<bool> UpdateProductAsync(ProductUpdate productToUpdate)
         {
             ProductCollection productCollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
-            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", productCollectionToUpdate._id);
-            var result = await _context.ProductCollection.ReplaceOneAsync(IdFinded, productCollectionToUpdate);
-            return result.ModifiedCount == 1;
+            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productCollectionToUpdate._id));
+            var result = _context.ProductCollection.Find(IdFinded).FirstOrDefault();
+            if (result != null)
+            {
+                var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFinded, productCollectionToUpdate);
+                return resultUpdate.ModifiedCount == 1;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

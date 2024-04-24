@@ -14,7 +14,9 @@ namespace Core.Entities.MongoDB
         /// _id
         /// </summary>
         [BsonId]
-        public ObjectId _id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("_id")]
+        public string? _id { get; set; }
         /// <summary>
         /// Name
         /// </summary>

@@ -26,9 +26,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Product GetProductForUpdate()
+        public static ProductUpdate GetProductForUpdate()
         {
-            return new Product
+            return new ProductUpdate
             {
                 _id = "661805457b1da8ba4cb52995",
                 Name = "Test",
@@ -42,7 +42,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductNameEmpty() => new Product()
         {
-            _id = "661805457b1da8ba4cb52995",
+            
             Name = "",
             Price = 10.000,
             Quantity = 1,
@@ -53,7 +53,7 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductNameWrongFormat() => new Product()
         {
-            _id = "661805457b1da8ba4cb52995",
+            
             Name = "+,-.'?",
             Price = 10.000,
             Quantity = 1,
@@ -64,7 +64,6 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductDescriptionEmpty() => new Product()
         {
-            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -75,7 +74,6 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductDescriptionWrongFormat() => new Product()
         {
-            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -86,7 +84,6 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductCategoryEmpty() => new Product()
         {
-            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -97,7 +94,6 @@ namespace Application.Tests.Application.Tests.DTOs
 
         public static Product GetProductForCreationWithProductCategoryWrongFormat() => new Product()
         {
-            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -107,6 +103,83 @@ namespace Application.Tests.Application.Tests.DTOs
         };
 
         public static Product GetProductForCreationWithoutProductPrice() => new Product()
+        {
+            
+            Name = "Test",
+            Price = 0,
+            Quantity = 1,
+            Description = "Test Description",
+            Category = "Testing",
+            State = true
+        };
+
+        public static ProductUpdate GetProductForUpdateWithProductNameEmpty() => new ProductUpdate()
+        {
+            _id = "661805457b1da8ba4cb52995",
+            Name = "",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "Test Description",
+            Category = "Testing",
+            State = true
+        };
+
+        public static ProductUpdate GetProductForUpdateWithProductNameWrongFormat() => new ProductUpdate()
+        {
+            _id = "661805457b1da8ba4cb52995",
+            Name = "+,-.'?",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "Test Description",
+            Category = "Testing",
+            State = true
+        };
+
+        public static ProductUpdate GetProductForUpdateWithProductDescriptionEmpty() => new ProductUpdate()
+        {
+            _id = "661805457b1da8ba4cb52995",
+            Name = "Test",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "",
+            Category = "Testing",
+            State = true
+        };
+
+        public static ProductUpdate GetProductForUpdateWithProductDescriptionWrongFormat() => new ProductUpdate()
+        {
+            _id = "661805457b1da8ba4cb52995",
+            Name = "Test",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "+,-.'?",
+            Category = "Testing",
+            State = true
+        };
+
+        public static ProductUpdate GetProductForUpdateWithProductCategoryEmpty() => new ProductUpdate()
+        {
+            _id = "661805457b1da8ba4cb52995",
+            Name = "Test",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "Test Description",
+            Category = "",
+            State = true
+        };
+
+        public static ProductUpdate GetProductForUpdateWithProductCategoryWrongFormat() => new ProductUpdate()
+        {
+            _id = "661805457b1da8ba4cb52995",
+            Name = "Test",
+            Price = 10.000,
+            Quantity = 1,
+            Description = "Test Description",
+            Category = "+,-.'?",
+            State = true
+        };
+
+        public static ProductUpdate GetProductForUpdateWithoutProductPrice() => new ProductUpdate()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",

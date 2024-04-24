@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs
 {
-    public class Product
+    public class ProductUpdate
     {
+        public string? _id { get; set; }
         public string? Name { get; set; }
         public double Price { get; set; }
         public int Quantity { get; set; }

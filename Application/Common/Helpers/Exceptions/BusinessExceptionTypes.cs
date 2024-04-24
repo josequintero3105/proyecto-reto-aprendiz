@@ -17,7 +17,10 @@ public enum BusinessExceptionTypes
 public enum GateWayBusinessException
 {
     [Description("Not Controller Exception")]
-    NotControlerException = 401,
+    NotControlerException = 400,
+
+    [Description("Product Id Is Not Valid")]
+    ProductIdIsNotValid = 401,
 
     [Description("Product Name Cannot Be Empty")]
     ProductNameCannotBeEmpty = 402,
@@ -37,6 +40,6 @@ public enum GateWayBusinessException
     [Description("Not Allow Special Characters")]
     NotAllowSpecialCharacters = 407,
 
-    [Description("Characters Limit Reached")]
-    CharactersLimitReached = 408
+    [Description("Characters Lenght")]
+    CharactersLenghtNotValid = 408
 }

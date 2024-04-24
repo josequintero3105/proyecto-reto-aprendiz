@@ -15,10 +15,9 @@ namespace Application.Tests.Application.Tests.DTOs
     {
         public static ProductCollection GetProductForUpdate()
         {
-            string idString = "661805457b1da8ba4cb52995";
             return new ProductCollection
             {
-                _id = ObjectId.Parse(idString),
+                _id = "661805457b1da8ba4cb52995",
                 Name = "Test",
                 Price = 10.000,
                 Quantity = 1,

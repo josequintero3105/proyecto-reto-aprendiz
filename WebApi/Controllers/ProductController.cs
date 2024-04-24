@@ -54,7 +54,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] Product body)
+        public async Task<IActionResult> Update([FromBody] ProductUpdate body)
         {
             await _handle.HandleRequestContextCatchException(_productService.UpdateProduct(body));
             return Ok(body);

@@ -39,12 +39,10 @@ namespace Application.Tests.Application.Tests.Services
         /// </summary>
         private readonly Mock<IProductRepository> _productRepositoryMock = new();
         private readonly Mock<IProductService> _productServiceMock = new();
-        private readonly Mock<IMongoCollection<ProductCollection>> _collectionMock = new();
         private readonly Mock<IMapper> _mapperMock = new();
         private readonly Mock<ILogger<ProductService>> _loggerMock = new();
         private readonly Mock<IContext> _contextMock = new();
         private readonly Mock<IHandle> _handleMock = new();
-        private readonly Mock<IAsyncCursor<ProductCollection>> _mockValues = new();
         /// <summary>
         /// Constructor
         /// </summary>
@@ -55,9 +53,7 @@ namespace Application.Tests.Application.Tests.Services
             _productService = new ProductService(_productRepositoryMock.Object, _loggerMock.Object);
             _productServiceMock = new Mock<IProductService>();
             _productController = new ProductController(_productServiceMock.Object, _handleMock.Object);
-            _collectionMock = new Mock<IMongoCollection<ProductCollection>>();
             _mapperMock = new Mock<IMapper>();
-            _mockValues = new Mock<IAsyncCursor<ProductCollection>>();
         }
         
         [Fact]
@@ -206,7 +202,7 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_When_ObjectIdMongoIsValid_Then_ResultEqualProduct()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForUpdate();
+            ProductUpdate product = ProductHelperModel.GetProductForUpdate();
             ProductCollection productCollection = ProductCollectionHelperModel.GetProductForUpdate();
 
             _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
@@ -223,10 +219,10 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductNameIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductNameEmpty();
+            ProductUpdate product = ProductHelperModel.GetProductForUpdateWithProductNameEmpty();
             ProductCollection productCollection = new ProductCollection();
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductUpdate>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -240,10 +236,10 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductDescriptionIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductDescriptionEmpty();
+            ProductUpdate product = ProductHelperModel.GetProductForUpdateWithProductDescriptionEmpty();
             ProductCollection productCollection = new ProductCollection();
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductUpdate>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -257,10 +253,10 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductCategoryIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductCategoryEmpty();
+            ProductUpdate product = ProductHelperModel.GetProductForUpdateWithProductCategoryEmpty();
             ProductCollection productCollection = new ProductCollection();
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductUpdate>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>

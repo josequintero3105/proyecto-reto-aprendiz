@@ -1,14 +1,25 @@
-﻿using System.Net.NetworkInformation;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Application.DTOs;
 using Common.Helpers.Exceptions;
 using FluentValidation;
 
 namespace Application.Common.FluentValidations.Validators
 {
-    public class ProductValidator : AbstractValidator<Product>
+    public class ProductUpdateValidator : AbstractValidator<ProductUpdate>
     {
-        public ProductValidator()
+        public ProductUpdateValidator() 
         {
+            RuleFor(p => p._id)
+                .NotNull()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductIdIsNotValid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductIdIsNotValid))
+                .Matches("^[a-zA-Z0-9 ]+$")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
             RuleFor(p => p.Name)
                 .NotEmpty()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductNameCannotBeEmpty).ToString())
