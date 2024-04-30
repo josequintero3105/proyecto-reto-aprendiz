@@ -23,6 +23,11 @@ builder.Services.RegisterAutoMapper();
 builder.Services.RegisterServices();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductAdapter>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceAdapter>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartAdapter>();
+
 IWebHostEnvironment environment = builder.Environment;
 IConfiguration configuration = builder.Configuration;
 
@@ -45,11 +50,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.UseRestApiFilters();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductAdapter>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceAdapter>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartAdapter>();
 builder.Services.AddScoped<IHandle, Application.Common.Helpers.Handle.Handle>();
 builder.Services.AddMongoDataBase(
     builder.Configuration.GetSection("AppSettings:ConnectionString").Value,
-    builder.Configuration.GetSection("AppSettings:Database").Value,
-    builder.Configuration.GetSection("AppSettings:CollectionName").Value
+    builder.Configuration.GetSection("AppSettings:Database").Value
+    
 );
 
 builder.Services.AddHealthChecks();

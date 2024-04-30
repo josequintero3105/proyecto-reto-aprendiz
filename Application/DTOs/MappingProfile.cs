@@ -14,6 +14,7 @@ namespace Application.DTOs
         {
             CreateMap<Product, ProductCollection>().ReverseMap();
             CreateMap<ProductUpdate, ProductCollection>().ReverseMap();
+            CreateMap<ShoppingCart, ShoppingCartCollection>().ReverseMap();
         }
     }
 }

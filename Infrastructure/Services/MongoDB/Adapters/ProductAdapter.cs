@@ -39,7 +39,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <param name="mapper"></param>
         public ProductAdapter(string stringMongoConnection, string dataBaseName, string collectionName, IMapper mapper) 
         {
-            _context = DataBaseContext.GetMongoDatabase(stringMongoConnection, dataBaseName, collectionName);
+            _context = DataBaseContext.GetMongoDatabase(stringMongoConnection, dataBaseName);
             _mapper = mapper;
         }
 

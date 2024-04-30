@@ -10,9 +10,9 @@ namespace Infrastructure
 {
     public static class InfrastructureDependencyInjection
     {
-        public static IServiceCollection AddMongoDataBase(this IServiceCollection services, string mongoConnectionString, string dataBaseName, string collectionName)
+        public static IServiceCollection AddMongoDataBase(this IServiceCollection services, string mongoConnectionString, string dataBaseName)
         {
-            services.AddSingleton<IContext>(provider => new DataBaseContext(mongoConnectionString, $"{dataBaseName}", collectionName));
+            services.AddSingleton<IContext>(provider => new DataBaseContext(mongoConnectionString, $"{dataBaseName}"));
             return services;
         }
     }

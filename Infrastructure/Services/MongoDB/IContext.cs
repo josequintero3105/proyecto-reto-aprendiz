@@ -11,5 +11,7 @@ namespace Infrastructure.Services.MongoDB
     public interface IContext
     {
         public IMongoCollection<ProductCollection> ProductCollection { get; }
+        public IMongoCollection<ShoppingCartCollection> ShoppingCartCollection { get; }
+        public IMongoCollection<InvoiceCollection> InvoiceCollection { get; }
     }
 }
