@@ -64,5 +64,37 @@ namespace Application.Services
         {
             await ControlCreateShoppingCart(shoppingCart);
         }
+
+        /// <summary>
+        /// Control to add a product into the shopping cart
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        private async Task ControlAddToShoppingCart(ShoppingCart shoppingCart)
+        {
+            try
+            {
+                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
+                await _shoppingCartRepository.AddToShoppingCartAsync(shoppingCart);
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating shoppingCart: {shoppingCart}"
+                    , bex.Code, bex.Message, shoppingCart);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+
+        public async Task AddToShoppingCart(ShoppingCart shoppingCart)
+        {
+            await ControlAddToShoppingCart(shoppingCart);
+        }
     }
 }

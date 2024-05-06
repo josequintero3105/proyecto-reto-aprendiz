@@ -8,6 +8,7 @@ namespace Application.DTOs
 {
     public class ProductInCart
     {
+        public string? _id { get; set; }
         public string? Name { get; set; }
         public double UnitPrice { get; set; }
         public int QuantityInCart { get; set; }

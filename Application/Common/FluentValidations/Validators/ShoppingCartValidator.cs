@@ -13,24 +13,10 @@ namespace Application.Common.FluentValidations.Validators
     {
         public ShoppingCartValidator()
         {
-            RuleFor(s => s.Id)
-                .NotEmpty()
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductNameCannotBeEmpty).ToString())
-                .WithMessage(nameof(GateWayBusinessException.ProductNameCannotBeEmpty))
+            RuleFor(s => s._id)
                 .Matches("^[a-zA-Z0-9 ]+$")
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters))
-                .MaximumLength(50)
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CharactersLenghtNotValid).ToString())
-                .WithMessage(nameof(GateWayBusinessException.CharactersLenghtNotValid));
-            RuleFor(s => s.Products)
-                .NotNull()
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductPriceCannotBeNull).ToString())
-                .WithMessage(nameof(GateWayBusinessException.ProductPriceCannotBeNull));
-            RuleFor(s => s.PriceTotal)
-                .NotNull()
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductPriceCannotBeNull).ToString())
-                .WithMessage(nameof(GateWayBusinessException.ProductPriceCannotBeNull));
+                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
         }
     }
 }

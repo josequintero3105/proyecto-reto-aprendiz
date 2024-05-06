@@ -18,11 +18,8 @@ namespace Core.Entities.MongoDB
         [BsonElement("_id")]
         public string? _id { get; set; }
 
-        [BsonElement("Id")]
-        public string? Id { get; set; }
-
-        [BsonElement("Products")]
-        public List<ProductCollection>? Products { get; set; }
+        [BsonElement("ProductsInCart")]
+        public List<ProductInCartCollection>? ProductsInCart { get; set; }
 
         [BsonElement("PriceTotal")]
         public double PriceTotal { get; set; }

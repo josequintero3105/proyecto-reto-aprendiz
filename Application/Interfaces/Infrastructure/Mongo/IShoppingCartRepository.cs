@@ -15,6 +15,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        Task<ShoppingCart> CreateShoppingCartAsync(ShoppingCart shoppingCart);
+        public Task<ShoppingCart> CreateShoppingCartAsync(ShoppingCart shoppingCart);
+        public Task<bool> AddToShoppingCartAsync(ShoppingCart shoppingCart);
     }
 }

@@ -11,5 +11,6 @@ namespace Application.Interfaces.Services
     public interface IShoppingCartService
     {
         public Task CreateShoppingCart(ShoppingCart shoppingCart);
+        public Task AddToShoppingCart(ShoppingCart shoppingCart);
     }
 }
