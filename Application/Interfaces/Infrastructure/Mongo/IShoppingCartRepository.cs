@@ -17,5 +17,6 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <returns></returns>
         public Task<ShoppingCart> CreateShoppingCartAsync(ShoppingCart shoppingCart);
         public Task<bool> AddToShoppingCartAsync(ShoppingCart shoppingCart);
+        public Task<bool> RemoveFromShoppingCartAsync(ShoppingCart shoppingCartToFind);
     }
 }

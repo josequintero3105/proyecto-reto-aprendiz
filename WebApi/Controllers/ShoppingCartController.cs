@@ -50,5 +50,17 @@ namespace WebApi.Controllers
             await _handle.HandleRequestContextCatchException(_shoppingCartService.AddToShoppingCart(body));
             return Ok(body);
         }
+
+        /// <summary>
+        /// Control and update and a delete a product
+        /// </summary>
+        /// <param name="body"></param>
+        [HttpPut()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Remove([FromBody] ShoppingCart body)
+        {
+            await _handle.HandleRequestContextCatchException(_shoppingCartService.RemoveFromShoppingCart(body));
+            return Ok(body);
+        }
     }
 }

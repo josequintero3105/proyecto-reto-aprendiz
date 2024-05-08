@@ -12,6 +12,7 @@ using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 
 namespace Application.Services
 {
@@ -76,7 +77,12 @@ namespace Application.Services
             try
             {
                 await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-                await _shoppingCartRepository.AddToShoppingCartAsync(shoppingCart);
+                var update = await _shoppingCartRepository.AddToShoppingCartAsync(shoppingCart);
+                if (update == false)
+                {
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                }
             }
             catch (BusinessException bex)
             {
@@ -95,6 +101,42 @@ namespace Application.Services
         public async Task AddToShoppingCart(ShoppingCart shoppingCart)
         {
             await ControlAddToShoppingCart(shoppingCart);
+        }
+
+        /// <summary>
+        /// Control to delete a product from the cart
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <exception cref="BusinessException"></exception>
+        private async Task ControlRemoveFromShoppingCart(ShoppingCart shoppingCart)
+        {
+            try
+            {
+                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
+                var remove = await _shoppingCartRepository.RemoveFromShoppingCartAsync(shoppingCart);
+                if (remove == false)
+                {
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                }
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating shoppingCart: {shoppingCart}"
+                    , bex.Code, bex.Message, shoppingCart);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+
+        public async Task RemoveFromShoppingCart(ShoppingCart shoppingCart)
+        {
+            await ControlRemoveFromShoppingCart(shoppingCart);
         }
     }
 }

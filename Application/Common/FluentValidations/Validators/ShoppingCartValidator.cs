@@ -14,6 +14,9 @@ namespace Application.Common.FluentValidations.Validators
         public ShoppingCartValidator()
         {
             RuleFor(s => s._id)
+                .NotEmpty()
+                .WithMessage(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid))
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ShoppingCartIdIsNotValid).ToString())
                 .Matches("^[a-zA-Z0-9 ]+$")
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
                 .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));

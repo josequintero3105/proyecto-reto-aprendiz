@@ -41,5 +41,8 @@ public enum GateWayBusinessException
     NotAllowSpecialCharacters = 407,
 
     [Description("Characters Lenght")]
-    CharactersLenghtNotValid = 408
+    CharactersLenghtNotValid = 408,
+
+    [Description("ShoppingCart Id Is Not Valid")]
+    ShoppingCartIdIsNotValid = 409,
 }
