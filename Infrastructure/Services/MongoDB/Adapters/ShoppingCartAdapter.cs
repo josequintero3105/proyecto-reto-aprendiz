@@ -56,47 +56,16 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Add product to shopping cart
+        /// Getting The shopping cart
         /// </summary>
         /// <param name="shoppingCartToFind"></param>
         /// <returns></returns>
-        public async Task<bool> RemoveFromShoppingCartAsync(ShoppingCart shoppingCartToFind)
-        {
-            return await RemoveFromCartLogic(shoppingCartToFind);
-        }
-
-        private async Task<bool> RemoveFromCartLogic(ShoppingCart shoppingCartToFind)
+        public async Task<ShoppingCart> GetShoppingCartAsync(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            
-            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
-            var resultCart = _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
-            string IdProductFinded = "";
-            double NewTotalPrice = 0;
-
-            if (resultCart != null && shoppingCartToFind.ProductsInCart.Count == 1)
-            {
-                for (int i = 0; i < resultCart.ProductsInCart.Count; i++)
-                {
-                    if (resultCart.ProductsInCart[i]._id == shoppingCartToFind.ProductsInCart[0]._id)
-                    {
-                        IdProductFinded = resultCart.ProductsInCart[i]._id;
-                        NewTotalPrice = resultCart.ProductsInCart[i].UnitPrice * resultCart.ProductsInCart[i].QuantityInCart;
-                        break;
-                    }
-                }
-                resultCart.PriceTotal -= NewTotalPrice;
-                shoppingCartCollectionToFind.PriceTotal = resultCart.PriceTotal;
-                resultCart.ProductsInCart.RemoveAll(x => x._id == IdProductFinded);
-                shoppingCartCollectionToFind = resultCart;
-
-                var resultRemove = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollectionToFind);
-                return resultRemove.ModifiedCount == 1;
-            }
-            else
-            {
-                return false;
-            }
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
+            var resultCart = await _context.ShoppingCartCollection.Find(filter).FirstOrDefaultAsync();
+            return _mapper.Map<ShoppingCart>(resultCart);
         }
 
         /// <summary>
@@ -157,6 +126,50 @@ namespace Infrastructure.Services.MongoDB.Adapters
                 shoppingCartCollectionToFind.PriceTotal = shoppingCartToFind.PriceTotal;
                 var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollectionToFind);
                 return resultAdd.ModifiedCount == 1;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Add product to shopping cart
+        /// </summary>
+        /// <param name="shoppingCartToFind"></param>
+        /// <returns></returns>
+        public async Task<bool> RemoveFromShoppingCartAsync(ShoppingCart shoppingCartToFind)
+        {
+            return await FindProductToRemove(shoppingCartToFind);
+        }
+
+        private async Task<bool> FindProductToRemove(ShoppingCart shoppingCartToFind)
+        {
+            ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
+            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
+            var resultCart = _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
+
+            string IdProductFinded = "";
+            double NewTotalPrice = 0;
+
+            if (resultCart != null && shoppingCartToFind.ProductsInCart.Count == 1)
+            {
+                for (int i = 0; i < resultCart.ProductsInCart.Count; i++)
+                {
+                    if (resultCart.ProductsInCart[i]._id == shoppingCartToFind.ProductsInCart[0]._id)
+                    {
+                        IdProductFinded = resultCart.ProductsInCart[i]._id;
+                        NewTotalPrice = resultCart.ProductsInCart[i].UnitPrice * resultCart.ProductsInCart[i].QuantityInCart;
+                        break;
+                    }
+                }
+                resultCart.PriceTotal -= NewTotalPrice;
+                shoppingCartCollectionToFind.PriceTotal = resultCart.PriceTotal;
+                resultCart.ProductsInCart.RemoveAll(x => x._id == IdProductFinded);
+                shoppingCartCollectionToFind = resultCart;
+
+                var resultRemove = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollectionToFind);
+                return resultRemove.ModifiedCount == 1;
             }
             else
             {

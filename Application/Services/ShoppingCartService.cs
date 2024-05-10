@@ -35,7 +35,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Private method controls the process of create a shopping cart
+        /// Private method controls the process to create a shopping cart
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
@@ -44,7 +44,8 @@ namespace Application.Services
         {
             try
             {
-                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
+                shoppingCart.CreatedAt = DateTime.Now;
+                shoppingCart.State = true;
                 await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
             }
             catch (BusinessException bex)
@@ -67,6 +68,38 @@ namespace Application.Services
         }
 
         /// <summary>
+        /// Private method controls the process to get a shopping cart
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        private async Task<bool> ControlGetShoppingCart(ShoppingCart shoppingCart)
+        {
+            try
+            {
+                ShoppingCart shoppingCartFound =  await _shoppingCartRepository.GetShoppingCartAsync(shoppingCart);
+                return shoppingCartFound != null;
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating shoppingCart: {shoppingCart}"
+                    , bex.Code, bex.Message, shoppingCart);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+        
+        public async Task<bool> GetShoppingCart(ShoppingCart shoppingCart)
+        {
+            return await ControlGetShoppingCart(shoppingCart);
+        }
+
+        /// <summary>
         /// Control to add a product into the shopping cart
         /// </summary>
         /// <param name="shoppingCart"></param>
@@ -76,6 +109,8 @@ namespace Application.Services
         {
             try
             {
+                shoppingCart.CreatedAt = DateTime.Now;
+                shoppingCart.State = true;
                 await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
                 var update = await _shoppingCartRepository.AddToShoppingCartAsync(shoppingCart);
                 if (update == false)
@@ -112,6 +147,8 @@ namespace Application.Services
         {
             try
             {
+                shoppingCart.CreatedAt = DateTime.Now;
+                shoppingCart.State = true;
                 await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
                 var remove = await _shoppingCartRepository.RemoveFromShoppingCartAsync(shoppingCart);
                 if (remove == false)

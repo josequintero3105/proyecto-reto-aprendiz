@@ -8,6 +8,7 @@ namespace Application.DTOs
 {
     public class Invoice
     {
+        public string? _id {  get; set; }
         public string? CustomerId { get; set; }
         public string? ShoppingCartId { get; set; }
         public DateTime CreatedAt { get; set; }
