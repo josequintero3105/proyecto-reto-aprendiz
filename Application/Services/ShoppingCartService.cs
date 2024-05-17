@@ -13,6 +13,9 @@ using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace Application.Services
 {
@@ -23,15 +26,18 @@ namespace Application.Services
         /// </summary>
         private readonly IShoppingCartRepository _shoppingCartRepository;
         private readonly ILogger<ShoppingCartService> _logger;
+        private readonly IProductRepository _productRepository;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="shoppingCartRepository"></param>
         /// <param name="logger"></param>
-        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository, ILogger<ShoppingCartService> logger)
+        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository, ILogger<ShoppingCartService> logger, IProductRepository productRepository)
         {
             _shoppingCartRepository = shoppingCartRepository;
+            _productRepository = productRepository;
             _logger = logger;
+
         }
 
         /// <summary>
@@ -77,7 +83,7 @@ namespace Application.Services
         {
             try
             {
-                ShoppingCart shoppingCartFound =  await _shoppingCartRepository.GetShoppingCartAsync(shoppingCart);
+                ShoppingCart shoppingCartFound = await _shoppingCartRepository.GetShoppingCartAsync(shoppingCart);
                 return shoppingCartFound != null;
             }
             catch (BusinessException bex)
@@ -93,10 +99,16 @@ namespace Application.Services
                     nameof(GateWayBusinessException.NotControlerException));
             }
         }
-        
+
         public async Task<bool> GetShoppingCart(ShoppingCart shoppingCart)
         {
             return await ControlGetShoppingCart(shoppingCart);
+        }
+
+        public async Task<string> GetProductsToAdd(ShoppingCart shoppingCart)
+        {
+            var cartJson = shoppingCart.ToJson();
+            return cartJson;
         }
 
         /// <summary>
@@ -107,30 +119,22 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         private async Task ControlAddToShoppingCart(ShoppingCart shoppingCart)
         {
-            try
+            
+            var resultCart = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+            
+            var stringProductInCart = GetProductsToAdd(shoppingCart);
+            ShoppingCart IdsInCart = JsonConvert.DeserializeObject<ShoppingCart>(stringProductInCart.Result);
+            
+            List<string> productIds = new List<string>();
+            foreach (var product in IdsInCart.ProductsInCart)
             {
-                shoppingCart.CreatedAt = DateTime.Now;
-                shoppingCart.State = true;
-                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-                var update = await _shoppingCartRepository.AddToShoppingCartAsync(shoppingCart);
-                if (update == false)
-                {
-                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
-                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
-                }
+                productIds.Add(product._id);
             }
-            catch (BusinessException bex)
-            {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating shoppingCart: {shoppingCart}"
-                    , bex.Code, bex.Message, shoppingCart);
-                throw new BusinessException(bex.Message, bex.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
-            }
+            await _shoppingCartRepository.ListSpecificProducts(productIds);
+
+            var update = await _shoppingCartRepository.AddToShoppingCartAsync(shoppingCart);
+            if (update == false)
+                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid), nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
         }
 
         public async Task AddToShoppingCart(ShoppingCart shoppingCart)

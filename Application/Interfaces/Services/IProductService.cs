@@ -17,6 +17,8 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        public Task UpdateProduct(ProductUpdate product);
+        public Task UpdateProduct(ProductToGet product);
+        public Task<ProductToGet> GetProductById(ProductToGet product);
+        public Task<List<Product>> GetAllProducts();
     }
 }

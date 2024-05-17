@@ -18,6 +18,9 @@ namespace Core.Entities.MongoDB
         [BsonElement("_id")]
         public string? _id { get; set; }
 
+        [BsonElement("CustomerId")]
+        public string? CustomerId { get; set; }
+
         [BsonElement("ProductsInCart")]
         public List<ProductInCartCollection>? ProductsInCart { get; set; }
 

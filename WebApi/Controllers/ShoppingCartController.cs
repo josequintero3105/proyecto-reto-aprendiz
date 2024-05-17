@@ -17,7 +17,6 @@ namespace WebApi.Controllers
         /// </summary>
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IHandle _handle;
-        private readonly Product _product;
 
         public ShoppingCartController(IShoppingCartService shoppingCartService, IHandle handle)
         {

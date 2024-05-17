@@ -22,6 +22,17 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<bool> UpdateProductAsync(ProductUpdate product);
+        Task<bool> UpdateProductAsync(ProductToGet product);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        Task<ProductToGet> GetProductByIdAsync(ProductToGet product);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Task<List<Product>> GetAllProductsAsync();
     }
 }

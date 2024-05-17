@@ -202,7 +202,7 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_When_ObjectIdMongoIsValid_Then_ResultEqualProduct()
         {
             // Arrange
-            ProductUpdate product = ProductHelperModel.GetProductForUpdate();
+            ProductToGet product = ProductHelperModel.GetProductForUpdate();
             ProductCollection productCollection = ProductCollectionHelperModel.GetProductForUpdate();
 
             _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
@@ -219,10 +219,10 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductNameIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            ProductUpdate product = ProductHelperModel.GetProductForUpdateWithProductNameEmpty();
+            ProductToGet product = ProductHelperModel.GetProductForUpdateWithProductNameEmpty();
             ProductCollection productCollection = new ProductCollection();
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductUpdate>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductToGet>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -236,10 +236,10 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductDescriptionIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            ProductUpdate product = ProductHelperModel.GetProductForUpdateWithProductDescriptionEmpty();
+            ProductToGet product = ProductHelperModel.GetProductForUpdateWithProductDescriptionEmpty();
             ProductCollection productCollection = new ProductCollection();
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductUpdate>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductToGet>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -253,10 +253,10 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductCategoryIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            ProductUpdate product = ProductHelperModel.GetProductForUpdateWithProductCategoryEmpty();
+            ProductToGet product = ProductHelperModel.GetProductForUpdateWithProductCategoryEmpty();
             ProductCollection productCollection = new ProductCollection();
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductUpdate>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductToGet>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>

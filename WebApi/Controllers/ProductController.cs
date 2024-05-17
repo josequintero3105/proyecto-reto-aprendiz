@@ -48,13 +48,39 @@ namespace WebApiHttp.Controllers
         }
 
         /// <summary>
+        /// Method Get Product
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Get([FromBody] ProductToGet body)
+        {
+            var result = await _productService.GetProductById(body);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Method Get Product
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _productService.GetAllProducts();
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Method Put Update Product
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] ProductUpdate body)
+        public async Task<IActionResult> Update([FromBody] ProductToGet body)
         {
             await _handle.HandleRequestContextCatchException(_productService.UpdateProduct(body));
             return Ok(body);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
 using Application.Interfaces.Infrastructure.Mongo;
+using Application.Services;
 using AutoMapper;
 using Core.Entities.MongoDB;
 using MongoDB.Bson;
@@ -69,68 +70,43 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Add product to shopping cart
+        /// Get an specific shoppingCart
         /// </summary>
         /// <param name="shoppingCartToFind"></param>
         /// <returns></returns>
-        public async Task<bool> AddToShoppingCartAsync(ShoppingCart shoppingCartToFind)
-        {
-            return await AddToCartLogic(shoppingCartToFind);
-        }
-
-        private async Task<bool> AddToCartLogic(ShoppingCart shoppingCartToFind)
+        public ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            List<ProductCollection> productsInStock = _context.ProductCollection.Find(new BsonDocument()).ToList();
             var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
             var resultCart = _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
+            return resultCart;
+        }
 
-            if (resultCart != null)
-            {
-                double totalPrice = resultCart.PriceTotal;
-                for (int j = 0; j < shoppingCartToFind.ProductsInCart.Count; j++)
-                {
-                    for (int i = 0; i < productsInStock.Count; i++)
-                    {
-                        int NewQuantity = 0, QuantityInCart = 0;
-                        ProductCollection productCollectionToFind = productsInStock[i];
-                        var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productCollectionToFind._id));
-                        var result = _context.ProductCollection.Find(IdFinded).FirstOrDefault();
+        /// <summary>
+        /// Get the product collection only for update it's quantity
+        /// </summary>
+        /// <param name="productToUpdate"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateQuantityForProduct(List<ProductCollection> productsToAdd, int nProduct, int NewQuantity)
+        {
+            ProductCollection productCollectionToUpdate = productsToAdd[nProduct];
+            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productCollectionToUpdate._id));
+            var resultProduct = _context.ProductCollection.Find(IdFinded).FirstOrDefault();
+            resultProduct.Quantity = NewQuantity;
+            var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFinded, resultProduct);
+            return resultUpdate.ModifiedCount == 1;          
+        }
 
-                        if (productsInStock[i]._id == shoppingCartToFind.ProductsInCart[j]._id)
-                        {
-                            if (result != null)
-                            {
-                                shoppingCartToFind.ProductsInCart[j].Name = result.Name;
-                                shoppingCartCollectionToFind.ProductsInCart[j].Name = shoppingCartToFind.ProductsInCart[j].Name;
-
-                                shoppingCartToFind.ProductsInCart[j].UnitPrice = result.Price;
-                                shoppingCartCollectionToFind.ProductsInCart[j].UnitPrice = shoppingCartToFind.ProductsInCart[j].UnitPrice;
-
-                                QuantityInCart = shoppingCartToFind.ProductsInCart[j].QuantityInCart;
-                                shoppingCartCollectionToFind.ProductsInCart[j].QuantityInCart = QuantityInCart;
-
-                                if (result.Quantity >= QuantityInCart)
-                                {
-                                    NewQuantity = result.Quantity - QuantityInCart;
-                                    totalPrice += shoppingCartCollectionToFind.ProductsInCart[j].UnitPrice * QuantityInCart;
-                                    result.Quantity = NewQuantity;
-                                    await _context.ProductCollection.ReplaceOneAsync(IdFinded, result);
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-                shoppingCartToFind.PriceTotal = totalPrice;
-                shoppingCartCollectionToFind.PriceTotal = shoppingCartToFind.PriceTotal;
-                var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollectionToFind);
-                return resultAdd.ModifiedCount == 1;
-            }
-            else
-            {
-                return false;
-            }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objectIds"></param>
+        /// <returns></returns>
+        public async Task<List<ProductCollection>> ListSpecificProducts(List<string> productIds)
+        {    
+            var idFinded = Builders<ProductCollection>.Filter.In(x => x._id, productIds);
+            var result = await _context.ProductCollection.Find(idFinded).ToListAsync();
+            return result;
         }
 
         /// <summary>
@@ -138,43 +114,18 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="shoppingCartToFind"></param>
         /// <returns></returns>
-        public async Task<bool> RemoveFromShoppingCartAsync(ShoppingCart shoppingCartToFind)
-        {
-            return await FindProductToRemove(shoppingCartToFind);
-        }
-
-        private async Task<bool> FindProductToRemove(ShoppingCart shoppingCartToFind)
+        public async Task<bool> AddToShoppingCartAsync(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
             var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
-            var resultCart = _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
+            _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
+            var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollectionToFind);
+            return resultAdd.ModifiedCount == 1;
+        }
 
-            string IdProductFinded = "";
-            double NewTotalPrice = 0;
-
-            if (resultCart != null && shoppingCartToFind.ProductsInCart.Count == 1)
-            {
-                for (int i = 0; i < resultCart.ProductsInCart.Count; i++)
-                {
-                    if (resultCart.ProductsInCart[i]._id == shoppingCartToFind.ProductsInCart[0]._id)
-                    {
-                        IdProductFinded = resultCart.ProductsInCart[i]._id;
-                        NewTotalPrice = resultCart.ProductsInCart[i].UnitPrice * resultCart.ProductsInCart[i].QuantityInCart;
-                        break;
-                    }
-                }
-                resultCart.PriceTotal -= NewTotalPrice;
-                shoppingCartCollectionToFind.PriceTotal = resultCart.PriceTotal;
-                resultCart.ProductsInCart.RemoveAll(x => x._id == IdProductFinded);
-                shoppingCartCollectionToFind = resultCart;
-
-                var resultRemove = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollectionToFind);
-                return resultRemove.ModifiedCount == 1;
-            }
-            else
-            {
-                return false;
-            }
+        public Task<bool> RemoveFromShoppingCartAsync(ShoppingCart shoppingCart)
+        {
+            throw new NotImplementedException();
         }
     }
 }

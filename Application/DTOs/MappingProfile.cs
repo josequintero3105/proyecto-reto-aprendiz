@@ -13,9 +13,11 @@ namespace Application.DTOs
         public MappingProfile() 
         {
             CreateMap<Product, ProductCollection>().ReverseMap();
-            CreateMap<ProductUpdate, ProductCollection>().ReverseMap();
+            CreateMap<ProductToGet, ProductCollection>().ReverseMap();
             CreateMap<ShoppingCart, ShoppingCartCollection>().ReverseMap();
             CreateMap<ProductInCart, ProductInCartCollection>().ReverseMap();
+            CreateMap<Invoice, InvoiceCollection>().ReverseMap();
+            CreateMap<Customer, CustomerCollection>().ReverseMap();
         }
     }
 }

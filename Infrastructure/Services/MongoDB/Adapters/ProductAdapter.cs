@@ -56,11 +56,34 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
+        /// Get Product By Id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task<ProductToGet> GetProductByIdAsync(ProductToGet product)
+        {
+            ProductCollection pCollection = _mapper.Map<ProductCollection>(product);
+            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(pCollection._id));
+            var result = await _context.ProductCollection.FindAsync(IdFinded);
+            return _mapper.Map<ProductToGet>(result.FirstOrDefault());
+        }
+
+        /// <summary>
+        /// Get Product By Id
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<Product>> GetAllProductsAsync()
+        {
+            var result = await _context.ProductCollection.FindAsync(Builders<ProductCollection>.Filter.Empty);
+            return _mapper.Map<List<Product>>(result.ToList());
+        }
+
+        /// <summary>
         /// Business logic update product
         /// </summary>
         /// <param name="productToUpdate"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateProductAsync(ProductUpdate productToUpdate)
+        public async Task<bool> UpdateProductAsync(ProductToGet productToUpdate)
         {
             ProductCollection productCollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
             var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productCollectionToUpdate._id));

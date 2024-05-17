@@ -14,54 +14,52 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
-    public class InvoiceService : IInvoiceService
+    public class CustomerService : ICustomerService
     {
         /// <summary>
         /// Variables
         /// </summary>
-        private readonly IInvoiceRepository _invoiceRepository;
-        private readonly ILogger<InvoiceService> _logger;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly ILogger<ProductService> _logger;
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="shoppingCartRepository"></param>
-        /// <param name="logger"></param>
-        public InvoiceService(IInvoiceRepository invoiceRepository, ILogger<InvoiceService> logger)
+        /// <param name="productRepository"></param>
+        public CustomerService(ICustomerRepository customerRepository, ILogger<ProductService> logger)
         {
-            _invoiceRepository = invoiceRepository;
+            _customerRepository = customerRepository;
             _logger = logger;
+        }
+        public async Task CreateCustomer(Customer customer)
+        {
+            await ControlCreateCustomer(customer);
         }
 
         /// <summary>
-        /// Private method controls the process of create a shopping cart
+        /// Private method controls the process of create a product
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="customer"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task ControlCreateInvoice(Invoice invoice)
+        private async Task ControlCreateCustomer(Customer customer)
         {
             try
             {
                 
-                await _invoiceRepository.CreateInvoiceAsync(invoice);
+                await _customerRepository.CreateCustomerAsync(customer);
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating invoice: {invoice}"
-                    , bex.Code, bex.Message, invoice);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating customer: {customer}"
+                    , bex.Code, bex.Message, customer);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating invoice: {invoice} ", ex.Message, invoice);
+                _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
-        }
-
-        public async Task CreateInvoice(Invoice invoice)
-        {
-            await ControlCreateInvoice(invoice);
         }
     }
 }

@@ -26,9 +26,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static ProductUpdate GetProductForUpdate()
+        public static ProductToGet GetProductForUpdate()
         {
-            return new ProductUpdate
+            return new ProductToGet
             {
                 _id = "661805457b1da8ba4cb52995",
                 Name = "Test",
@@ -113,7 +113,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductUpdate GetProductForUpdateWithProductNameEmpty() => new ProductUpdate()
+        public static ProductToGet GetProductForUpdateWithProductNameEmpty() => new ProductToGet()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "",
@@ -124,7 +124,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductUpdate GetProductForUpdateWithProductNameWrongFormat() => new ProductUpdate()
+        public static ProductToGet GetProductForUpdateWithProductNameWrongFormat() => new ProductToGet()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "+,-.'?",
@@ -135,7 +135,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductUpdate GetProductForUpdateWithProductDescriptionEmpty() => new ProductUpdate()
+        public static ProductToGet GetProductForUpdateWithProductDescriptionEmpty() => new ProductToGet()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",
@@ -146,7 +146,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductUpdate GetProductForUpdateWithProductDescriptionWrongFormat() => new ProductUpdate()
+        public static ProductToGet GetProductForUpdateWithProductDescriptionWrongFormat() => new ProductToGet()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",
@@ -157,7 +157,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductUpdate GetProductForUpdateWithProductCategoryEmpty() => new ProductUpdate()
+        public static ProductToGet GetProductForUpdateWithProductCategoryEmpty() => new ProductToGet()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",
@@ -168,7 +168,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductUpdate GetProductForUpdateWithProductCategoryWrongFormat() => new ProductUpdate()
+        public static ProductToGet GetProductForUpdateWithProductCategoryWrongFormat() => new ProductToGet()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",
@@ -179,7 +179,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductUpdate GetProductForUpdateWithoutProductPrice() => new ProductUpdate()
+        public static ProductToGet GetProductForUpdateWithoutProductPrice() => new ProductToGet()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",

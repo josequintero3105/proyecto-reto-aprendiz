@@ -47,7 +47,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         {
             _shoppingCartRepositoryMock = new Mock<IShoppingCartRepository>();
             _shoppingCartRepository = new ShoppingCartAdapter(_contextMock.Object, _mapperMock.Object);
-            _shoppingCartService = new ShoppingCartService(_shoppingCartRepositoryMock.Object, _loggerMock.Object);
+            
             _shoppingCartController = new ShoppingCartController(_shoppingCartServiceMock.Object, _handleMock.Object);
             _mapperMock = new Mock<IMapper>();
         }

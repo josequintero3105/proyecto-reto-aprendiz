@@ -36,5 +36,6 @@ namespace Infrastructure.Services.MongoDB
         public IMongoCollection<ProductCollection> ProductCollection => _databaseName.GetCollection<ProductCollection>("Product");
         public IMongoCollection<ShoppingCartCollection> ShoppingCartCollection => _databaseName.GetCollection<ShoppingCartCollection>("ShoppingCart");
         public IMongoCollection<InvoiceCollection> InvoiceCollection => _databaseName.GetCollection<InvoiceCollection>("Invoice");
+        public IMongoCollection<CustomerCollection> CustomerCollection => _databaseName.GetCollection<CustomerCollection>("Customer");
     }
 }

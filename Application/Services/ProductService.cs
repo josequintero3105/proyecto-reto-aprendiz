@@ -71,6 +71,71 @@ namespace Application.Services
             await ControlCreateProduct(product);
         }
 
+        /// <summary>
+        /// Private method controls to get a product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        private async Task<ProductToGet> ControlGetProductById(ProductToGet product)
+        {
+            try
+            {
+                ProductToGet productToGet = await _productRepository.GetProductByIdAsync(product);
+                return productToGet;
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating product"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating product ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+
+        public async Task<ProductToGet> GetProductById(ProductToGet product)
+        {
+            return await ControlGetProductById(product);
+        }
+
+        /// <summary>
+        /// Private method controls to get a product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        private async Task<List<Product>> ControlGetAllProducts()
+        {
+            try
+            {
+                List<Product> productsList = await _productRepository.GetAllProductsAsync();
+                return productsList.Count == 0 ? throw new BusinessException(
+                    nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException)) : productsList;
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating product"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating product ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+
+        public async Task<List<Product>> GetAllProducts()
+        {
+            return await ControlGetAllProducts();
+        }
 
         /// <summary>
         /// Calling the business logic from the ProductAdapter
@@ -79,11 +144,11 @@ namespace Application.Services
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task ControlUpdateProduct(ProductUpdate product)
+        private async Task ControlUpdateProduct(ProductToGet product)
         {
             try
             {
-                await product.ValidateAndThrowsAsync<ProductUpdate, ProductUpdateValidator>();
+                await product.ValidateAndThrowsAsync<ProductToGet, ProductUpdateValidator>();
                 var update = await _productRepository.UpdateProductAsync(product);
                 if (update == false)
                 {
@@ -105,7 +170,7 @@ namespace Application.Services
             }
         }
         
-        public async Task UpdateProduct(ProductUpdate product)
+        public async Task UpdateProduct(ProductToGet product)
         {
             await ControlUpdateProduct(product);
         }
