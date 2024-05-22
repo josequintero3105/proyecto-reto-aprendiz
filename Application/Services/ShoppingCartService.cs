@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.FluentValidations.Extentions;
@@ -14,7 +16,9 @@ using Core.Entities.MongoDB;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
 
 namespace Application.Services
@@ -26,18 +30,15 @@ namespace Application.Services
         /// </summary>
         private readonly IShoppingCartRepository _shoppingCartRepository;
         private readonly ILogger<ShoppingCartService> _logger;
-        private readonly IProductRepository _productRepository;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="shoppingCartRepository"></param>
         /// <param name="logger"></param>
-        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository, ILogger<ShoppingCartService> logger, IProductRepository productRepository)
+        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository, ILogger<ShoppingCartService> logger)
         {
             _shoppingCartRepository = shoppingCartRepository;
-            _productRepository = productRepository;
             _logger = logger;
-
         }
 
         /// <summary>
@@ -73,73 +74,61 @@ namespace Application.Services
             await ControlCreateShoppingCart(shoppingCart);
         }
 
-        /// <summary>
-        /// Private method controls the process to get a shopping cart
-        /// </summary>
-        /// <param name="shoppingCart"></param>
-        /// <returns></returns>
-        /// <exception cref="BusinessException"></exception>
-        private async Task<bool> ControlGetShoppingCart(ShoppingCart shoppingCart)
+        private async Task<List<ProductCollection>> ListProductCollections(ShoppingCart shoppingCart)
         {
-            try
-            {
-                ShoppingCart shoppingCartFound = await _shoppingCartRepository.GetShoppingCartAsync(shoppingCart);
-                return shoppingCartFound != null;
-            }
-            catch (BusinessException bex)
-            {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating shoppingCart: {shoppingCart}"
-                    , bex.Code, bex.Message, shoppingCart);
-                throw new BusinessException(bex.Message, bex.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
-            }
+            List<string> productIds = shoppingCart.ProductsInCart.Select(p => p._id.ToString()).ToList();
+            var specificProducts = await _shoppingCartRepository.ListSpecificProducts(productIds);
+            return specificProducts;
         }
 
-        public async Task<bool> GetShoppingCart(ShoppingCart shoppingCart)
+        private async Task ProcessForEachProduct(ShoppingCart shoppingCart)
         {
-            return await ControlGetShoppingCart(shoppingCart);
-        }
-
-        public async Task<string> GetProductsToAdd(ShoppingCart shoppingCart)
-        {
-            var cartJson = shoppingCart.ToJson();
-            return cartJson;
-        }
-
-        /// <summary>
-        /// Control to add a product into the shopping cart
-        /// </summary>
-        /// <param name="shoppingCart"></param>
-        /// <returns></returns>
-        /// <exception cref="BusinessException"></exception>
-        private async Task ControlAddToShoppingCart(ShoppingCart shoppingCart)
-        {
-            
             var resultCart = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-            
-            var stringProductInCart = GetProductsToAdd(shoppingCart);
-            ShoppingCart IdsInCart = JsonConvert.DeserializeObject<ShoppingCart>(stringProductInCart.Result);
-            
-            List<string> productIds = new List<string>();
-            foreach (var product in IdsInCart.ProductsInCart)
+            var specificProducts = await ListProductCollections(shoppingCart);
+            var BulkWriteQuantities = new List<WriteModel<ProductCollection>>();
+            foreach (var products in specificProducts)
             {
-                productIds.Add(product._id);
+                resultCart.PriceTotal = CalculateAndAssign(shoppingCart, products, resultCart.PriceTotal);
+                _shoppingCartRepository.FilterToGetProduct(BulkWriteQuantities, products);   
             }
-            await _shoppingCartRepository.ListSpecificProducts(productIds);
+            await _shoppingCartRepository.UpdateQuantitiesForProducts(BulkWriteQuantities);
+            shoppingCart.PriceTotal = resultCart.PriceTotal;
+            await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
+        }
 
-            var update = await _shoppingCartRepository.AddToShoppingCartAsync(shoppingCart);
-            if (update == false)
-                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid), nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+        private double CalculateAndAssign(ShoppingCart shoppingCart, ProductCollection products, double PriceTotal)
+        {
+            var productToBill = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+            products.Quantity -= productToBill.QuantityInCart;
+            productToBill.Name = products.Name;
+            productToBill.UnitPrice = products.Price;
+            PriceTotal += productToBill.QuantityInCart * products.Price;
+            return PriceTotal;
+        }
+
+        private async Task GetAtLeastOneProduct(ShoppingCart shoppingCart)
+        {
+            var specificProducts = await ListProductCollections(shoppingCart);
+            if (specificProducts.Count > 0)
+                await ProcessForEachProduct(shoppingCart);
+            else
+                throw new BusinessException(nameof(GateWayBusinessException.ProductIdIsNotValid),
+                    nameof(GateWayBusinessException.ProductIdIsNotValid));
         }
 
         public async Task AddToShoppingCart(ShoppingCart shoppingCart)
         {
-            await ControlAddToShoppingCart(shoppingCart);
+            shoppingCart.CreatedAt = DateTime.Now;
+            var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+            if (result != null)
+            {
+                await GetAtLeastOneProduct(shoppingCart);
+            }
+            else
+            {
+                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
         }
 
         /// <summary>
@@ -147,37 +136,37 @@ namespace Application.Services
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <exception cref="BusinessException"></exception>
-        private async Task ControlRemoveFromShoppingCart(ShoppingCart shoppingCart)
+        private async Task LogicRemoveFromShoppingCart(ShoppingCart shoppingCart)
         {
-            try
+            shoppingCart.CreatedAt = DateTime.Now;
+            var resultCart = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+            List<string> productIds = shoppingCart.ProductsInCart.Select(p => p._id.ToString()).ToList();
+            var specificProducts = await _shoppingCartRepository.ListSpecificProducts(productIds);
+            foreach (var products in specificProducts)
             {
-                shoppingCart.CreatedAt = DateTime.Now;
-                shoppingCart.State = true;
-                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-                var remove = await _shoppingCartRepository.RemoveFromShoppingCartAsync(shoppingCart);
-                if (remove == false)
-                {
-                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
-                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
-                }
-            }
-            catch (BusinessException bex)
-            {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating shoppingCart: {shoppingCart}"
-                    , bex.Code, bex.Message, shoppingCart);
-                throw new BusinessException(bex.Message, bex.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id);
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
         public async Task RemoveFromShoppingCart(ShoppingCart shoppingCart)
         {
-            await ControlRemoveFromShoppingCart(shoppingCart);
+            shoppingCart.CreatedAt = DateTime.Now;
+            var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+            if (result != null)
+            {
+                await LogicRemoveFromShoppingCart(shoppingCart);
+            }
+            else
+            {
+                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
         }
     }
 }

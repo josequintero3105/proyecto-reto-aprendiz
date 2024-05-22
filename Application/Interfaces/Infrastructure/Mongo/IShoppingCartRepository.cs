@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
 using Core.Entities.MongoDB;
+using MongoDB.Driver;
 
 namespace Application.Interfaces.Infrastructure.Mongo
 {
@@ -16,11 +17,13 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
         public Task<ShoppingCart> CreateShoppingCartAsync(ShoppingCart shoppingCart);
-        public Task<ShoppingCart> GetShoppingCartAsync(ShoppingCart shoppingCart);
-        public Task<bool> AddToShoppingCartAsync(ShoppingCart shoppingCart);
-        public Task<bool> RemoveFromShoppingCartAsync(ShoppingCart shoppingCart);
+        public Task<ShoppingCart> GetShoppingCartAlter(ShoppingCart shoppingCart);
+        public Task<bool> UpdateShoppingCartAsync(ShoppingCart shoppingCart);
         public ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCart);
         public Task<List<ProductCollection>> ListSpecificProducts(List<string> productIds);
-        public Task<bool> UpdateQuantityForProduct(List<ProductCollection> productsToAdd, int position, int NewQuantity);
+        public Task<bool> UpdateQuantityForProduct(ProductCollection productsToAdd);
+        public Task UpdateQuantitiesForProducts(List<WriteModel<ProductCollection>> BulkWriteQuantities);
+        public void FilterToGetProduct(List<WriteModel<ProductCollection>> BulkWriteQuantities, ProductCollection products);
+        public Task RemoveProductFromCartAsync(ShoppingCartCollection shoppingCart, string id);
     }
 }

@@ -42,19 +42,6 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
-        [HttpGet()]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromBody] ShoppingCart body)
-        {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.GetShoppingCart(body));
-            return Ok(body);
-        }
-
-        /// <summary>
-        /// Method Post Create Product
-        /// </summary>
-        /// <param name="body"></param>
-        /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
         public async Task<IActionResult> Add([FromBody] ShoppingCart body)
@@ -64,7 +51,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Control and update and a delete a product
+        /// Control Delete a product
         /// </summary>
         /// <param name="body"></param>
         [HttpPut()]

@@ -13,6 +13,5 @@ namespace Application.Interfaces.Services
         public Task CreateShoppingCart(ShoppingCart shoppingCart);
         public Task AddToShoppingCart(ShoppingCart shoppingCart);
         public Task RemoveFromShoppingCart(ShoppingCart shoppingCart);
-        public Task<bool> GetShoppingCart(ShoppingCart shoppingCart);
     }
 }
