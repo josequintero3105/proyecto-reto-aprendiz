@@ -30,9 +30,52 @@ namespace Application.Services
             _customerRepository = customerRepository;
             _logger = logger;
         }
+
+        /// <summary>
+        /// Private method controls the process of create a product
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
         public async Task CreateCustomer(Customer customer)
         {
-            await ControlCreateCustomer(customer);
+            try
+            {
+                await _customerRepository.CreateCustomerAsync(customer);
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating customer: {customer}"
+                    , bex.Code, bex.Message, customer);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+
+        public async Task<Customer> GetCustomerById(Customer customer)
+        {
+            try
+            {
+                var result = await _customerRepository.GetCustomerByIdAsync(customer);
+                return result;
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating customer: {customer}"
+                    , bex.Code, bex.Message, customer);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
         }
 
         /// <summary>
@@ -41,12 +84,11 @@ namespace Application.Services
         /// <param name="customer"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task ControlCreateCustomer(Customer customer)
+        public async Task UpdateCustomer(Customer customer)
         {
             try
             {
-                
-                await _customerRepository.CreateCustomerAsync(customer);
+                await _customerRepository.UpdateCustomerAsync(customer);
             }
             catch (BusinessException bex)
             {

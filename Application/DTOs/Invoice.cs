@@ -10,9 +10,9 @@ namespace Application.DTOs
     {
         public string? _id {  get; set; }
         public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
         public string? ShoppingCartId { get; set; }
         public DateTime CreatedAt { get; set; }
         public double Total { get; set; }
-        public string? PaymentMethod { get; set; }
     }
 }

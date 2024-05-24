@@ -62,7 +62,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="shoppingCartToFind"></param>
         /// <returns></returns>
-        public async Task<ShoppingCart> GetShoppingCartAlter(ShoppingCart shoppingCartToFind)
+        public async Task<ShoppingCart> GetShoppingCartObject(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
             var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
@@ -79,8 +79,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
             var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
-            var resultCart = _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
-            return resultCart;
+            return _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
         }
 
         /// <summary>
@@ -96,25 +95,25 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// 
+        /// Filter the products to do it the update process
         /// </summary>
-        /// <param name="BulkWriteQuantities"></param>
+        /// <param name="listModelProducts"></param>
         /// <param name="products"></param>
-        public void FilterToGetProduct(List<WriteModel<ProductCollection>> BulkWriteQuantities, ProductCollection products)
+        public void FilterToGetProduct(List<WriteModel<ProductCollection>> listModelProducts, ProductCollection products)
         {
             var filter = Builders<ProductCollection>.Filter.Eq(x => x._id, products._id);
             var update = Builders<ProductCollection>.Update.Set(a => a.Quantity, products.Quantity);
-            BulkWriteQuantities.Add(new UpdateOneModel<ProductCollection>(filter, update) { IsUpsert = true });
+            listModelProducts.Add(new UpdateOneModel<ProductCollection>(filter, update) { IsUpsert = true });
         }
 
         /// <summary>
-        /// 
+        /// Update the product quantities in a just iterator
         /// </summary>
-        /// <param name="BulkWriteQuantities"></param>
+        /// <param name="listModelProducts"></param>
         /// <returns></returns>
-        public async Task UpdateQuantitiesForProducts(List<WriteModel<ProductCollection>> BulkWriteQuantities)
+        public async Task UpdateQuantitiesForProducts(List<WriteModel<ProductCollection>> listModelProducts)
         {
-            await _context.ProductCollection.BulkWriteAsync(BulkWriteQuantities);
+            await _context.ProductCollection.BulkWriteAsync(listModelProducts);
         }
 
         /// <summary>
@@ -125,12 +124,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public async Task<List<ProductCollection>> ListSpecificProducts(List<string> productIds)
         {    
             var idFinded = Builders<ProductCollection>.Filter.In(x => x._id, productIds);
-            var result = await _context.ProductCollection.Find(idFinded).ToListAsync();
-            return result;
+            return await _context.ProductCollection.Find(idFinded).ToListAsync();
         }
 
         /// <summary>
-        /// 
+        /// Take the shopping cart and take one of its products for remove
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <param name="_id"></param>

@@ -29,7 +29,7 @@ namespace WebApi.Controllers
             _handle = handle;
         }
         /// <summary>
-        /// Method Post Create Product
+        /// Method Post Create Customer
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
@@ -39,6 +39,30 @@ namespace WebApi.Controllers
         {
             await _handle.HandleRequestContextCatchException(_customerService.CreateCustomer(body));
             return Ok(body);
+        }
+        /// <summary>
+        /// Method Post Update Customer
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpPut()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Update([FromBody] Customer body)
+        {
+            await _handle.HandleRequestContextCatchException(_customerService.UpdateCustomer(body));
+            return Ok(body);
+        }
+        /// <summary>
+        /// Method Get Get Customer
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Get([FromBody] Customer body)
+        {
+            var result = await _customerService.GetCustomerById(body);
+            return Ok(result);
         }
     }
 }

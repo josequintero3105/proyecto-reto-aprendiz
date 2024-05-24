@@ -14,6 +14,6 @@ namespace Application.DTOs
         public List<ProductInCart>? ProductsInCart { get; set; }
         public double PriceTotal { get; set;}
         public DateTime CreatedAt { get; set; }
-        public bool State {  get; set; }
+        public bool Active {  get; set; }
     }
 }

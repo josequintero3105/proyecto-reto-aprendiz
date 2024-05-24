@@ -21,15 +21,17 @@ namespace Application.Services
         /// </summary>
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly ILogger<InvoiceService> _logger;
+        private readonly IShoppingCartRepository _shoppingCartRepository;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="shoppingCartRepository"></param>
         /// <param name="logger"></param>
-        public InvoiceService(IInvoiceRepository invoiceRepository, ILogger<InvoiceService> logger)
+        public InvoiceService(IInvoiceRepository invoiceRepository, ILogger<InvoiceService> logger, IShoppingCartRepository shoppingCartRepository)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
+            _shoppingCartRepository = shoppingCartRepository;
         }
 
         /// <summary>
@@ -38,12 +40,11 @@ namespace Application.Services
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task ControlCreateInvoice(Invoice invoice)
+        public async Task GenerateInvoice(Invoice invoice)
         {
             try
             {
-                
-                await _invoiceRepository.CreateInvoiceAsync(invoice);
+                await _invoiceRepository.GenerateInvoiceAsync(invoice);
             }
             catch (BusinessException bex)
             {
@@ -57,11 +58,6 @@ namespace Application.Services
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
-        }
-
-        public async Task CreateInvoice(Invoice invoice)
-        {
-            await ControlCreateInvoice(invoice);
         }
     }
 }

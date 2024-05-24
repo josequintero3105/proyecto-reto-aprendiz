@@ -30,7 +30,7 @@ namespace Core.Entities.MongoDB
         [BsonElement("CreatedAt")]
         public DateTime CreatedAt { get; set; }
 
-        [BsonElement("State")]
-        public bool State {  get; set; }
+        [BsonElement("Active")]
+        public bool Active {  get; set; }
     }
 }

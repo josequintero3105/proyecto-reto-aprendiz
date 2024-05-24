@@ -9,6 +9,6 @@ namespace Application.Interfaces.Services
 {
     public interface IInvoiceService
     {
-        public Task CreateInvoice(Invoice invoice);
+        public Task GenerateInvoice(Invoice invoice);
     }
 }

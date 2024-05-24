@@ -9,6 +9,6 @@ namespace Application.Interfaces.Infrastructure.Mongo
 {
     public interface IInvoiceRepository
     {
-        Task<Invoice> CreateInvoiceAsync(Invoice invoice);
+        Task<Invoice> GenerateInvoiceAsync(Invoice invoice);
     }
 }

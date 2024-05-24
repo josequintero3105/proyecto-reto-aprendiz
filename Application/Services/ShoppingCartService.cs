@@ -52,7 +52,7 @@ namespace Application.Services
             try
             {
                 shoppingCart.CreatedAt = DateTime.Now;
-                shoppingCart.State = true;
+                shoppingCart.Active = true;
                 await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
             }
             catch (BusinessException bex)
@@ -85,13 +85,13 @@ namespace Application.Services
         {
             var resultCart = _shoppingCartRepository.GetShoppingCart(shoppingCart);
             var specificProducts = await ListProductCollections(shoppingCart);
-            var BulkWriteQuantities = new List<WriteModel<ProductCollection>>();
+            var listModelProducts = new List<WriteModel<ProductCollection>>();
             foreach (var products in specificProducts)
             {
                 resultCart.PriceTotal = CalculateAndAssign(shoppingCart, products, resultCart.PriceTotal);
-                _shoppingCartRepository.FilterToGetProduct(BulkWriteQuantities, products);   
+                _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);   
             }
-            await _shoppingCartRepository.UpdateQuantitiesForProducts(BulkWriteQuantities);
+            await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
             shoppingCart.PriceTotal = resultCart.PriceTotal;
             await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
         }
@@ -119,6 +119,7 @@ namespace Application.Services
         public async Task AddToShoppingCart(ShoppingCart shoppingCart)
         {
             shoppingCart.CreatedAt = DateTime.Now;
+            await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
             var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
             if (result != null)
             {

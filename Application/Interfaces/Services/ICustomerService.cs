@@ -9,6 +9,8 @@ namespace Application.Interfaces.Services
 {
     public interface ICustomerService
     {
-        public Task CreateCustomer(Customer customer);
+        Task CreateCustomer(Customer customer);
+        Task UpdateCustomer(Customer customer);
+        Task<Customer> GetCustomerById(Customer customer);
     }
 }

@@ -15,5 +15,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <param name="customer"></param>
         /// <returns></returns>
         Task<Customer> CreateCustomerAsync(Customer customer);
+        Task<Customer> GetCustomerByIdAsync(Customer customer);
+        Task<bool> UpdateCustomerAsync(Customer customer);
     }
 }

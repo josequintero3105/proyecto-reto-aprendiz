@@ -18,13 +18,13 @@ namespace Core.Entities.MongoDB
         [BsonElement("CustomerId")]
         public string? CostumerId { get; set; }
 
+        [BsonElement("CustomerName")]
+        public string? CustomerName { get; set; }
+
         [BsonElement("ShoppingCartId")]
         public string? ShoppingCartId { get; set; }
 
         [BsonElement("CreatedAt")]
         public DateTime CreatedAt { get; set; }
-
-        [BsonElement("PaymentMethod")]
-        public string? PaymentMethod { get; set; }
     }
 }
