@@ -33,7 +33,6 @@ namespace Application.Tests.Application.Tests.Services
         
         private IProductService _productService;
         private readonly ProductController _productController;
-        private IProductRepository _productRepository;
         /// <summary>
         /// Mocks
         /// </summary>
@@ -49,7 +48,6 @@ namespace Application.Tests.Application.Tests.Services
         public ProductTest()
         {
             _productRepositoryMock = new Mock<IProductRepository>();
-            _productRepository = new ProductAdapter(_contextMock.Object, _mapperMock.Object);
             _productService = new ProductService(_productRepositoryMock.Object, _loggerMock.Object);
             _productServiceMock = new Mock<IProductService>();
             _productController = new ProductController(_productServiceMock.Object, _handleMock.Object);
@@ -202,17 +200,14 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_When_ObjectIdMongoIsValid_Then_ResultEqualProduct()
         {
             // Arrange
-            ProductToGet product = ProductHelperModel.GetProductForUpdate();
-            ProductCollection productCollection = ProductCollectionHelperModel.GetProductForUpdate();
-
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<Product>())).Returns(productCollection);
-            _productRepositoryMock.Setup(repo => repo.UpdateProductAsync(product)).Verifiable();
+            ProductToGet product = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.UpdateProductAsync(product)).ReturnsAsync(true).Verifiable();
 
             // Act
             await _productService.UpdateProduct(product);
 
             // Assert
-            Assert.IsType<Product>(product);
+            Assert.IsType<ProductToGet>(product);
         }
 
         [Fact]
@@ -264,6 +259,37 @@ namespace Application.Tests.Application.Tests.Services
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void GetProduct_When_IdNotFountInMongo_ExpectsResultEqualProduct()
+        {
+            // Arrange
+            var productFound = ProductHelperModel.GetProductFromMongo();
+            productFound._id = "661feb4a110728200e31903e";
+
+            _productRepositoryMock.Setup(x => x.GetProductByIdAsync(It.IsAny<ProductToGet>()))
+                .ReturnsAsync(productFound).Verifiable();
+
+            // Act
+            await _productService.GetProductById(productFound);
+
+            // Assert
+            Assert.IsType<ProductToGet>(productFound);
+        }
+
+        [Fact]
+        public async void ListProducts_When_ProducesErrorInDataBase_ExpectsResultList()
+        {
+            // Assert
+            List<Product> products = ProductHelperModel.ListAllProducts();
+            _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
+
+            // Act
+            await _productService.GetAllProducts();
+
+            // Arrange
+            Assert.IsType<List<Product>>(products);
         }
     }
 }

@@ -81,18 +81,19 @@ namespace Application.Services
         {
             try
             {
+                await product.ValidateAndThrowsAsync<ProductToGet, ProductUpdateValidator>();
                 ProductToGet productToGet = await _productRepository.GetProductByIdAsync(product);
                 return productToGet;
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating product"
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} getting product"
                     , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating product ", ex.Message);
+                _logger.LogError(ex, "Error: {message} getting product ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }

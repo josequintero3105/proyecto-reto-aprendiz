@@ -50,6 +50,14 @@ namespace WebApi.Controllers
             return Ok(body);
         }
 
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Get([FromBody] ShoppingCart body)
+        {
+            var result = await _shoppingCartService.GetShoppingCartById(body);
+            return Ok(result);
+        }
+
         /// <summary>
         /// Control Delete a product
         /// </summary>

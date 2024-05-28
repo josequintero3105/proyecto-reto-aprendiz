@@ -26,19 +26,33 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static ProductToGet GetProductForUpdate()
+        public static ProductToGet GetProductFromMongo()
         {
             return new ProductToGet
             {
-                _id = "661805457b1da8ba4cb52995",
+                _id = "661feb4a110728200e31903e",
                 Name = "Test",
-                Price = 10.000,
-                Quantity = 1,
+                Price = 10000,
+                Quantity = 100,
                 Description = "Test Description",
                 Category = "Testing",
                 State = true
             };
         }
+
+        public static List<Product> ListAllProducts() => new List<Product>
+        {
+            new Product
+            {
+                Name = "Test",
+                Price = 0,
+                Quantity = 0,
+                Description = "Test",
+                Category = "Test",
+                State = true
+            }
+        };
+        
 
         public static Product GetProductForCreationWithProductNameEmpty() => new Product()
         {

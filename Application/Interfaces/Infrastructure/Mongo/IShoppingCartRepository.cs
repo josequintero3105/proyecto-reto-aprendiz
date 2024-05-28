@@ -22,13 +22,19 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public Task<ShoppingCart> GetShoppingCartObject(ShoppingCart shoppingCart);
+        public Task<ShoppingCart> GetShoppingCartAsync(ShoppingCart shoppingCart);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
         public Task<bool> UpdateShoppingCartAsync(ShoppingCart shoppingCart);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shoppingCartCollection"></param>
+        /// <returns></returns>
+        public Task<bool> UpdatePriceTotalFromShoppingCart(ShoppingCartCollection shoppingCartCollection);
         /// <summary>
         /// 
         /// </summary>

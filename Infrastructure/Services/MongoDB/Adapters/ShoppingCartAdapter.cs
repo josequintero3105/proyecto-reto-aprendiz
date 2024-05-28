@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,12 +63,12 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="shoppingCartToFind"></param>
         /// <returns></returns>
-        public async Task<ShoppingCart> GetShoppingCartObject(ShoppingCart shoppingCartToFind)
+        public async Task<ShoppingCart> GetShoppingCartAsync(ShoppingCart shoppingCartToFind)
         {
-            ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
-            var resultCart = await _context.ShoppingCartCollection.Find(filter).FirstOrDefaultAsync();
-            return _mapper.Map<ShoppingCart>(resultCart);
+            ShoppingCartCollection spCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(spCollectionToFind._id));
+            var resultCart = await _context.ShoppingCartCollection.FindAsync(filter);
+            return _mapper.Map<ShoppingCart>(resultCart.FirstOrDefault());
         }
 
         /// <summary>
@@ -78,7 +79,10 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
+            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.And(
+                Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id)),
+                Builders<ShoppingCartCollection>.Filter.Eq(x => x.Active, true)
+            );
             return _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
         }
 
@@ -122,9 +126,12 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <param name="productIds"></param>
         /// <returns></returns>
         public async Task<List<ProductCollection>> ListSpecificProducts(List<string> productIds)
-        {    
-            var idFinded = Builders<ProductCollection>.Filter.In(x => x._id, productIds);
-            return await _context.ProductCollection.Find(idFinded).ToListAsync();
+        {
+            var filter = Builders<ProductCollection>.Filter.And(
+                Builders<ProductCollection>.Filter.In(x => x._id, productIds),
+                Builders<ProductCollection>.Filter.Eq(x => x.State, true)
+            );
+            return await _context.ProductCollection.Find(filter).ToListAsync();
         }
 
         /// <summary>
@@ -133,11 +140,24 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <param name="shoppingCart"></param>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public async Task RemoveProductFromCartAsync(ShoppingCartCollection shoppingCart, string _id)
+        public async Task RemoveProductFromCartAsync(ShoppingCartCollection shoppingCartCollection, string _id)
         {
-            var filter = Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, shoppingCart._id);
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, shoppingCartCollection._id);
             var remove = Builders<ShoppingCartCollection>.Update.PullFilter(c => c.ProductsInCart, p => p._id == _id);
             await _context.ShoppingCartCollection.UpdateOneAsync(filter, remove);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shoppingCartCollection"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdatePriceTotalFromShoppingCart(ShoppingCartCollection shoppingCartCollection)
+        {
+            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollection._id));
+            _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
+            var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollection);
+            return resultAdd.ModifiedCount == 1;
         }
 
         /// <summary>
