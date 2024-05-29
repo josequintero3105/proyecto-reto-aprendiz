@@ -9,7 +9,6 @@ using Application.Interfaces.Infrastructure.Mongo;
 using Application.Services;
 using AutoMapper;
 using Core.Entities.MongoDB;
-using Microsoft.VisualBasic;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -69,6 +68,13 @@ namespace Infrastructure.Services.MongoDB.Adapters
             var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(spCollectionToFind._id));
             var resultCart = await _context.ShoppingCartCollection.FindAsync(filter);
             return _mapper.Map<ShoppingCart>(resultCart.FirstOrDefault());
+        }
+
+        public async Task<bool> GetShoppingCartFromMongo(string _id)
+        {
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq(s => s._id, _id);
+            var shoppingCartCollection = await _context.ShoppingCartCollection.Find(filter).FirstOrDefaultAsync();
+            return shoppingCartCollection != null;
         }
 
         /// <summary>

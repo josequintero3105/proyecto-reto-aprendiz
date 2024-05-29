@@ -58,6 +58,13 @@ namespace Infrastructure.Services.MongoDB.Adapters
             return _mapper.Map<Customer>(result.FirstOrDefault());
         }
 
+        public CustomerCollection GetCustomer(Customer customerToFind)
+        {
+            CustomerCollection customerCollectionToFind = _mapper.Map<CustomerCollection>(customerToFind);
+            var IdCustomerFinded = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(customerCollectionToFind._id));
+            return _context.CustomerCollection.Find(IdCustomerFinded).FirstOrDefault();
+        }
+
         public async Task<bool> UpdateCustomerAsync(Customer customerToUpdate)
         {
             CustomerCollection collectionToUpdate = _mapper.Map<CustomerCollection>(customerToUpdate);

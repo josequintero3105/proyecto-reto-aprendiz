@@ -51,7 +51,6 @@ namespace Application.Services
         {
             try
             {
-                shoppingCart.CreatedAt = DateTime.Now;
                 shoppingCart.Active = true;
                 await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
             }
@@ -107,6 +106,11 @@ namespace Application.Services
             return await ControlGetShoppingCartById(shoppingCart);
         }
 
+        public async Task<bool> GetShoppingCartCollectionMongo(string _id)
+        {
+            return await _shoppingCartRepository.GetShoppingCartFromMongo(_id);
+        }
+
         /// <summary>
         /// Lis only the specific products of the json format
         /// </summary>
@@ -136,6 +140,7 @@ namespace Application.Services
             }
             await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
             shoppingCart.PriceTotal = resultCart.PriceTotal;
+            shoppingCart.Active = true;
             await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
         }
 
@@ -181,17 +186,12 @@ namespace Application.Services
         public async Task AddToShoppingCart(ShoppingCart shoppingCart)
         {
             await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-            shoppingCart.CreatedAt = DateTime.Now;
             var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
             if (result != null)
-            {
                 await GetAtLeastOneProduct(shoppingCart);
-            }
             else
-            {
                 throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
                     nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
-            }
         }
 
         /// <summary>
@@ -239,17 +239,13 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task RemoveFromShoppingCart(ShoppingCart shoppingCart)
         {
-            shoppingCart.CreatedAt = DateTime.Now;
+            await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
             var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
             if (result != null)
-            {
                 await LogicRemoveFromShoppingCart(shoppingCart);
-            }
             else
-            {
                 throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
                     nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
-            }
         }
     }
 }

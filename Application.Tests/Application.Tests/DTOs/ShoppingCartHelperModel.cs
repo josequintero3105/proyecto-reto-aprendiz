@@ -16,18 +16,7 @@ namespace Application.Tests.Application.Tests.DTOs
         {
             return new ShoppingCart()
             {
-                ProductsInCart = new List<ProductInCart>()
-                {
-                    new ProductInCart
-                    {
-                        _id = "661805457b1da8ba4cb52995",
-                        QuantityInCart = 4
-                    },
-                    new ProductInCart {
-                        _id = "66185655155f38e1afb9fd29",
-                        QuantityInCart = 3
-                    },
-                },
+                ProductsInCart = new List<ProductInCart>() {},
                 PriceTotal = 0,
                 Active = true
             };
@@ -50,15 +39,8 @@ namespace Application.Tests.Application.Tests.DTOs
                 },
             },
             PriceTotal = 40000,
-            CreatedAt = DateTime.Now,
             Active = true
-        };
-
-        public static List<string> IdList => new List<string>()
-        {
-            "661805457b1da8ba4cb52995",
-            "66185655155f38e1afb9fd29"
-        };
+        };        
 
         public static ShoppingCart GetShoppingCartForRemoveProducts() => new ShoppingCart()
         {

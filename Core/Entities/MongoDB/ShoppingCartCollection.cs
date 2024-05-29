@@ -18,17 +18,11 @@ namespace Core.Entities.MongoDB
         [BsonElement("_id")]
         public string? _id { get; set; }
 
-        [BsonElement("CustomerId")]
-        public string? CustomerId { get; set; }
-
         [BsonElement("ProductsInCart")]
         public List<ProductInCartCollection>? ProductsInCart { get; set; }
 
         [BsonElement("PriceTotal")]
         public double PriceTotal { get; set; }
-
-        [BsonElement("CreatedAt")]
-        public DateTime CreatedAt { get; set; }
 
         [BsonElement("Active")]
         public bool Active {  get; set; }

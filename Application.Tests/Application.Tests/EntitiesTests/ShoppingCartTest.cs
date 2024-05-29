@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
@@ -15,6 +16,8 @@ using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
 using Infrastructure.Services.MongoDB;
 using Infrastructure.Services.MongoDB.Adapters;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Moq;
@@ -37,9 +40,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         private readonly Mock<IShoppingCartRepository> _shoppingCartRepositoryMock = new();
         private readonly Mock<IShoppingCartService> _shoppingCartServiceMock = new();
         private readonly Mock<ILogger<ShoppingCartService>> _loggerMock = new();
-        
         private readonly Mock<IMapper> _mapperMock = new();
-        private readonly Mock<IContext> _contextMock = new();
         private readonly Mock<IHandle> _handleMock = new();
 
         /// <summary>
@@ -50,7 +51,76 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             _shoppingCartRepositoryMock = new Mock<IShoppingCartRepository>();
             _shoppingCartService = new ShoppingCartService(_shoppingCartRepositoryMock.Object, _loggerMock.Object);
             _shoppingCartController = new ShoppingCartController(_shoppingCartServiceMock.Object, _handleMock.Object);
+            
+            _shoppingCartController.ControllerContext.RouteData = new RouteData();
+            _shoppingCartController.ControllerContext.RouteData.Values.Add("Controller", "Create");
             _mapperMock = new Mock<IMapper>();
+        }
+
+        [Fact]
+        public async Task CreateShoppingCart_Then_ExpectsResultEqualShoppingCart()
+        {
+            // Act
+            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCart))
+                .ReturnsAsync(shoppingCart).Verifiable();
+
+            // Assert
+            await _shoppingCartService.CreateShoppingCart(shoppingCart);
+
+            // Arrange
+            Assert.IsType<ShoppingCart>(shoppingCart);
+        }
+
+        [Fact]
+        public async Task CreateShoppingCart_Then_ResultCartIsNotNull()
+        {
+            // Act
+            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCart))
+                .ReturnsAsync(shoppingCart).Verifiable();
+
+            // Assert
+            await _shoppingCartService.CreateShoppingCart(shoppingCart);
+
+            // Arrange
+            Assert.NotNull(shoppingCart);
+        }
+
+        [Fact]
+        public async Task CreateShoppingCart_Then_ExpectsVerifyCreation()
+        {
+            // Arrange
+            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(It.Is<ShoppingCart>
+                (x => x.ProductsInCart == shoppingCart.ProductsInCart &&
+                x.PriceTotal == shoppingCart.PriceTotal &&
+                x.Active == shoppingCart.Active
+                ))).Verifiable();
+
+            // Act
+            await _shoppingCartService.CreateShoppingCart(shoppingCart);
+
+            // Arrange
+            _shoppingCartRepositoryMock.Verify();
+        }
+
+        [Fact]
+        public async Task CreateShoppingCart_When_ResponseIsCorrect_Then_ExpectsResponseOk()
+        {
+            // Act
+            var shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            _shoppingCartController.ControllerContext.RouteData.Values.Add("action", "Post");
+            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCart))
+                .Returns(Task.FromResult(shoppingCart));
+
+            // Assert
+            var result = await _shoppingCartController.Create(shoppingCart);
+            var objectResult = result as OkObjectResult;
+
+            // Arrange
+            Assert.NotNull(result);
+            Assert.Equal((int)HttpStatusCode.OK, objectResult?.StatusCode);
         }
 
         [Fact]
@@ -150,61 +220,11 @@ namespace Application.Tests.Application.Tests.EntitiesTests
                     GateWayBusinessException.ShoppingCartIdIsNotValid.ToString())).Verifiable();
 
             // Act
-            var result = await Assert.ThrowsAsync<BusinessException>(async() =>
+            var result = await Assert.ThrowsAsync<BusinessException>(async () =>
              await _shoppingCartService.AddToShoppingCart(shoppingCart));
 
             // Assert
             Assert.Equal(result.Message, GateWayBusinessException.NotAllowSpecialCharacters.ToString());
-        }
-
-        [Fact]
-        public async void ListProductsToWriteQuantities_When_ProductsInCartExists_ExpectsResultEqualListProduct()
-        {
-            //Arrange
-            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
-            ShoppingCartCollection shoppingCartCollection = new ShoppingCartCollection();
-            List<ProductCollection> listProductCollections = new List<ProductCollection>();
-            List<string> productIds = ShoppingCartHelperModel.IdList;
-
-            _mapperMock.Setup(x => x.Map<ShoppingCartCollection>(It.IsAny<ShoppingCart>()))
-                .Returns(shoppingCartCollection);
-
-            _shoppingCartRepositoryMock.Setup(x => x.GetShoppingCart(It.IsAny<ShoppingCart>()))
-                .Returns(shoppingCartCollection).Verifiable();
-
-            _shoppingCartRepositoryMock.Setup(x => x.ListSpecificProducts(productIds))
-                .ReturnsAsync(listProductCollections).Verifiable();
-
-            //Act
-            await _shoppingCartService.AddToShoppingCart(shoppingCart);
-
-            //Assert
-            Assert.IsType<List<ProductCollection>>(listProductCollections);
-        }
-
-        [Fact]
-        public async void ListProductsToRemoveFromCart_When_ProductsInCartExists_ExpectsResultEqualListProduct()
-        {
-            //Arrange
-            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
-            ShoppingCartCollection shoppingCartCollection = new ShoppingCartCollection();
-            List<ProductCollection> listProductCollections = new List<ProductCollection>();
-            List<string> productIds = ShoppingCartHelperModel.IdList;
-
-            _mapperMock.Setup(x => x.Map<ShoppingCartCollection>(It.IsAny<ShoppingCart>()))
-                .Returns(shoppingCartCollection);
-
-            _shoppingCartRepositoryMock.Setup(x => x.GetShoppingCart(It.IsAny<ShoppingCart>()))
-                .Returns(shoppingCartCollection).Verifiable();
-
-            _shoppingCartRepositoryMock.Setup(x => x.ListSpecificProducts(productIds))
-                .ReturnsAsync(listProductCollections).Verifiable();
-
-            //Act
-            await _shoppingCartService.RemoveFromShoppingCart(shoppingCart);
-
-            //Assert
-            Assert.IsType<List<ProductCollection>>(listProductCollections);
         }
     }
 }

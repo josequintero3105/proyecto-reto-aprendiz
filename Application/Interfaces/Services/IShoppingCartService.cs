@@ -12,6 +12,7 @@ namespace Application.Interfaces.Services
     {
         public Task CreateShoppingCart(ShoppingCart shoppingCart);
         public Task<ShoppingCart> GetShoppingCartById(ShoppingCart shoppingCart);
+        public Task<bool> GetShoppingCartCollectionMongo(string _id);
         public Task AddToShoppingCart(ShoppingCart shoppingCart);
         public Task RemoveFromShoppingCart(ShoppingCart shoppingCart);
     }

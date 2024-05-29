@@ -54,26 +54,5 @@ namespace Infrastructure.Services.MongoDB.Adapters
             await _context.InvoiceCollection.InsertOneAsync(invoiceCollectionToCreate);
             return _mapper.Map<Invoice>(InvoiceToCreate);
         }
-
-        /// <summary>
-        /// Update the invoice
-        /// </summary>
-        /// <param name="InvoiceToUpdate"></param>
-        /// <returns></returns>
-        public async Task<bool> UpdateInvoiceAsync(Invoice InvoiceToUpdate)
-        {
-            InvoiceCollection invoiceCollectionToUpdate = _mapper.Map<InvoiceCollection>(InvoiceToUpdate);
-            var IdFinded = Builders<InvoiceCollection>.Filter.Eq("_id", ObjectId.Parse(invoiceCollectionToUpdate._id));
-            var result = _context.InvoiceCollection.Find(IdFinded).FirstOrDefault();
-            if (result != null)
-            {
-                var resultUpdate = await _context.InvoiceCollection.ReplaceOneAsync(IdFinded, invoiceCollectionToUpdate);
-                return resultUpdate.ModifiedCount == 1;
-            }
-            else
-            {
-                return false;
-            }
-        }
     }
 }

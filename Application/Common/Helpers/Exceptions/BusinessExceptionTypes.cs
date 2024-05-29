@@ -45,4 +45,7 @@ public enum GateWayBusinessException
 
     [Description("ShoppingCart Id Is Not Valid")]
     ShoppingCartIdIsNotValid = 409,
+
+    [Description("Customer Id Is Not Valid")]
+    CustomerIdIsNotValid = 410,
 }

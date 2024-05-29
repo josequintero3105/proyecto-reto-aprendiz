@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Infrastructure.Mongo
 {
@@ -16,6 +17,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <returns></returns>
         Task<Customer> CreateCustomerAsync(Customer customer);
         Task<Customer> GetCustomerByIdAsync(Customer customer);
+        CustomerCollection GetCustomer(Customer customerToFind);
         Task<bool> UpdateCustomerAsync(Customer customer);
     }
 }

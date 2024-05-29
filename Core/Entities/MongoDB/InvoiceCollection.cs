@@ -26,5 +26,8 @@ namespace Core.Entities.MongoDB
 
         [BsonElement("CreatedAt")]
         public DateTime CreatedAt { get; set; }
+
+        [BsonElement("Total")]
+        public double Total { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using Application.DTOs;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
+using Core.Entities.MongoDB;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services
@@ -22,16 +23,21 @@ namespace Application.Services
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly ILogger<InvoiceService> _logger;
         private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly ICustomerRepository _customerRepository;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="shoppingCartRepository"></param>
         /// <param name="logger"></param>
-        public InvoiceService(IInvoiceRepository invoiceRepository, ILogger<InvoiceService> logger, IShoppingCartRepository shoppingCartRepository)
+        public InvoiceService(IInvoiceRepository invoiceRepository, 
+            ILogger<InvoiceService> logger, 
+            IShoppingCartRepository shoppingCartRepository, 
+            ICustomerRepository customerRepository)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
             _shoppingCartRepository = shoppingCartRepository;
+            _customerRepository = customerRepository;
         }
 
         /// <summary>
@@ -44,7 +50,23 @@ namespace Application.Services
         {
             try
             {
-                await _invoiceRepository.GenerateInvoiceAsync(invoice);
+                await invoice.ValidateAndThrowsAsync<Invoice, InvoiceValidator>();
+                invoice.CreatedAt = DateTime.Now;
+                ShoppingCart shoppingCart = new ShoppingCart();
+                Customer customer = new Customer();
+                shoppingCart._id = invoice.ShoppingCartId;
+                customer._id = invoice.CustomerId;
+                ShoppingCartCollection shoppingCartCollection = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
+
+                if (shoppingCartCollection != null && customerCollection != null)
+                {
+                    invoice.CustomerName = customerCollection.Name;
+                    invoice.Total = shoppingCartCollection.PriceTotal;
+                    shoppingCartCollection.Active = false;
+                    await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
+                    await _invoiceRepository.GenerateInvoiceAsync(invoice);
+                }
             }
             catch (BusinessException bex)
             {

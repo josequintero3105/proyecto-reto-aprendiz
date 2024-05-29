@@ -24,6 +24,12 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <returns></returns>
         public Task<ShoppingCart> GetShoppingCartAsync(ShoppingCart shoppingCart);
         /// <summary>
+        /// Method for search in mongo in unit test
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        public Task<bool> GetShoppingCartFromMongo(string _id);
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="shoppingCart"></param>

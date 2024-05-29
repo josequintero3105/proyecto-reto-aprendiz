@@ -40,7 +40,6 @@ namespace Application.Tests.Application.Tests.Services
         private readonly Mock<IProductService> _productServiceMock = new();
         private readonly Mock<IMapper> _mapperMock = new();
         private readonly Mock<ILogger<ProductService>> _loggerMock = new();
-        private readonly Mock<IContext> _contextMock = new();
         private readonly Mock<IHandle> _handleMock = new();
         /// <summary>
         /// Constructor
