@@ -13,7 +13,7 @@ namespace Application.Common.FluentValidations.Validators
     {
         public CustomerValidator() 
         {
-            RuleFor(c => c.name)
+            RuleFor(c => c.Name)
                 .NotNull()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerNameCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerNameCannotBeEmpty))
@@ -23,14 +23,14 @@ namespace Application.Common.FluentValidations.Validators
                 .Matches("^[a-zA-Z0-9 ]+$")
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
                 .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
-            RuleFor(c => c.email)
+            RuleFor(c => c.Email)
                 .NotNull()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerEmailCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerEmailCannotBeEmpty))
                 .NotEmpty()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerEmailCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerEmailCannotBeEmpty));
-            RuleFor(c => c.phone)
+            RuleFor(c => c.Phone)
                 .NotNull()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerPhoneCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerPhoneCannotBeEmpty))

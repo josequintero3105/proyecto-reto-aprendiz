@@ -74,7 +74,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <returns></returns>
         public async Task<List<Product>> GetAllProductsAsync()
         {
-            var result = await _context.ProductCollection.FindAsync(Builders<ProductCollection>.Filter.Empty);
+            var result = await _context.ProductCollection.FindAsync(Builders<ProductCollection>.Filter.Eq(x => x.State, true));
             return _mapper.Map<List<Product>>(result.ToList());
         }
 

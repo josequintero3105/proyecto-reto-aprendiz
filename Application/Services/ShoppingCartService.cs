@@ -106,6 +106,11 @@ namespace Application.Services
             return await ControlGetShoppingCartById(shoppingCart);
         }
 
+        /// <summary>
+        /// Method for unit test
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
         public async Task<bool> GetShoppingCartCollectionMongo(string _id)
         {
             return await _shoppingCartRepository.GetShoppingCartFromMongo(_id);
@@ -118,9 +123,24 @@ namespace Application.Services
         /// <returns></returns>
         private async Task<List<ProductCollection>> ListProductCollections(ShoppingCart shoppingCart)
         {
-            List<string> productIds = shoppingCart.ProductsInCart.Select(p => p._id.ToString()).ToList();
-            var specificProducts = await _shoppingCartRepository.ListSpecificProducts(productIds);
-            return specificProducts;
+            try
+            {
+                List<string> productIds = shoppingCart.ProductsInCart.Select(p => p._id.ToString()).ToList();
+                var specificProducts = await _shoppingCartRepository.ListSpecificProducts(productIds);
+                return specificProducts;
+            }
+            catch (NullReferenceException ex)
+            {
+                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+            catch (FormatException ex)
+            {
+                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
         }
 
         /// <summary>

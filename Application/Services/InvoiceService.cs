@@ -59,7 +59,9 @@ namespace Application.Services
                 ShoppingCartCollection shoppingCartCollection = _shoppingCartRepository.GetShoppingCart(shoppingCart);
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
 
-                if (shoppingCartCollection != null && customerCollection != null)
+                if (shoppingCartCollection != null 
+                    && customerCollection != null 
+                    && shoppingCartCollection.ProductsInCart.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
