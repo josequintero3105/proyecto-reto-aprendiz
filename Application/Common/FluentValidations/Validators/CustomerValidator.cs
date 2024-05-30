@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Common.Helpers.Exceptions;
 using FluentValidation;
 
 namespace Application.Common.FluentValidations.Validators
@@ -12,7 +13,33 @@ namespace Application.Common.FluentValidations.Validators
     {
         public CustomerValidator() 
         {
-            
+            RuleFor(c => c.name)
+                .NotNull()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerNameCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerNameCannotBeEmpty))
+                .NotEmpty()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerNameCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerNameCannotBeEmpty))
+                .Matches("^[a-zA-Z0-9 ]+$")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
+            RuleFor(c => c.email)
+                .NotNull()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerEmailCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerEmailCannotBeEmpty))
+                .NotEmpty()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerEmailCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerEmailCannotBeEmpty));
+            RuleFor(c => c.phone)
+                .NotNull()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerPhoneCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerPhoneCannotBeEmpty))
+                .NotEmpty()
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerPhoneCannotBeEmpty).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerPhoneCannotBeEmpty))
+                .Matches("^[a-zA-Z0-9 ]+$")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
+                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
         }
     }
 }

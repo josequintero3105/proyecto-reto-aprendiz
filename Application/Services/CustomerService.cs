@@ -41,6 +41,7 @@ namespace Application.Services
         {
             try
             {
+                await customer.ValidateAndThrowsAsync<Customer, CustomerValidator>();
                 await _customerRepository.CreateCustomerAsync(customer);
             }
             catch (BusinessException bex)
@@ -88,6 +89,7 @@ namespace Application.Services
         {
             try
             {
+                await customer.ValidateAndThrowsAsync<Customer, CustomerValidator>();
                 await _customerRepository.UpdateCustomerAsync(customer);
             }
             catch (BusinessException bex)

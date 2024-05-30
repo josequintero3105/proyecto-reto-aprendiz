@@ -23,6 +23,10 @@ namespace Application.Common.FluentValidations.Validators
                 .Matches("^[a-zA-Z0-9 ]+$")
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
                 .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
+            RuleFor(s => s.ProductsInCart)
+                .NotNull()
+                .WithMessage(nameof(GateWayBusinessException.NotControlerException))
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotControlerException).ToString());
         }
     }
 }

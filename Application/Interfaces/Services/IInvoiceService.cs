@@ -9,6 +9,11 @@ namespace Application.Interfaces.Services
 {
     public interface IInvoiceService
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <returns></returns>
         public Task GenerateInvoice(Invoice invoice);
     }
 }

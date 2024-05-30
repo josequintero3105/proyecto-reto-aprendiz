@@ -48,4 +48,13 @@ public enum GateWayBusinessException
 
     [Description("Customer Id Is Not Valid")]
     CustomerIdIsNotValid = 410,
+
+    [Description("Customer Name Cannot Be Empty")]
+    CustomerNameCannotBeEmpty = 411,
+
+    [Description("Customer Email Cannot Be Empty")]
+    CustomerEmailCannotBeEmpty = 412,
+
+    [Description("Customer Email Cannot Be Empty")]
+    CustomerPhoneCannotBeEmpty = 413
 }
