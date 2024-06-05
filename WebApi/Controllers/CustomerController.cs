@@ -41,7 +41,7 @@ namespace WebApi.Controllers
             return Ok(body);
         }
         /// <summary>
-        /// Method Post Update Customer
+        /// Method Put Update Customer
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
@@ -63,6 +63,19 @@ namespace WebApi.Controllers
         {
             var result = await _customerService.GetCustomerById(body);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Method Delete a Customer
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpDelete()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Delete([FromBody] Customer body)
+        {
+            await _handle.HandleRequestContextCatchException(_customerService.DeleteCustomer(body));
+            return Ok(body);
         }
     }
 }

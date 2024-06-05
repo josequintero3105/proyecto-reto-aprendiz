@@ -121,6 +121,40 @@ namespace Application.Services
             }
             catch (BusinessException bex)
             {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} get all products"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} get all products ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+
+        public async Task<List<Product>> GetAllProducts()
+        {
+            return await ControlGetAllProducts();
+        }
+
+        /// <summary>
+        /// Private method controls to get a product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        private async Task<List<Product>> ControlGetProductsPagination(int page)
+        {
+            try
+            {
+                List<Product> productsList = await _productRepository.GetProductsPaginationAsync(page);
+                return productsList.Count == 0 ? throw new BusinessException(
+                    nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException)) : productsList;
+            }
+            catch (BusinessException bex)
+            {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating product"
                     , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
@@ -133,9 +167,9 @@ namespace Application.Services
             }
         }
 
-        public async Task<List<Product>> GetAllProducts()
+        public async Task<List<Product>> GetProductsPagination(int page)
         {
-            return await ControlGetAllProducts();
+            return await ControlGetProductsPagination(page);
         }
 
         /// <summary>

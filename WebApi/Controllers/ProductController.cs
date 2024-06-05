@@ -74,6 +74,19 @@ namespace WebApiHttp.Controllers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetPage([FromQuery] int page)
+        {
+            var result = await _productService.GetProductsPagination(page);
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Method Put Update Product
         /// </summary>
         /// <param name="body"></param>

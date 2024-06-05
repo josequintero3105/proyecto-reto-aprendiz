@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.Extensions.Logging;
 using Application.Interfaces.Common;
 using Xunit.Sdk;
+using Common.Helpers.Exceptions;
 
 namespace Application.Tests.Application.Tests.Services
 {
@@ -278,7 +279,26 @@ namespace Application.Tests.Application.Tests.Services
         }
 
         [Fact]
-        public async void ListProducts_When_ProducesErrorInDataBase_ExpectsResultList()
+        public async void GetProduct_When_ProductIdWrongFormat_ExpectsBusinessException()
+        {
+            // Arrange
+            var productFound = ProductHelperModel.GetProductFromMongo();
+            productFound._id = "6644d*+77042e#$&63d~°^a600";
+
+            _productRepositoryMock.Setup(x => x.GetProductByIdAsync(It.IsAny<ProductToGet>()))
+                .Throws(new BusinessException(GateWayBusinessException.ShoppingCartIdIsNotValid.ToString(),
+                    GateWayBusinessException.ShoppingCartIdIsNotValid.ToString())).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>(async () =>
+             await _productService.GetProductById(productFound));
+
+            // Assert
+            Assert.Equal(result.Message, GateWayBusinessException.NotAllowSpecialCharacters.ToString());
+        }
+
+        [Fact]
+        public async void ListProducts_When_ProductListIsFound_ExpectsResultList()
         {
             // Assert
             List<Product> products = ProductHelperModel.ListAllProducts();
@@ -289,6 +309,21 @@ namespace Application.Tests.Application.Tests.Services
 
             // Arrange
             Assert.IsType<List<Product>>(products);
+        }
+
+        [Fact]
+        public async void ListProduct_When_ListProductsIsEmpty_ExpectsBusinessException()
+        {
+            // Arrange
+            List<Product> products = ProductHelperModel.ListAllProductsIsEmpty();
+            _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _productService.GetAllProducts());
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());            
         }
     }
 }

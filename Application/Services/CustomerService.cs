@@ -20,12 +20,12 @@ namespace Application.Services
         /// Variables
         /// </summary>
         private readonly ICustomerRepository _customerRepository;
-        private readonly ILogger<ProductService> _logger;
+        private readonly ILogger<CustomerService> _logger;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="productRepository"></param>
-        public CustomerService(ICustomerRepository customerRepository, ILogger<ProductService> logger)
+        public CustomerService(ICustomerRepository customerRepository, ILogger<CustomerService> logger)
         {
             _customerRepository = customerRepository;
             _logger = logger;
@@ -90,7 +90,10 @@ namespace Application.Services
             try
             {
                 await customer.ValidateAndThrowsAsync<Customer, CustomerValidator>();
-                await _customerRepository.UpdateCustomerAsync(customer);
+                var update = await _customerRepository.UpdateCustomerAsync(customer);
+                if (update == false)
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
+                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
             }
             catch (BusinessException bex)
             {
@@ -101,6 +104,35 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+        }
+
+        /// <summary>
+        /// Private method controls the process of create a product
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        public async Task DeleteCustomer(Customer customer)
+        {
+            try
+            {
+                var delete = await _customerRepository.DeleteCustomerAsync(customer);
+                if (delete == false)
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
+                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} deliting customer: {customer}"
+                    , bex.Code, bex.Message, customer);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} deleting customer: {customer} ", ex.Message, customer);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }

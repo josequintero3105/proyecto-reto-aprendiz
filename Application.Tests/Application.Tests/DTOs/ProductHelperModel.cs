@@ -52,6 +52,11 @@ namespace Application.Tests.Application.Tests.DTOs
                 State = true
             }
         };
+
+        public static List<Product> ListAllProductsIsEmpty() => new List<Product>
+        {
+            
+        };
         
 
         public static Product GetProductForCreationWithProductNameEmpty() => new Product()

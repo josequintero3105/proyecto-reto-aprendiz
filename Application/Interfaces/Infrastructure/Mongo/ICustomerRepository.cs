@@ -16,8 +16,29 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <param name="customer"></param>
         /// <returns></returns>
         Task<Customer> CreateCustomerAsync(Customer customer);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
         Task<Customer> GetCustomerByIdAsync(Customer customer);
-        CustomerCollection GetCustomer(Customer customerToFind);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        CustomerCollection GetCustomer(Customer customer);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
         Task<bool> UpdateCustomerAsync(Customer customer);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        Task<bool> DeleteCustomerAsync(Customer customer);
     }
 }

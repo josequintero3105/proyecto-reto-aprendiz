@@ -34,5 +34,11 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <returns></returns>
         Task<List<Product>> GetAllProductsAsync();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public Task<List<Product>> GetProductsPaginationAsync(int page);
     }
 }

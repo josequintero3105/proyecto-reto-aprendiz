@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Common.FluentValidations.Validators;
 using Application.DTOs;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Services;

@@ -27,5 +27,11 @@ namespace Application.Interfaces.Services
         /// <param name="customer"></param>
         /// <returns></returns>
         Task<Customer> GetCustomerById(Customer customer);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        Task DeleteCustomer(Customer customer);
     }
 }

@@ -80,5 +80,21 @@ namespace Infrastructure.Services.MongoDB.Adapters
                 return false;
             }
         }
+
+        public async Task<bool> DeleteCustomerAsync(Customer customerToDelete)
+        {
+            CustomerCollection collectionToDelete = _mapper.Map<CustomerCollection>(customerToDelete);
+            var IdFinded = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(collectionToDelete._id));
+            var result = _context.CustomerCollection.Find(IdFinded).FirstOrDefault();
+            if (result != null)
+            {
+                var resultDelete = await _context.CustomerCollection.DeleteOneAsync(IdFinded);
+                return resultDelete.DeletedCount == 1;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

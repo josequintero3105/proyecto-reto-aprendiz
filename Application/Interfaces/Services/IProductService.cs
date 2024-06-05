@@ -29,5 +29,11 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <returns></returns>
         public Task<List<Product>> GetAllProducts();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public Task<List<Product>> GetProductsPagination(int page);
     }
 }
