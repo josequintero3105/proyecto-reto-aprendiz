@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.Interfaces.Services;
 using Application.Interfaces.Common;
+using Core.Entities.MongoDB;
 
 namespace WebApi.Controllers
 {
@@ -47,8 +48,9 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] Customer body)
+        public async Task<IActionResult> Update([FromBody] Customer body, [FromQuery] string _id)
         {
+            body._id = _id;
             await _handle.HandleRequestContextCatchException(_customerService.UpdateCustomer(body));
             return Ok(body);
         }
@@ -59,9 +61,9 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromBody] Customer body)
+        public async Task<IActionResult> Get([FromQuery] string _id)
         {
-            var result = await _customerService.GetCustomerById(body);
+            var result = await _customerService.GetCustomerById(_id);
             return Ok(result);
         }
 
@@ -72,10 +74,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpDelete()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Delete([FromBody] Customer body)
+        public async Task<IActionResult> Delete([FromQuery] string _id)
         {
-            await _handle.HandleRequestContextCatchException(_customerService.DeleteCustomer(body));
-            return Ok(body);
+            await _handle.HandleRequestContextCatchException(_customerService.DeleteCustomer(_id));
+            return Ok(_id);
         }
     }
 }

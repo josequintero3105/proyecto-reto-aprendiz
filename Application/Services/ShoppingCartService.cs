@@ -47,11 +47,11 @@ namespace Application.Services
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task ControlCreateShoppingCart(ShoppingCart shoppingCart)
+        public async Task CreateShoppingCart(ShoppingCart shoppingCart)
         {
             try
             {
-                shoppingCart.Active = true;
+                await GetAtLeastOneProduct(shoppingCart);
                 await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
             }
             catch (BusinessException bex)
@@ -66,11 +66,6 @@ namespace Application.Services
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
-        }
-
-        public async Task CreateShoppingCart(ShoppingCart shoppingCart)
-        {
-            await ControlCreateShoppingCart(shoppingCart);
         }
 
         /// <summary>
@@ -150,18 +145,52 @@ namespace Application.Services
         /// <returns></returns>
         private async Task LogicForEachProduct(ShoppingCart shoppingCart)
         {
-            var resultCart = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+            var resultCart = DefineShoppingCart(shoppingCart);
+            ProductInCart productInCart;
             var specificProducts = await ListProductCollections(shoppingCart);
             var listModelProducts = new List<WriteModel<ProductCollection>>();
             foreach (var products in specificProducts)
             {
-                resultCart.PriceTotal = CalculateAndAssign(shoppingCart, products, resultCart.PriceTotal);
+                resultCart.PriceTotal = CalculateTotal(shoppingCart, products, resultCart.PriceTotal);
+                productInCart = GetObjectForArray(shoppingCart, products);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
+                await _shoppingCartRepository.AddAnotherProductInCartAsync(resultCart, productInCart);
             }
+            var resultShopping = _shoppingCartRepository.GetShoppingCart(shoppingCart);
             await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
-            shoppingCart.PriceTotal = resultCart.PriceTotal;
-            shoppingCart.Active = true;
-            await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
+            resultShopping.PriceTotal = resultCart.PriceTotal;
+            await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(resultShopping);
+        }
+
+        private ShoppingCartCollection DefineShoppingCart(ShoppingCart shoppingCart)
+        {
+            if (shoppingCart._id != null)
+                return _shoppingCartRepository.GetShoppingCart(shoppingCart);
+            else
+                return new ShoppingCartCollection();
+        }
+
+        private ProductInCart GetObjectForArray(ShoppingCart shoppingCart, ProductCollection products)
+        {
+            try
+            {
+                var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+                productToAdd.Name = products.Name;
+                productToAdd.UnitPrice = products.Price;
+                return productToAdd;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
         }
 
         /// <summary>
@@ -171,14 +200,35 @@ namespace Application.Services
         /// <param name="products"></param>
         /// <param name="PriceTotal"></param>
         /// <returns></returns>
-        private double CalculateAndAssign(ShoppingCart shoppingCart, ProductCollection products, double PriceTotal)
+        private double CalculateTotal(ShoppingCart shoppingCart, ProductCollection products, double PriceTotal)
         {
-            var productToBill = shoppingCart.ProductsInCart.First(s => s._id == products._id);
-            products.Quantity -= productToBill.QuantityInCart;
-            productToBill.Name = products.Name;
-            productToBill.UnitPrice = products.Price;
-            PriceTotal += productToBill.QuantityInCart * products.Price;
-            return PriceTotal;
+            try
+            {
+                var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+                if (products.Quantity >= productToAdd.QuantityInCart && productToAdd.QuantityInCart > 0)
+                {
+                    products.Quantity -= productToAdd.QuantityInCart;
+                    PriceTotal += productToAdd.QuantityInCart * products.Price;
+                    return PriceTotal;
+                }
+                else
+                {
+                    throw new BusinessException(nameof(GateWayBusinessException.ProductCountCannotBeLess),
+                    nameof(GateWayBusinessException.ProductCountCannotBeLess));
+                }
+            }
+            catch (BusinessException ex)
+            {
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
         }
 
         /// <summary>
@@ -245,10 +295,25 @@ namespace Application.Services
         /// <returns></returns>
         private double DiscountTotalPrice(ShoppingCartCollection shoppingCart, ProductCollection products, double PriceTotal)
         {
-            var productToBill = shoppingCart.ProductsInCart.First(s => s._id == products._id);
-            products.Quantity += productToBill.QuantityInCart;
-            PriceTotal -= productToBill.QuantityInCart * products.Price;
-            return PriceTotal;
+            try
+            {
+                var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+                products.Quantity += productToAdd.QuantityInCart;
+                PriceTotal -= productToAdd.QuantityInCart * products.Price;
+                return PriceTotal;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
+                    nameof(GateWayBusinessException.NotControlerException));
+            }
         }
 
         /// <summary>

@@ -46,15 +46,18 @@ public enum GateWayBusinessException
     [Description("ShoppingCart Id Is Not Valid")]
     ShoppingCartIdIsNotValid = 409,
 
+    [Description("Product Count Cannot Be Less")]
+    ProductCountCannotBeLess = 410,
+
     [Description("Customer Id Is Not Valid")]
-    CustomerIdIsNotValid = 410,
+    CustomerIdIsNotValid = 411,
 
     [Description("Customer Name Cannot Be Empty")]
-    CustomerNameCannotBeEmpty = 411,
+    CustomerNameCannotBeEmpty = 412,
 
     [Description("Customer Email Cannot Be Empty")]
-    CustomerEmailCannotBeEmpty = 412,
+    CustomerEmailCannotBeEmpty = 413,
 
     [Description("Customer Email Cannot Be Empty")]
-    CustomerPhoneCannotBeEmpty = 413
+    CustomerPhoneCannotBeEmpty = 414
 }

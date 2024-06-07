@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.Runtime.SharedInterfaces;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
@@ -58,22 +59,22 @@ namespace Application.Services
             }
         }
 
-        public async Task<Customer> GetCustomerById(Customer customer)
+        public async Task<Customer> GetCustomerById(string _id)
         {
             try
             {
-                var result = await _customerRepository.GetCustomerByIdAsync(customer);
+                var result = await _customerRepository.GetCustomerByIdAsync(_id);
                 return result;
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating customer: {customer}"
-                    , bex.Code, bex.Message, customer);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
+                _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
@@ -97,13 +98,13 @@ namespace Application.Services
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating customer: {customer}"
-                    , bex.Code, bex.Message, customer);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
@@ -115,24 +116,24 @@ namespace Application.Services
         /// <param name="customer"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task DeleteCustomer(Customer customer)
+        public async Task DeleteCustomer(string _id)
         {
             try
             {
-                var delete = await _customerRepository.DeleteCustomerAsync(customer);
+                var delete = await _customerRepository.DeleteCustomerAsync(_id);
                 if (delete == false)
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
                     nameof(GateWayBusinessException.CustomerIdIsNotValid));
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} deliting customer: {customer}"
-                    , bex.Code, bex.Message, customer);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} deleting customer: {customer} ", ex.Message, customer);
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.FluentValidations.Validators;
@@ -87,11 +88,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.And(
+            var filter = Builders<ShoppingCartCollection>.Filter.And(
                 Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id)),
                 Builders<ShoppingCartCollection>.Filter.Eq(x => x.Active, true)
             );
-            return _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
+            return _context.ShoppingCartCollection.Find(filter).FirstOrDefault();
         }
 
         /// <summary>
@@ -101,8 +102,8 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <returns></returns>
         public async Task<bool> UpdateQuantityForProduct(ProductCollection productsToAdd)
         {
-            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productsToAdd._id));
-            var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFinded, productsToAdd);
+            var filter = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productsToAdd._id));
+            var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(filter, productsToAdd);
             return resultUpdate.ModifiedCount == 1;
         }
 
@@ -145,7 +146,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <summary>
         /// Take the shopping cart and take one of its products for remove
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartCollection"></param>
         /// <param name="_id"></param>
         /// <returns></returns>
         public async Task RemoveProductFromCartAsync(ShoppingCartCollection shoppingCartCollection, string _id)
@@ -156,15 +157,29 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
+        /// Add another product into the cart
+        /// </summary>
+        /// <param name="shoppingCartCollection"></param>
+        /// <param name="productInCart"></param>
+        /// <returns></returns>
+        public async Task AddAnotherProductInCartAsync(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart)
+        {
+            ProductInCartCollection productInCartCollection = _mapper.Map<ProductInCartCollection>(productInCart);
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, shoppingCartCollection._id);
+            var add = Builders<ShoppingCartCollection>.Update.Push(c => c.ProductsInCart, productInCartCollection);
+            await _context.ShoppingCartCollection.UpdateOneAsync(filter, add);
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="shoppingCartCollection"></param>
         /// <returns></returns>
         public async Task<bool> UpdatePriceTotalFromShoppingCart(ShoppingCartCollection shoppingCartCollection)
         {
-            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollection._id));
-            _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
-            var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollection);
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollection._id));
+            _context.ShoppingCartCollection.Find(filter).FirstOrDefault();
+            var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(filter, shoppingCartCollection);
             return resultAdd.ModifiedCount == 1;
         }
 
@@ -176,9 +191,9 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public async Task<bool> UpdateShoppingCartAsync(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            var IdCartFinded = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
-            _context.ShoppingCartCollection.Find(IdCartFinded).FirstOrDefault();
-            var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(IdCartFinded, shoppingCartCollectionToFind);
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
+            _context.ShoppingCartCollection.Find(filter).FirstOrDefault();
+            var resultAdd = await _context.ShoppingCartCollection.ReplaceOneAsync(filter, shoppingCartCollectionToFind);
             return resultAdd.ModifiedCount == 1;
         }
     }

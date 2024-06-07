@@ -50,29 +50,28 @@ namespace Infrastructure.Services.MongoDB.Adapters
             return _mapper.Map<Customer>(customerToCreate);
         }
 
-        public async Task<Customer> GetCustomerByIdAsync(Customer customerToGet)
+        public async Task<Customer> GetCustomerByIdAsync(string _id)
         {
-            CustomerCollection pCollection = _mapper.Map<CustomerCollection>(customerToGet);
-            var IdFinded = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(pCollection._id));
-            var result = await _context.CustomerCollection.FindAsync(IdFinded);
+            var IdFound = Builders<CustomerCollection>.Filter.Eq(c => c._id, _id);
+            var result = await _context.CustomerCollection.FindAsync(IdFound);
             return _mapper.Map<Customer>(result.FirstOrDefault());
         }
 
         public CustomerCollection GetCustomer(Customer customerToFind)
         {
             CustomerCollection customerCollectionToFind = _mapper.Map<CustomerCollection>(customerToFind);
-            var IdCustomerFinded = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(customerCollectionToFind._id));
-            return _context.CustomerCollection.Find(IdCustomerFinded).FirstOrDefault();
+            var IdCustomerFound = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(customerCollectionToFind._id));
+            return _context.CustomerCollection.Find(IdCustomerFound).FirstOrDefault();
         }
 
         public async Task<bool> UpdateCustomerAsync(Customer customerToUpdate)
         {
             CustomerCollection collectionToUpdate = _mapper.Map<CustomerCollection>(customerToUpdate);
-            var IdFinded = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(collectionToUpdate._id));
-            var result = _context.CustomerCollection.Find(IdFinded).FirstOrDefault();
+            var IdFound = Builders<CustomerCollection>.Filter.Eq(c => c._id, collectionToUpdate._id);
+            var result = _context.CustomerCollection.Find(IdFound).FirstOrDefault();
             if (result != null)
             {
-                var resultUpdate = await _context.CustomerCollection.ReplaceOneAsync(IdFinded, collectionToUpdate);
+                var resultUpdate = await _context.CustomerCollection.ReplaceOneAsync(IdFound, collectionToUpdate);
                 return resultUpdate.ModifiedCount == 1;
             }
             else
@@ -81,14 +80,14 @@ namespace Infrastructure.Services.MongoDB.Adapters
             }
         }
 
-        public async Task<bool> DeleteCustomerAsync(Customer customerToDelete)
+        public async Task<bool> DeleteCustomerAsync(string _id)
         {
-            CustomerCollection collectionToDelete = _mapper.Map<CustomerCollection>(customerToDelete);
-            var IdFinded = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(collectionToDelete._id));
-            var result = _context.CustomerCollection.Find(IdFinded).FirstOrDefault();
+            
+            var IdFound = Builders<CustomerCollection>.Filter.Eq(c => c._id, _id);
+            var result = _context.CustomerCollection.Find(IdFound).FirstOrDefault();
             if (result != null)
             {
-                var resultDelete = await _context.CustomerCollection.DeleteOneAsync(IdFinded);
+                var resultDelete = await _context.CustomerCollection.DeleteOneAsync(IdFound);
                 return resultDelete.DeletedCount == 1;
             }
             else

@@ -65,7 +65,6 @@ namespace Application.Services
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
-                    shoppingCartCollection.Active = false;
                     await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                     await _invoiceRepository.GenerateInvoiceAsync(invoice);
                 }

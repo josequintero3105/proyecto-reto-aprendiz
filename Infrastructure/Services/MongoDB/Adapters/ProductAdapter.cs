@@ -63,8 +63,8 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public async Task<ProductToGet> GetProductByIdAsync(ProductToGet product)
         {
             ProductCollection pCollection = _mapper.Map<ProductCollection>(product);
-            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(pCollection._id));
-            var result = await _context.ProductCollection.FindAsync(IdFinded);
+            var IdFound = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(pCollection._id));
+            var result = await _context.ProductCollection.FindAsync(IdFound);
             return _mapper.Map<ProductToGet>(result.FirstOrDefault());
         }
 
@@ -98,11 +98,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public async Task<bool> UpdateProductAsync(ProductToGet productToUpdate)
         {
             ProductCollection productCollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
-            var IdFinded = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productCollectionToUpdate._id));
-            var result = _context.ProductCollection.Find(IdFinded).FirstOrDefault();
+            var IdFound = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productCollectionToUpdate._id));
+            var result = _context.ProductCollection.Find(IdFound).FirstOrDefault();
             if (result != null)
             {
-                var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFinded, productCollectionToUpdate);
+                var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFound, productCollectionToUpdate);
                 return resultUpdate.ModifiedCount == 1;
             }
             else

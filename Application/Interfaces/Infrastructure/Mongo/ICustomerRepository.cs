@@ -21,7 +21,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task<Customer> GetCustomerByIdAsync(Customer customer);
+        Task<Customer> GetCustomerByIdAsync(string _id);
         /// <summary>
         /// 
         /// </summary>
@@ -39,6 +39,6 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task<bool> DeleteCustomerAsync(Customer customer);
+        Task<bool> DeleteCustomerAsync(string _id);
     }
 }
