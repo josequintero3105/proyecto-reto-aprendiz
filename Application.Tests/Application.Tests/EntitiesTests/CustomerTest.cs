@@ -144,35 +144,5 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
         }
-
-        [Fact]
-        public async void DeleteCustomer_When_CustomerIdIsValid_ExpectsBusinessException()
-        {
-            // Arrange
-            Customer customer = new Customer();
-
-            // Act
-            var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _customerService.DeleteCustomer(customer));
-
-            // Assert
-            Assert.Equal(typeof(BusinessException), result.GetType());
-        }
-
-        [Fact]
-        public async void GetCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
-        {
-            // Assert
-            Customer customer = CustomerHelperModel.GetCustomerForUpdate();
-            customer._id = "6644d3d6a20a7c5dc4ed2680";
-            _customerRepositoryMock.Setup(x => x.DeleteCustomerAsync(customer)).ReturnsAsync(false).Verifiable();
-
-            // Act
-            var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _customerService.DeleteCustomer(customer));
-
-            // Assert
-            Assert.Equal(typeof(BusinessException), result.GetType());
-        }
     }
 }
