@@ -59,5 +59,13 @@ namespace Application.Tests.Application.Tests.DTOs
                 Phone = "phone"
             };
         }
+
+        public static Customer GetCustomerForDelete()
+        {
+            return new Customer
+            {
+                _id = "6644d3d6a20a7c5dc4ed2680"
+            };
+        }
     }
 }

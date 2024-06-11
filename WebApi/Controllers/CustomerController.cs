@@ -4,6 +4,7 @@ using Application.DTOs;
 using Application.Interfaces.Services;
 using Application.Interfaces.Common;
 using Core.Entities.MongoDB;
+using System.Net;
 
 namespace WebApi.Controllers
 {
@@ -35,11 +36,11 @@ namespace WebApi.Controllers
         /// <param name="body"></param>
         /// <returns></returns>
         [HttpPost()]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] Customer body)
         {
             await _handle.HandleRequestContextCatchException(_customerService.CreateCustomer(body));
-            return Ok(body);
+            return Created("~/api/Customer/", body);
         }
         /// <summary>
         /// Method Put Update Customer

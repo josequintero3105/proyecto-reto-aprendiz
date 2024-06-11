@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.Runtime.SharedInterfaces;
@@ -88,7 +89,7 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task UpdateCustomer(Customer customer)
         {
-            try
+            if (customer._id != null)
             {
                 await customer.ValidateAndThrowsAsync<Customer, CustomerValidator>();
                 var update = await _customerRepository.UpdateCustomerAsync(customer);
@@ -96,15 +97,8 @@ namespace Application.Services
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
                     nameof(GateWayBusinessException.CustomerIdIsNotValid));
             }
-            catch (BusinessException bex)
+            else
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
-                    , bex.Code, bex.Message);
-                throw new BusinessException(bex.Message, bex.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
@@ -113,27 +107,20 @@ namespace Application.Services
         /// <summary>
         /// Private method controls the process of create a product
         /// </summary>
-        /// <param name="customer"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
         public async Task DeleteCustomer(string _id)
         {
-            try
+            if (_id != "")
             {
                 var delete = await _customerRepository.DeleteCustomerAsync(_id);
                 if (delete == false)
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
                     nameof(GateWayBusinessException.CustomerIdIsNotValid));
             }
-            catch (BusinessException bex)
+            else
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
-                    , bex.Code, bex.Message);
-                throw new BusinessException(bex.Message, bex.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
