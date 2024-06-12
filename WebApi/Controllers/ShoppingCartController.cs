@@ -2,6 +2,7 @@
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Application.Services;
+using Azure.Core;
 using Core.Entities.MongoDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,11 @@ namespace WebApi.Controllers
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IHandle _handle;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="shoppingCartService"></param>
+        /// <param name="handle"></param>
         public ShoppingCartController(IShoppingCartService shoppingCartService, IHandle handle)
         {
             _shoppingCartService = shoppingCartService;
@@ -50,6 +56,11 @@ namespace WebApi.Controllers
             return Ok(body);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
         public async Task<IActionResult> Get([FromBody] ShoppingCart body)
@@ -59,7 +70,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Control Delete a product
+        /// Remove a product
         /// </summary>
         /// <param name="body"></param>
         [HttpPut()]
@@ -67,7 +78,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> Remove([FromBody] ShoppingCart body)
         {
             await _handle.HandleRequestContextCatchException(_shoppingCartService.RemoveFromShoppingCart(body));
-            return Ok(body);
+            return Ok("Products removed successfully");
         }
     }
 }

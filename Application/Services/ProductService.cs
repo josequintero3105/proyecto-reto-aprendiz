@@ -77,12 +77,12 @@ namespace Application.Services
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<ProductToGet> ControlGetProductById(ProductToGet product)
+        private async Task<ProductToGet> ControlGetProductById(string _id)
         {
             try
             {
-                await product.ValidateAndThrowsAsync<ProductToGet, ProductUpdateValidator>();
-                ProductToGet productToGet = await _productRepository.GetProductByIdAsync(product);
+                
+                var productToGet = await _productRepository.GetProductByIdAsync(_id);
                 return productToGet;
             }
             catch (BusinessException bex)
@@ -99,9 +99,9 @@ namespace Application.Services
             }
         }
 
-        public async Task<ProductToGet> GetProductById(ProductToGet product)
+        public async Task<ProductToGet> GetProductById(string _id)
         {
-            return await ControlGetProductById(product);
+            return await ControlGetProductById(_id);
         }
 
         /// <summary>

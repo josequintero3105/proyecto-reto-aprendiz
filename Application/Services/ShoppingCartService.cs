@@ -52,6 +52,7 @@ namespace Application.Services
             try
             {
                 await GetAtLeastOneProduct(shoppingCart);
+                shoppingCart.Active = true;
                 await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
             }
             catch (BusinessException bex)
@@ -156,12 +157,26 @@ namespace Application.Services
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
                 await _shoppingCartRepository.AddAnotherProductInCartAsync(resultCart, productInCart);
             }
-            var resultShopping = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-            await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
-            resultShopping.PriceTotal = resultCart.PriceTotal;
-            await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(resultShopping);
+            await ConfirmChangeTotalPrice(listModelProducts, shoppingCart, resultCart);
         }
 
+        private async Task ConfirmChangeTotalPrice(List<WriteModel<ProductCollection>> listModelProducts, ShoppingCart shoppingCart, ShoppingCartCollection resultCart)
+        {
+            await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
+            if (shoppingCart._id != null)
+            {
+                var resultShopping = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                resultShopping.PriceTotal = resultCart.PriceTotal;
+                await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(resultShopping);
+            }
+            shoppingCart.PriceTotal = resultCart.PriceTotal;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <returns></returns>
         private ShoppingCartCollection DefineShoppingCart(ShoppingCart shoppingCart)
         {
             if (shoppingCart._id != null)
@@ -170,6 +185,13 @@ namespace Application.Services
                 return new ShoppingCartCollection();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <param name="products"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
         private ProductInCart GetObjectForArray(ShoppingCart shoppingCart, ProductCollection products)
         {
             try

@@ -59,7 +59,12 @@ namespace Application.Services
                     nameof(GateWayBusinessException.NotControlerException));
             }
         }
-
+        /// <summary>
+        /// Get customer by id
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
         public async Task<Customer> GetCustomerById(string _id)
         {
             try
@@ -89,7 +94,7 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task UpdateCustomer(Customer customer)
         {
-            if (customer._id != null)
+            try
             {
                 await customer.ValidateAndThrowsAsync<Customer, CustomerValidator>();
                 var update = await _customerRepository.UpdateCustomerAsync(customer);
@@ -97,8 +102,15 @@ namespace Application.Services
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
                     nameof(GateWayBusinessException.CustomerIdIsNotValid));
             }
-            else
+            catch (BusinessException bex)
             {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
                     nameof(GateWayBusinessException.NotControlerException));
             }
@@ -112,18 +124,10 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task DeleteCustomer(string _id)
         {
-            if (_id != "")
-            {
-                var delete = await _customerRepository.DeleteCustomerAsync(_id);
-                if (delete == false)
-                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
-                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
-            }
-            else
-            {
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
-            }
+            var delete = await _customerRepository.DeleteCustomerAsync(_id);
+            if (delete == false)
+                throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
+                nameof(GateWayBusinessException.CustomerIdIsNotValid));
         }
     }
 }

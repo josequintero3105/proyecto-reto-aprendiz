@@ -23,7 +23,7 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        public Task<ProductToGet> GetProductById(ProductToGet product);
+        public Task<ProductToGet> GetProductById(string _id);
         /// <summary>
         /// Get all products
         /// </summary>

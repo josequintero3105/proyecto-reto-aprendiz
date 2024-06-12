@@ -58,12 +58,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <summary>
         /// Get Product By Id
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public async Task<ProductToGet> GetProductByIdAsync(ProductToGet product)
+        public async Task<ProductToGet> GetProductByIdAsync(string _id)
         {
-            ProductCollection pCollection = _mapper.Map<ProductCollection>(product);
-            var IdFound = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(pCollection._id));
+            var IdFound = Builders<ProductCollection>.Filter.Eq(x => x._id, _id);
             var result = await _context.ProductCollection.FindAsync(IdFound);
             return _mapper.Map<ProductToGet>(result.FirstOrDefault());
         }

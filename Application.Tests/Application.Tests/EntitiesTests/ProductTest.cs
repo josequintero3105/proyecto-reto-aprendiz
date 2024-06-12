@@ -268,11 +268,11 @@ namespace Application.Tests.Application.Tests.Services
             var productFound = ProductHelperModel.GetProductFromMongo();
             productFound._id = "661feb4a110728200e31903e";
 
-            _productRepositoryMock.Setup(x => x.GetProductByIdAsync(It.IsAny<ProductToGet>()))
+            _productRepositoryMock.Setup(x => x.GetProductByIdAsync(productFound._id))
                 .ReturnsAsync(productFound).Verifiable();
 
             // Act
-            await _productService.GetProductById(productFound);
+            await _productService.GetProductById(productFound._id);
 
             // Assert
             Assert.IsType<ProductToGet>(productFound);
@@ -285,16 +285,16 @@ namespace Application.Tests.Application.Tests.Services
             var productFound = ProductHelperModel.GetProductFromMongo();
             productFound._id = "6644d*+77042e#$&63d~°^a600";
 
-            _productRepositoryMock.Setup(x => x.GetProductByIdAsync(It.IsAny<ProductToGet>()))
+            _productRepositoryMock.Setup(x => x.GetProductByIdAsync(productFound._id))
                 .Throws(new BusinessException(GateWayBusinessException.ShoppingCartIdIsNotValid.ToString(),
                     GateWayBusinessException.ShoppingCartIdIsNotValid.ToString())).Verifiable();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>(async () =>
-             await _productService.GetProductById(productFound));
+             await _productService.GetProductById(productFound._id));
 
             // Assert
-            Assert.Equal(result.Message, GateWayBusinessException.NotAllowSpecialCharacters.ToString());
+            Assert.Equal(result.Message, GateWayBusinessException.ShoppingCartIdIsNotValid.ToString());
         }
 
         [Fact]

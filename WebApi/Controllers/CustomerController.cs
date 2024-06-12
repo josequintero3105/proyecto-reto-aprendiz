@@ -46,6 +46,7 @@ namespace WebApi.Controllers
         /// Method Put Update Customer
         /// </summary>
         /// <param name="body"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
@@ -53,12 +54,12 @@ namespace WebApi.Controllers
         {
             body._id = _id;
             await _handle.HandleRequestContextCatchException(_customerService.UpdateCustomer(body));
-            return Ok(body);
+            return Created("~/api/Customer/", body);
         }
         /// <summary>
         /// Method Get Get Customer
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
@@ -71,14 +72,14 @@ namespace WebApi.Controllers
         /// <summary>
         /// Method Delete a Customer
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         [HttpDelete()]
         [ProducesResponseType(200)]
         public async Task<IActionResult> Delete([FromQuery] string _id)
         {
             await _handle.HandleRequestContextCatchException(_customerService.DeleteCustomer(_id));
-            return Ok(_id);
+            return Ok("Customer deleted successfully");
         }
     }
 }

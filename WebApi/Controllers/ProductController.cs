@@ -40,11 +40,11 @@ namespace WebApiHttp.Controllers
         /// <param name="body"></param>
         /// <returns></returns>
         [HttpPost()]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] Product body)
         {
             await _handle.HandleRequestContextCatchException(_productService.CreateProduct(body));
-            return Ok(body);
+            return Created("~/api/Product/", body);
         }
 
         /// <summary>
@@ -54,9 +54,9 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromBody] ProductToGet body)
+        public async Task<IActionResult> Get([FromQuery] string _id)
         {
-            var result = await _productService.GetProductById(body);
+            var result = await _productService.GetProductById(_id);
             return Ok(result);
         }
 

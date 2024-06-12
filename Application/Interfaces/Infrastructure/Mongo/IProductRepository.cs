@@ -28,7 +28,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<ProductToGet> GetProductByIdAsync(ProductToGet product);
+        Task<ProductToGet> GetProductByIdAsync(string _id);
         /// <summary>
         /// 
         /// </summary>
