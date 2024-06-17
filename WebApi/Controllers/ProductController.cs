@@ -1,29 +1,102 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Application.DTOs.Handle;
 using Microsoft.Extensions.Options;
 using Application.Interfaces.Services;
-using Application.Interfaces.Common;
 using Application.Common.Utilities;
 using Newtonsoft.Json;
 using Application.DTOs;
+using Application.Common.FluentValidations.Extentions;
+using Application.Common.FluentValidations.Validators;
+using Core.Entities.MongoDB;
+using Application.Interfaces.Infrastructure.Mongo;
+using Application.Interfaces.Common;
 
 namespace WebApiHttp.Controllers
 {
+    /// <summary>
+    /// General route of endpoints
+    /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductService _transactionService;
+        /// <summary>
+        /// Variables
+        /// </summary>
+        private readonly IProductService _productService;
         private readonly IHandle _handle;
-        private readonly IOptionsMonitor<BusinessSettings> _optionsMonitor;
-        private readonly ValidationSettings? _validationSettings;
-
-        public ProductController(IProductService transactionService, IHandle handle, IOptionsMonitor<BusinessSettings> optionsMonitor)
+        /// <summary>
+        /// Constructor
+        /// <paramref name="productService"/>
+        /// <paramref name="handle"/>
+        /// </summary>
+        public ProductController(IProductService productService, IHandle handle)
         {
-            _transactionService = transactionService;
+            _productService = productService;
             _handle = handle;
-            _optionsMonitor = optionsMonitor;
-            _validationSettings = JsonConvert.DeserializeObject<ValidationSettings>(_optionsMonitor.CurrentValue.ValidationSettings);
+        }
+        /// <summary>
+        /// Method Post Create Product
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpPost()]
+        [ProducesResponseType(201)]
+        public async Task<IActionResult> Create([FromBody] Product body)
+        {
+            await _handle.HandleRequestContextCatchException(_productService.CreateProduct(body));
+            return Created("~/api/Product/", body);
+        }
+
+        /// <summary>
+        /// Method Get Product
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Get([FromQuery] string _id)
+        {
+            var result = await _productService.GetProductById(_id);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Method Get Product
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _productService.GetAllProducts();
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        [HttpGet()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetPage([FromQuery] int page)
+        {
+            var result = await _productService.GetProductsPagination(page);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Method Put Update Product
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpPut()]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Update([FromBody] ProductToGet body)
+        {
+            await _handle.HandleRequestContextCatchException(_productService.UpdateProduct(body));
+            return Ok(body);
         }
     }
 }
