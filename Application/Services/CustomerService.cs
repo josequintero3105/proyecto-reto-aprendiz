@@ -55,8 +55,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
         /// <summary>
@@ -81,8 +81,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 
@@ -111,8 +111,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 

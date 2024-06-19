@@ -61,8 +61,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} creating product: {product} ", ex.Message, product);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
        
@@ -94,8 +94,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} getting product ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 
@@ -116,8 +116,8 @@ namespace Application.Services
             {
                 List<Product> productsList = await _productRepository.GetAllProductsAsync();
                 return productsList.Count == 0 ? throw new BusinessException(
-                    nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException)) : productsList;
+                    nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException)) : productsList;
             }
             catch (BusinessException bex)
             {
@@ -128,8 +128,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} get all products ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 
@@ -150,8 +150,8 @@ namespace Application.Services
             {
                 List<Product> productsList = await _productRepository.GetProductsPaginationAsync(page);
                 return productsList.Count == 0 ? throw new BusinessException(
-                    nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException)) : productsList;
+                    nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException)) : productsList;
             }
             catch (BusinessException bex)
             {
@@ -162,8 +162,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} creating product ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 
@@ -200,8 +200,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} updating product: {product} ", ex.Message, product);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
         

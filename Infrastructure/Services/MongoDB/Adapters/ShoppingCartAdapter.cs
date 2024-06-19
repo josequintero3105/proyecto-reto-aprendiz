@@ -65,10 +65,9 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="shoppingCartToFind"></param>
         /// <returns></returns>
-        public async Task<ShoppingCart> GetShoppingCartAsync(ShoppingCart shoppingCartToFind)
+        public async Task<ShoppingCart> GetShoppingCartAsync(string _id)
         {
-            ShoppingCartCollection spCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(spCollectionToFind._id));
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, _id);
             var resultCart = await _context.ShoppingCartCollection.FindAsync(filter);
             return _mapper.Map<ShoppingCart>(resultCart.FirstOrDefault());
         }

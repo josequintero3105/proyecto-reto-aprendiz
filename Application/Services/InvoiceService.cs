@@ -52,20 +52,19 @@ namespace Application.Services
             {
                 await invoice.ValidateAndThrowsAsync<Invoice, InvoiceValidator>();
                 invoice.CreatedAt = DateTime.Now;
-                ShoppingCart shoppingCart = new ShoppingCart();
                 Customer customer = new Customer();
-                shoppingCart._id = invoice.ShoppingCartId;
+                ShoppingCart shoppingCart = new ShoppingCart();
                 customer._id = invoice.CustomerId;
-                ShoppingCartCollection shoppingCartCollection = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                shoppingCart._id = invoice.ShoppingCartId;
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
-
+                ShoppingCartCollection shoppingCartCollection = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                
                 if (shoppingCartCollection != null 
                     && customerCollection != null 
                     && shoppingCartCollection.ProductsInCart.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
-                    await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                     await _invoiceRepository.GenerateInvoiceAsync(invoice);
                 }
             }
@@ -78,8 +77,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} creating invoice: {invoice} ", ex.Message, invoice);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
     }

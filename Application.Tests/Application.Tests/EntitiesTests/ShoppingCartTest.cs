@@ -159,56 +159,6 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         }
 
         [Fact]
-        public async void GetShoppingCart_When_ProducesErrorInDataBase_Then_ExpectsErrorResultNotNull()
-        {
-            // Arrange
-            var getShoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
-            _shoppingCartRepositoryMock.Setup(x => x.GetShoppingCartAsync(It.IsAny<ShoppingCart>()))
-                .Throws(new Exception("Error")).Verifiable();
-
-            // Act
-            var result = await Assert.ThrowsAsync<BusinessException>(async () => 
-            await _shoppingCartService.GetShoppingCartById(getShoppingCart));
-
-            // Assert
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async void AddToShoppingCart_When_GetShoppingCartIdInvalid_ExpectsBusinessException()
-        {
-            // Arrange
-            var shoppingCartFound = ShoppingCartHelperModel.GetShoppingCartFromMongo();
-            shoppingCartFound._id = "664f40fed44e5362205a9381";
-
-            _shoppingCartRepositoryMock.Setup(x => x.GetShoppingCartAsync(It.IsAny<ShoppingCart>()))
-                .ReturnsAsync(shoppingCartFound).Verifiable();
-
-            // Act
-            await _shoppingCartService.GetShoppingCartById(shoppingCartFound);
-
-            // Assert
-            Assert.IsType<ShoppingCart>(shoppingCartFound);
-        }
-
-        [Fact]
-        public async void AddToShopping_When_ProductIdIsNotEmpty_ExpectsTrueResult()
-        {
-            // Arrange
-            ShoppingCart shoppingCartFound = new ShoppingCart();
-            shoppingCartFound._id = "664f40fed44e5362205a9381";
-
-            _shoppingCartRepositoryMock.Setup(x => x.GetShoppingCartAsync(It.IsAny<ShoppingCart>()))
-                .ReturnsAsync(shoppingCartFound).Verifiable();
-
-            // Act
-            await _shoppingCartService.GetShoppingCartById(shoppingCartFound);
-
-            // Assert
-            Assert.True(shoppingCartFound._id != "");
-        }
-
-        [Fact]
         public async void GetShoppingCartById_When_IdWrongFormat_Then_ExpectsBusinessException()
         {
             // Arrange

@@ -16,7 +16,7 @@ namespace Core.Entities.MongoDB
         public string? _id { get; set; }
 
         [BsonElement("CustomerId")]
-        public string? CostumerId { get; set; }
+        public string? CustomerId { get; set; }
 
         [BsonElement("CustomerName")]
         public string? CustomerName { get; set; }

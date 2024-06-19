@@ -64,23 +64,23 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 
         /// <summary>
         /// Get the products
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<ShoppingCart> ControlGetShoppingCartById(ShoppingCart shoppingCart)
+        public async Task<ShoppingCart> GetShoppingCartById(string _id)
         {
             try
             {
-                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-                ShoppingCart shoppingCartToGet = await _shoppingCartRepository.GetShoppingCartAsync(shoppingCart);
+                
+                ShoppingCart shoppingCartToGet = await _shoppingCartRepository.GetShoppingCartAsync(_id);
                 return shoppingCartToGet;
             }
             catch (BusinessException bex)
@@ -92,14 +92,9 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} getting shoppingCart ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
             }
-        }
-
-        public async Task<ShoppingCart> GetShoppingCartById(ShoppingCart shoppingCart)
-        {
-            return await ControlGetShoppingCartById(shoppingCart);
         }
 
         /// <summary>
@@ -128,14 +123,14 @@ namespace Application.Services
             catch (NullReferenceException ex)
             {
                 _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.ObjectCannotBeEmpty),
+                    nameof(GateWayBusinessException.ObjectCannotBeEmpty));
             }
             catch (FormatException ex)
             {
                 _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.ObjectCannotBeEmpty),
+                    nameof(GateWayBusinessException.ObjectCannotBeEmpty));
             }
         }
 
@@ -204,14 +199,14 @@ namespace Application.Services
             catch (InvalidOperationException ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 
@@ -227,7 +222,9 @@ namespace Application.Services
             try
             {
                 var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
-                if (products.Quantity >= productToAdd.QuantityInCart && productToAdd.QuantityInCart > 0)
+                if (products.Quantity >= productToAdd.QuantityInCart 
+                    && productToAdd.QuantityInCart > 0
+                    && productToAdd.QuantityInCart < 20)
                 {
                     products.Quantity -= productToAdd.QuantityInCart;
                     PriceTotal += productToAdd.QuantityInCart * products.Price;
@@ -242,14 +239,14 @@ namespace Application.Services
             catch (BusinessException ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 
@@ -265,8 +262,8 @@ namespace Application.Services
             if (specificProducts.Count > 0)
                 await LogicForEachProduct(shoppingCart);
             else
-                throw new BusinessException(nameof(GateWayBusinessException.ProductIdIsNotValid),
-                    nameof(GateWayBusinessException.ProductIdIsNotValid));
+                throw new BusinessException(nameof(GateWayBusinessException.ProductListCannotBeNull),
+                    nameof(GateWayBusinessException.ProductListCannotBeNull));
         }
 
         /// <summary>
@@ -277,13 +274,22 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task AddToShoppingCart(ShoppingCart shoppingCart)
         {
-            await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-            var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-            if (result != null)
-                await GetAtLeastOneProduct(shoppingCart);
-            else
+            try
+            {
+                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
+                var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                if (result != null)
+                    await GetAtLeastOneProduct(shoppingCart);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                        nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
+            catch (FormatException ex)
+            {
+                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
                     nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
         }
 
         /// <summary>
@@ -327,14 +333,14 @@ namespace Application.Services
             catch (InvalidOperationException ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlerException),
-                    nameof(GateWayBusinessException.NotControlerException));
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
             }
         }
 

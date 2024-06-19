@@ -59,13 +59,13 @@ namespace WebApi.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromBody] ShoppingCart body)
+        public async Task<IActionResult> Get([FromQuery] string _id)
         {
-            var result = await _shoppingCartService.GetShoppingCartById(body);
+            var result = await _shoppingCartService.GetShoppingCartById(_id);
             return Ok(result);
         }
 
