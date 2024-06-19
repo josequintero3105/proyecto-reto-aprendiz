@@ -71,6 +71,34 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         }
 
         [Fact]
+        public async void CreateCustomer_When_CustomerDocumentIsEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentEmpty();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _customerService.CreateCustomer(customer));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void CreateCustomer_When_CustomerDocumentTypeIsEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentTypeEmpty();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _customerService.CreateCustomer(customer));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
         public async void CreateCustomer_When_CustomerEmailIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange

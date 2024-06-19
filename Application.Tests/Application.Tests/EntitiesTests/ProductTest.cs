@@ -301,21 +301,21 @@ namespace Application.Tests.Application.Tests.Services
         public async void ListProducts_When_ProductListIsFound_ExpectsResultList()
         {
             // Assert
-            List<Product> products = ProductHelperModel.ListAllProducts();
+            List<ProductToGet> products = ProductHelperModel.ListAllProducts();
             _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
 
             // Act
             await _productService.GetAllProducts();
 
             // Arrange
-            Assert.IsType<List<Product>>(products);
+            Assert.IsType<List<ProductToGet>>(products);
         }
 
         [Fact]
         public async void ListProduct_When_ListProductsIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            List<Product> products = ProductHelperModel.ListAllProductsIsEmpty();
+            List<ProductToGet> products = ProductHelperModel.ListAllProductsIsEmpty();
             _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
 
             // Act

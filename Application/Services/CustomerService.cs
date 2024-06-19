@@ -81,8 +81,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
+                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
             }
         }
 
@@ -111,8 +111,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
+                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
             }
         }
 
@@ -124,10 +124,19 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task DeleteCustomer(string _id)
         {
-            var delete = await _customerRepository.DeleteCustomerAsync(_id);
-            if (delete == false)
+            try
+            {
+                var delete = await _customerRepository.DeleteCustomerAsync(_id);
+                if (delete == false)
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
+                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
+            }
+            catch (FormatException ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
-                nameof(GateWayBusinessException.CustomerIdIsNotValid));
+                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
+            }
         }
     }
 }

@@ -54,7 +54,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromQuery] string _id)
+        public async Task<IActionResult> GetById([FromQuery] string _id)
         {
             var result = await _productService.GetProductById(_id);
             return Ok(result);
@@ -80,9 +80,9 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> GetPage([FromQuery] int page)
+        public async Task<IActionResult> GetPage([FromQuery] int page, [FromQuery] int size)
         {
-            var result = await _productService.GetProductsPagination(page);
+            var result = await _productService.GetProductsPagination(page, size);
             return Ok(result);
         }
 

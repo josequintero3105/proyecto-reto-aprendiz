@@ -14,6 +14,32 @@ namespace Application.Tests.Application.Tests.DTOs
             return new Customer
             {
                 Name = "name",
+                Document = "111",
+                DocumentType = "Cedula",
+                Email = "email",
+                Phone = "phone"
+            };
+        }
+
+        public static Customer GetCustomerForCreationOrUpdateWithDocumentEmpty()
+        {
+            return new Customer
+            {
+                Name = "name",
+                Document = "",
+                DocumentType = "Cedula",
+                Email = "email",
+                Phone = "phone"
+            };
+        }
+
+        public static Customer GetCustomerForCreationOrUpdateWithDocumentTypeEmpty()
+        {
+            return new Customer
+            {
+                Name = "name",
+                Document = "111",
+                DocumentType = "",
                 Email = "email",
                 Phone = "phone"
             };
@@ -24,6 +50,8 @@ namespace Application.Tests.Application.Tests.DTOs
             return new Customer
             {
                 Name = "",
+                Document = "111",
+                DocumentType = "Cedula",
                 Email = "email",
                 Phone = "phone"
             };
@@ -34,6 +62,8 @@ namespace Application.Tests.Application.Tests.DTOs
             return new Customer
             {
                 Name = "name",
+                Document = "111",
+                DocumentType = "Cedula",
                 Email = "",
                 Phone = "phone"
             };
@@ -44,6 +74,8 @@ namespace Application.Tests.Application.Tests.DTOs
             return new Customer
             {
                 Name = "name",
+                Document = "111",
+                DocumentType = "Cedula",
                 Email = "email",
                 Phone = ""
             };
@@ -55,6 +87,8 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 _id = "6644d3d6a20a7c5dc4ed2680",
                 Name = "name",
+                Document = "111",
+                DocumentType = "Cedula",
                 Email = "email",
                 Phone = "phone"
             };

@@ -94,8 +94,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} getting product ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                throw new BusinessException(nameof(GateWayBusinessException.ProductIdIsNotValid),
+                    nameof(GateWayBusinessException.ProductIdIsNotValid));
             }
         }
 
@@ -110,11 +110,11 @@ namespace Application.Services
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<List<Product>> ControlGetAllProducts()
+        private async Task<List<ProductToGet>> ControlGetAllProducts()
         {
             try
             {
-                List<Product> productsList = await _productRepository.GetAllProductsAsync();
+                List<ProductToGet> productsList = await _productRepository.GetAllProductsAsync();
                 return productsList.Count == 0 ? throw new BusinessException(
                     nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException)) : productsList;
@@ -133,7 +133,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<List<Product>> GetAllProducts()
+        public async Task<List<ProductToGet>> GetAllProducts()
         {
             return await ControlGetAllProducts();
         }
@@ -144,11 +144,11 @@ namespace Application.Services
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<List<Product>> ControlGetProductsPagination(int page)
+        private async Task<List<Product>> ControlGetProductsPagination(int page, int size)
         {
             try
             {
-                List<Product> productsList = await _productRepository.GetProductsPaginationAsync(page);
+                List<Product> productsList = await _productRepository.GetProductsPaginationAsync(page, size);
                 return productsList.Count == 0 ? throw new BusinessException(
                     nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException)) : productsList;
@@ -167,9 +167,9 @@ namespace Application.Services
             }
         }
 
-        public async Task<List<Product>> GetProductsPagination(int page)
+        public async Task<List<Product>> GetProductsPagination(int page, int size)
         {
-            return await ControlGetProductsPagination(page);
+            return await ControlGetProductsPagination(page, size);
         }
 
         /// <summary>

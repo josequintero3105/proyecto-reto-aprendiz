@@ -33,12 +33,12 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<List<Product>> GetAllProductsAsync();
+        Task<List<ProductToGet>> GetAllProductsAsync();
         /// <summary>
         /// 
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public Task<List<Product>> GetProductsPaginationAsync(int page);
+        public Task<List<Product>> GetProductsPaginationAsync(int page, int size);
     }
 }
