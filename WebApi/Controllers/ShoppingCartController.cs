@@ -31,7 +31,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Method Post Create Product
+        /// Method Post Create a shoppingcart
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
@@ -44,7 +44,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Method Post Create Product
+        /// Method Put Add one or more products to shoppingcart
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
@@ -57,7 +57,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Method get shoppingcart by id
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
@@ -70,7 +70,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Remove a product
+        /// Remove a product from the shopping cart
         /// </summary>
         /// <param name="body"></param>
         [HttpPut()]

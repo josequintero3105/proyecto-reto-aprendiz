@@ -74,9 +74,10 @@ namespace WebApiHttp.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Method Pagination requires page number and products count
         /// </summary>
         /// <param name="page"></param>
+        /// <param name="size"></param>
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
