@@ -20,6 +20,16 @@ namespace Core.Entities.MongoDB
         /// <summary>
         /// Name
         /// </summary>
+        [BsonElement("DocumentType")]
+        public string? DocumentType { get; set; }
+        /// <summary>
+        /// Name
+        /// </summary>
+        [BsonElement("Document")]
+        public string? Document { get; set; }
+        /// <summary>
+        /// Name
+        /// </summary>
         [BsonElement("Name")]
         public string? Name { get; set; }
         /// <summary>

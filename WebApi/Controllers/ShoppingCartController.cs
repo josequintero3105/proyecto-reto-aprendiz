@@ -31,7 +31,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Method Post Create Product
+        /// Method Post Create a shoppingcart
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
@@ -44,7 +44,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Method Post Create Product
+        /// Method Put Add one or more products to shoppingcart
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
@@ -57,20 +57,20 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Method get shoppingcart by id
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromBody] ShoppingCart body)
+        public async Task<IActionResult> Get([FromQuery] string _id)
         {
-            var result = await _shoppingCartService.GetShoppingCartById(body);
+            var result = await _shoppingCartService.GetShoppingCartById(_id);
             return Ok(result);
         }
 
         /// <summary>
-        /// Remove a product
+        /// Remove a product from the shopping cart
         /// </summary>
         /// <param name="body"></param>
         [HttpPut()]

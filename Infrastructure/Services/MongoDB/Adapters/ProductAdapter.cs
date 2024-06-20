@@ -10,6 +10,7 @@ using Core.Entities.MongoDB;
 using MongoDB.Bson;
 using AutoMapper;
 using MongoDB.Driver;
+using System.Drawing;
 
 namespace Infrastructure.Services.MongoDB.Adapters
 {
@@ -71,10 +72,10 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// Get Product By Id
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Product>> GetAllProductsAsync()
+        public async Task<List<ProductToGet>> GetAllProductsAsync()
         {
             var result = await _context.ProductCollection.FindAsync(Builders<ProductCollection>.Filter.Eq(x => x.State, true));
-            return _mapper.Map<List<Product>>(result.ToList());
+            return _mapper.Map<List<ProductToGet>>(result.ToList());
         }
 
         /// <summary>
@@ -82,10 +83,10 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public async Task<List<Product>> GetProductsPaginationAsync(int page)
+        public async Task<List<Product>> GetProductsPaginationAsync(int page, int size)
         {
             var result = await _context.ProductCollection.Find(Builders<ProductCollection>.Filter.Eq(x => x.State, true))
-                .Skip((page - 1) * 10).Limit(10).ToListAsync();
+                .Skip((page - 1) * size).Limit(size).ToListAsync();
             return _mapper.Map<List<Product>>(result.ToList());
         }
 

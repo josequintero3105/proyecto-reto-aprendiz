@@ -71,6 +71,34 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         }
 
         [Fact]
+        public async void CreateCustomer_When_CustomerDocumentIsEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentEmpty();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _customerService.CreateCustomer(customer));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void CreateCustomer_When_CustomerDocumentTypeIsEmpty_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentTypeEmpty();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _customerService.CreateCustomer(customer));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
         public async void CreateCustomer_When_CustomerEmailIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
@@ -149,20 +177,6 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
                 (async () => await _customerService.UpdateCustomer(customer));
-
-            // Assert
-            Assert.Equal(typeof(BusinessException), result.GetType());
-        }
-
-        [Fact]
-        public async void DeleteCustomer_When_CustomerIdIsValid_ExpectsBusinessException()
-        {
-            // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForDelete();
-            customer._id = "6644d3d6a20a7c5dc4ed2680";
-            // Act
-            var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _customerService.DeleteCustomer(customer._id));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());

@@ -22,7 +22,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public Task<ShoppingCart> GetShoppingCartAsync(ShoppingCart shoppingCart);
+        public Task<ShoppingCart> GetShoppingCartAsync(string _id);
         /// <summary>
         /// Method for search in mongo in unit test
         /// </summary>

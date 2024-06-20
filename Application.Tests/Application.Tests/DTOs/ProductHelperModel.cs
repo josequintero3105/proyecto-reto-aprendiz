@@ -40,9 +40,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static List<Product> ListAllProducts() => new List<Product>
+        public static List<ProductToGet> ListAllProducts() => new List<ProductToGet>
         {
-            new Product
+            new ProductToGet
             {
                 Name = "Test",
                 Price = 0,
@@ -53,7 +53,7 @@ namespace Application.Tests.Application.Tests.DTOs
             }
         };
 
-        public static List<Product> ListAllProductsIsEmpty() => new List<Product>
+        public static List<ProductToGet> ListAllProductsIsEmpty() => new List<ProductToGet>
         {
             
         };

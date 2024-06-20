@@ -28,12 +28,12 @@ namespace Application.Interfaces.Services
         /// Get all products
         /// </summary>
         /// <returns></returns>
-        public Task<List<Product>> GetAllProducts();
+        public Task<List<ProductToGet>> GetAllProducts();
         /// <summary>
         /// 
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public Task<List<Product>> GetProductsPagination(int page);
+        public Task<List<Product>> GetProductsPagination(int page, int size);
     }
 }

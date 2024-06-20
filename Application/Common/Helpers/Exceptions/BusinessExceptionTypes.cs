@@ -16,8 +16,8 @@ public enum BusinessExceptionTypes
 
 public enum GateWayBusinessException
 {
-    [Description("Not Controller Exception")]
-    NotControlerException = 400,
+    [Description("Not Controlled Exception")]
+    NotControlledException = 400,
 
     [Description("Product Id Is Not Valid")]
     ProductIdIsNotValid = 401,
@@ -52,12 +52,24 @@ public enum GateWayBusinessException
     [Description("Customer Id Is Not Valid")]
     CustomerIdIsNotValid = 411,
 
+    [Description("Customer DocumentType Cannot Be Empty")]
+    CustomerDocumentTypeCannotBeEmpty = 412,
+
+    [Description("Customer Document Cannot Be Empty")]
+    CustomerDocumentCannotBeEmpty = 413,
+
     [Description("Customer Name Cannot Be Empty")]
-    CustomerNameCannotBeEmpty = 412,
+    CustomerNameCannotBeEmpty = 414,
 
     [Description("Customer Email Cannot Be Empty")]
-    CustomerEmailCannotBeEmpty = 413,
+    CustomerEmailCannotBeEmpty = 415,
 
-    [Description("Customer Email Cannot Be Empty")]
-    CustomerPhoneCannotBeEmpty = 414
+    [Description("Customer Phone Cannot Be Empty")]
+    CustomerPhoneCannotBeEmpty = 416,
+
+    [Description("The Object Cannot Be Empty")]
+    ObjectCannotBeEmpty = 417,
+
+    [Description("The List of Products Cannot Be Null")]
+    ProductListCannotBeNull = 418
 }

@@ -21,7 +21,7 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public Task<ShoppingCart> GetShoppingCartById(ShoppingCart shoppingCart);
+        public Task<ShoppingCart> GetShoppingCartById(string _id);
         /// <summary>
         /// Get shopping collection from mongo
         /// </summary>

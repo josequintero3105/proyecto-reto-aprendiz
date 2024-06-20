@@ -16,6 +16,11 @@ namespace WebApi.Controllers
         private readonly IInvoiceService _invoiceService;
         private readonly IHandle _handle;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="invoiceService"></param>
+        /// <param name="handle"></param>
         public InvoiceController(IInvoiceService invoiceService, IHandle handle)
         {
             _invoiceService = invoiceService;
@@ -23,7 +28,7 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Method Post Create Product
+        /// Method Post Generate the invoice
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
