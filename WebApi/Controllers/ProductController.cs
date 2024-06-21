@@ -9,6 +9,8 @@ using Application.Common.FluentValidations.Validators;
 using Core.Entities.MongoDB;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Common;
+using Application.Services;
+using Application.DTOs.Entries;
 
 namespace WebApiHttp.Controllers
 {
@@ -41,7 +43,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpPost()]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Create([FromBody] Product body)
+        public async Task<IActionResult> Create([FromBody] ProductInput body)
         {
             await _handle.HandleRequestContextCatchException(_productService.CreateProduct(body));
             return Created("~/api/Product/", body);
@@ -94,10 +96,10 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] ProductToGet body)
+        public async Task<IActionResult> Update([FromBody] ProductInput body, [FromQuery] string _id)
         {
-            await _handle.HandleRequestContextCatchException(_productService.UpdateProduct(body));
-            return Ok(body);
+            ProductOutput product = await _productService.UpdateProduct(body, _id);
+            return Created("~/api/Product/", product);
         }
     }
 }

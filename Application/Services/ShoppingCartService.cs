@@ -5,10 +5,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.Runtime.SharedInterfaces;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -44,26 +46,28 @@ namespace Application.Services
         /// <summary>
         /// Private method controls the process to create a shopping cart
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task CreateShoppingCart(ShoppingCart shoppingCart)
+        public async Task<ShoppingCart> CreateShoppingCart(ShoppingCartInput shoppingCartInput)
         {
             try
             {
+                ShoppingCart shoppingCart = new ShoppingCart();
+                shoppingCart.ProductsInCart = shoppingCartInput.ProductsInCart;
+
                 await GetAtLeastOneProduct(shoppingCart);
-                shoppingCart.Active = true;
-                await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
+                return await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating shoppingCart: {shoppingCart}"
-                    , bex.Code, bex.Message, shoppingCart);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating shoppingCart: {shoppingCart} ", ex.Message, shoppingCart);
+                _logger.LogError(ex, "Error: {message} creating ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException));
             }
@@ -79,7 +83,7 @@ namespace Application.Services
         {
             try
             {
-                
+
                 ShoppingCart shoppingCartToGet = await _shoppingCartRepository.GetShoppingCartAsync(_id);
                 return shoppingCartToGet;
             }
@@ -150,7 +154,12 @@ namespace Application.Services
                 resultCart.PriceTotal = CalculateTotal(shoppingCart, products, resultCart.PriceTotal);
                 productInCart = GetObjectForArray(shoppingCart, products);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
-                await _shoppingCartRepository.AddAnotherProductInCartAsync(resultCart, productInCart);
+                if (!resultCart.ProductsInCart.Any(p => p._id == productInCart._id))
+                    await _shoppingCartRepository.AddAnotherProductInCartAsync(resultCart, productInCart);
+                else
+                {
+                    await _shoppingCartRepository.AddMoreCountOfCurrentProduct(resultCart, productInCart);
+                }  
             }
             await ConfirmChangeTotalPrice(listModelProducts, shoppingCart, resultCart);
         }
@@ -222,7 +231,7 @@ namespace Application.Services
             try
             {
                 var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
-                if (products.Quantity >= productToAdd.QuantityInCart 
+                if (products.Quantity >= productToAdd.QuantityInCart
                     && productToAdd.QuantityInCart > 0
                     && productToAdd.QuantityInCart < 20)
                 {
@@ -352,13 +361,22 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task RemoveFromShoppingCart(ShoppingCart shoppingCart)
         {
-            await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-            var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-            if (result != null)
-                await LogicRemoveFromShoppingCart(shoppingCart);
-            else
+            try
+            {
+                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
+                var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                if (result != null && result.ProductsInCart.Count > 0)
+                    await LogicRemoveFromShoppingCart(shoppingCart);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                        nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
+            catch (FormatException ex)
+            {
+                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
                     nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
         }
     }
 }

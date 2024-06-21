@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Entries;
 
 namespace Application.Interfaces.Services
 {
@@ -14,19 +15,19 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task CreateCustomer(Customer customer);
+        Task<CustomerOutput> CreateCustomer(CustomerInput customer);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task UpdateCustomer(Customer customer);
+        Task<CustomerOutput> UpdateCustomerData(CustomerInput customer, string _id);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task<Customer> GetCustomerById(string _id);
+        Task<CustomerOutput> GetCustomerById(string _id);
         /// <summary>
         /// 
         /// </summary>

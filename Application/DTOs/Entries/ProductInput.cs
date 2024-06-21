@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTOs
+namespace Application.DTOs.Entries
 {
-    public class Product
+    public class ProductInput
     {
         public string? Name { get; set; }
         public double Price { get; set; }

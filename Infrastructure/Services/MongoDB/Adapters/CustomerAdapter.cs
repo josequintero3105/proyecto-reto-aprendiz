@@ -7,6 +7,7 @@ using Application.DTOs;
 using Application.Interfaces.Infrastructure.Mongo;
 using AutoMapper;
 using Core.Entities.MongoDB;
+using DnsClient.Internal;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -48,11 +49,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="customerToCreate"></param>
         /// <returns></returns>
-        public async Task<Customer> CreateCustomerAsync(Customer customerToCreate)
+        public async Task<CustomerOutput> CreateCustomerAsync(CustomerOutput customerToCreate)
         {
             CustomerCollection customerCollectionToCreate = _mapper.Map<CustomerCollection>(customerToCreate);
             await _context.CustomerCollection.InsertOneAsync(customerCollectionToCreate);
-            return _mapper.Map<Customer>(customerToCreate);
+            return _mapper.Map<CustomerOutput>(customerToCreate);
         }
 
         /// <summary>
@@ -60,39 +61,27 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public async Task<Customer> GetCustomerByIdAsync(string _id)
+        public async Task<CustomerOutput> GetCustomerByIdAsync(string _id)
         {
             var IdFound = Builders<CustomerCollection>.Filter.Eq(c => c._id, _id);
             var result = await _context.CustomerCollection.FindAsync(IdFound);
-            return _mapper.Map<Customer>(result.FirstOrDefault());
+            return _mapper.Map<CustomerOutput>(result.FirstOrDefault());
         }
 
-        public CustomerCollection GetCustomer(Customer customerToFind)
+        public CustomerCollection GetCustomer(CustomerOutput customerToFind)
         {
             CustomerCollection customerCollectionToFind = _mapper.Map<CustomerCollection>(customerToFind);
             var IdCustomerFound = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(customerCollectionToFind._id));
             return _context.CustomerCollection.Find(IdCustomerFound).FirstOrDefault();
         }
 
-        /// <summary>
-        /// Update customer
-        /// </summary>
-        /// <param name="customerToUpdate"></param>
-        /// <returns></returns>
-        public async Task<bool> UpdateCustomerAsync(Customer customerToUpdate)
+        public async Task<CustomerOutput> UpdateCustomerDataAsync(CustomerOutput customerToUpdate)
         {
             CustomerCollection collectionToUpdate = _mapper.Map<CustomerCollection>(customerToUpdate);
             var IdFound = Builders<CustomerCollection>.Filter.Eq(c => c._id, collectionToUpdate._id);
             var result = _context.CustomerCollection.Find(IdFound).FirstOrDefault();
-            if (result != null)
-            {
-                var resultUpdate = await _context.CustomerCollection.ReplaceOneAsync(IdFound, collectionToUpdate);
-                return resultUpdate.ModifiedCount == 1;
-            }
-            else
-            {
-                return false;
-            }
+            var resultUpdate = await _context.CustomerCollection.ReplaceOneAsync(IdFound, collectionToUpdate);
+            return _mapper.Map<CustomerOutput>(customerToUpdate);
         }
 
         /// <summary>

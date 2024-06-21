@@ -71,5 +71,38 @@ public enum GateWayBusinessException
     ObjectCannotBeEmpty = 417,
 
     [Description("The List of Products Cannot Be Null")]
-    ProductListCannotBeNull = 418
+    ProductListCannotBeNull = 418,
+
+    [Description("Product Quantity or Price Invalid")]
+    ProductQuantityOrPriceInvalid = 419,
+
+    [Description("Customer Not Exists")]
+    CustomerNotExists = 420,
+
+    [Description("ShoppingCart Not Exists")]
+    ShoppingCartNotExists = 421,
+
+    [Description("Not Products In Cart")]
+    NotProductsInCart = 422,
+
+    [Description("Cart And Customer Invalid")]
+    CartAndCustomerInvalid = 423,
+
+    [Description("Customer Id Cannot Be Null")]
+    CustomerIdCannotBeNull = 424,
+
+    [Description("Customer DocumentType Is Invalid")]
+    CustomerDocumentTypeIsInvalid = 425,
+
+    [Description("Customer Document Cannot Be Very Long")]
+    CustomerDocumentCannotBeVeryLong = 426,
+
+    [Description("Customer Name Cannot Be Very Long")]
+    CustomerNameCannotBeVeryLong = 427,
+
+    [Description("Customer Phone Cannot Be Very Long")]
+    CustomerPhoneCannotBeVeryLong = 428,
+
+    [Description("Products Unavailable")]
+    ProductsUnavailable = 429,
 }

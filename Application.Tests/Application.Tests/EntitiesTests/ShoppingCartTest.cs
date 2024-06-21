@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Common;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
@@ -61,24 +62,26 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async Task CreateShoppingCart_Then_ExpectsResultEqualShoppingCart()
         {
             // Act
-            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
-            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCart))
-                .ReturnsAsync(shoppingCart).Verifiable();
+            ShoppingCartInput shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            ShoppingCart shoppingCartOutPut = new ShoppingCart();
+            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCartOutPut))
+                .ReturnsAsync(shoppingCartOutPut).Verifiable();
 
             // Assert
             await _shoppingCartService.CreateShoppingCart(shoppingCart);
 
             // Arrange
-            Assert.IsType<ShoppingCart>(shoppingCart);
+            Assert.IsType<ShoppingCartInput>(shoppingCart);
         }
 
         [Fact]
         public async Task CreateShoppingCart_Then_ResultCartIsNotNull()
         {
             // Act
-            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
-            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCart))
-                .ReturnsAsync(shoppingCart).Verifiable();
+            ShoppingCartInput shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            ShoppingCart shoppingCartOutPut = new ShoppingCart();
+            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCartOutPut))
+                .ReturnsAsync(shoppingCartOutPut).Verifiable();
 
             // Assert
             await _shoppingCartService.CreateShoppingCart(shoppingCart);
@@ -91,11 +94,10 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async Task CreateShoppingCart_Then_ExpectsVerifyCreation()
         {
             // Arrange
-            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            ShoppingCartInput shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
             _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(It.Is<ShoppingCart>
-                (x => x.ProductsInCart == shoppingCart.ProductsInCart &&
-                x.PriceTotal == shoppingCart.PriceTotal &&
-                x.Active == shoppingCart.Active
+                (x => x.ProductsInCart == shoppingCart.ProductsInCart
+               
                 ))).Verifiable();
 
             // Act
@@ -110,9 +112,10 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         {
             // Act
             var shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            ShoppingCart shoppingCartOutPut = new ShoppingCart();
             _shoppingCartController.ControllerContext.RouteData.Values.Add("action", "Post");
-            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCart))
-                .Returns(Task.FromResult(shoppingCart));
+            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCartOutPut))
+                .Returns(Task.FromResult(shoppingCartOutPut));
 
             // Assert
             var result = await _shoppingCartController.Create(shoppingCart);

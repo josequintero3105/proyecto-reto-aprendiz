@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTOs
+namespace Application.DTOs.Entries
 {
-    public class Invoice
+    public class InvoiceInput
     {
         public string? CustomerId { get; set; }
-        public string? CustomerName { get; set; }
         public string? ShoppingCartId { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public double Total { get; set; }
     }
 }

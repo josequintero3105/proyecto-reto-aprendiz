@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Common;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
@@ -44,9 +45,10 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateInvoice_When_CartIdAndCustomerIdAreValid_Then_ExpectsResultEqualInvoice()
         {
             // Arrange
-            Invoice invoice = InvoiceHelperModel.GetInvoiceFromCreation();
-            _invoiceRepositoryMock.Setup(x => x.GenerateInvoiceAsync(invoice))
-                .ReturnsAsync(invoice).Verifiable();
+            InvoiceInput invoice = InvoiceHelperModel.GetInvoiceFromCreation();
+            Invoice invoiceOutput = new Invoice();
+            _invoiceRepositoryMock.Setup(x => x.GenerateInvoiceAsync(invoiceOutput))
+                .ReturnsAsync(invoiceOutput).Verifiable();
 
             // Act
             await _invoiceService.GenerateInvoice(invoice);
@@ -59,7 +61,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateInvoice_When_CustomerIdNotValid_Then_ExpectsBusinessException()
         {
             // Arrange
-            Invoice invoice = InvoiceHelperModel.GetInvoiceFromCreationCustomerIdInvalid();
+            InvoiceInput invoice = InvoiceHelperModel.GetInvoiceFromCreationCustomerIdInvalid();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -73,7 +75,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateInvoice_When_ShoppingCartIdNotValid_Then_ExpectsBusinessException()
         {
             // Arrange
-            Invoice invoice = InvoiceHelperModel.GetInvoiceFromCreationShoppingCartIdInvalid();
+            InvoiceInput invoice = InvoiceHelperModel.GetInvoiceFromCreationShoppingCartIdInvalid();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>

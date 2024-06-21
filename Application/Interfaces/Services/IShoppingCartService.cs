@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Services
@@ -15,7 +16,7 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public Task CreateShoppingCart(ShoppingCart shoppingCart);
+        public Task<ShoppingCart> CreateShoppingCart(ShoppingCartInput shoppingCart);
         /// <summary>
         /// Get shopping cart by id
         /// </summary>

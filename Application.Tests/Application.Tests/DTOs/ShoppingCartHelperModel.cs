@@ -7,18 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Amazon.Runtime.SharedInterfaces;
 using Application.DTOs;
+using Application.DTOs.Entries;
 
 namespace Application.Tests.Application.Tests.DTOs
 {
     public class ShoppingCartHelperModel
     {
-        public static ShoppingCart GetShoppingCartForCreation()
+        public static ShoppingCartInput GetShoppingCartForCreation()
         {
-            return new ShoppingCart()
+            return new ShoppingCartInput()
             {
-                ProductsInCart = new List<ProductInCart>() {},
-                PriceTotal = 0,
-                Active = true
+                ProductsInCart = new List<ProductInCart>() {}
+                
             };
         }
 

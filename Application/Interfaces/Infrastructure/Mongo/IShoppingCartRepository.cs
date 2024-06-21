@@ -85,5 +85,12 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <param name="productInCart"></param>
         /// <returns></returns>
         public Task AddAnotherProductInCartAsync(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shoppingCartCollection"></param>
+        /// <param name="productInCart"></param>
+        /// <returns></returns>
+        Task AddMoreCountOfCurrentProduct(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart);
     }
 }

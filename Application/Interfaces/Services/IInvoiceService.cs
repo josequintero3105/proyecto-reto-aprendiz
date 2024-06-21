@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Entries;
 
 namespace Application.Interfaces.Services
 {
@@ -14,6 +15,6 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="invoice"></param>
         /// <returns></returns>
-        public Task GenerateInvoice(Invoice invoice);
+        public Task<Invoice> GenerateInvoice(InvoiceInput invoice);
     }
 }

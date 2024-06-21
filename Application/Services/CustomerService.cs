@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,7 @@ using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -33,28 +35,53 @@ namespace Application.Services
             _logger = logger;
         }
 
+        public Dictionary<string, string> GetDocumentTypes()
+        {
+            Dictionary<string, string> keyValues = new Dictionary<string, string>()
+            {
+                {"TI", ""},
+                {"CC", ""},
+                {"NIT", ""}
+            };
+            return keyValues;
+        }
+
         /// <summary>
         /// Private method controls the process of create a product
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task CreateCustomer(Customer customer)
+        public async Task<CustomerOutput> CreateCustomer(CustomerInput customerInput)
         {
             try
             {
-                await customer.ValidateAndThrowsAsync<Customer, CustomerValidator>();
-                await _customerRepository.CreateCustomerAsync(customer);
+                await customerInput.ValidateAndThrowsAsync<CustomerInput, CustomerValidator>();
+                Dictionary<string, string> keyValues = GetDocumentTypes();
+                CustomerOutput customer = new()
+                {
+                    DocumentType = customerInput.DocumentType,
+                    Document = customerInput.Document,
+                    Name = customerInput.Name,
+                    Email = customerInput.Email,
+                    Phone = customerInput.Phone
+                };
+                if (keyValues.ContainsKey(customerInput.DocumentType))
+                    return await _customerRepository.CreateCustomerAsync(customer);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
+                    nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
+
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating customer: {customer}"
-                    , bex.Code, bex.Message, customer);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating customer: {customer} ", ex.Message, customer);
+                _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException));
             }
@@ -65,7 +92,7 @@ namespace Application.Services
         /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<Customer> GetCustomerById(string _id)
+        public async Task<CustomerOutput> GetCustomerById(string _id)
         {
             try
             {
@@ -92,15 +119,26 @@ namespace Application.Services
         /// <param name="customer"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task UpdateCustomer(Customer customer)
+        public async Task<CustomerOutput> UpdateCustomerData(CustomerInput customerInput, string _id)
         {
             try
             {
-                await customer.ValidateAndThrowsAsync<Customer, CustomerValidator>();
-                var update = await _customerRepository.UpdateCustomerAsync(customer);
-                if (update == false)
-                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
-                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
+                await customerInput.ValidateAndThrowsAsync<CustomerInput, CustomerValidator>();
+                Dictionary<string, string> keyValues = GetDocumentTypes();
+                CustomerOutput customer = new()
+                {
+                    _id = _id,
+                    DocumentType = customerInput.DocumentType,
+                    Document = customerInput.Document,
+                    Name = customerInput.Name,
+                    Email = customerInput.Email,
+                    Phone = customerInput.Phone
+                };
+                if (keyValues.ContainsKey(customerInput.DocumentType))
+                    return await _customerRepository.UpdateCustomerDataAsync(customer);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
+                    nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
             }
             catch (BusinessException bex)
             {

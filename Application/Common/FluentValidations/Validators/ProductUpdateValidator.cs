@@ -9,7 +9,7 @@ using FluentValidation;
 
 namespace Application.Common.FluentValidations.Validators
 {
-    public class ProductUpdateValidator : AbstractValidator<ProductToGet>
+    public class ProductUpdateValidator : AbstractValidator<ProductOutput>
     {
         public ProductUpdateValidator() 
         {

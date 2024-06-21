@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Transactions;
 using Amazon.Runtime.Internal.Util;
@@ -11,6 +12,7 @@ using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -45,12 +47,18 @@ namespace Application.Services
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task ControlCreateProduct(Product product)
+        private async Task ControlCreateProduct(ProductInput product)
         {
             try
             {
-                await product.ValidateAndThrowsAsync<Product, ProductValidator>();
-                await _productRepository.CreateProductAsync(product);
+                await product.ValidateAndThrowsAsync<ProductInput, ProductValidator>();
+                if (product.Quantity >= 0 && product.Price >= 0 
+                    && product.Quantity <= Int32.MaxValue 
+                    && product.Price <= Int32.MaxValue)
+                    await _productRepository.CreateProductAsync(product);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid),
+                    nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid));
             }
             catch (BusinessException bex)
             {
@@ -66,7 +74,7 @@ namespace Application.Services
             }
         }
        
-        public async Task CreateProduct(Product product)
+        public async Task CreateProduct(ProductInput product)
         {
             await ControlCreateProduct(product);
         }
@@ -77,7 +85,7 @@ namespace Application.Services
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<ProductToGet> ControlGetProductById(string _id)
+        private async Task<ProductOutput> ControlGetProductById(string _id)
         {
             try
             {
@@ -99,7 +107,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<ProductToGet> GetProductById(string _id)
+        public async Task<ProductOutput> GetProductById(string _id)
         {
             return await ControlGetProductById(_id);
         }
@@ -107,17 +115,16 @@ namespace Application.Services
         /// <summary>
         /// Private method controls to get a product
         /// </summary>
-        /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<List<ProductToGet>> ControlGetAllProducts()
+        private async Task<List<ProductOutput>> ControlGetAllProducts()
         {
             try
             {
-                List<ProductToGet> productsList = await _productRepository.GetAllProductsAsync();
+                List<ProductOutput> productsList = await _productRepository.GetAllProductsAsync();
                 return productsList.Count == 0 ? throw new BusinessException(
-                    nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException)) : productsList;
+                    nameof(GateWayBusinessException.ProductListCannotBeNull),
+                    nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;
             }
             catch (BusinessException bex)
             {
@@ -133,7 +140,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<List<ProductToGet>> GetAllProducts()
+        public async Task<List<ProductOutput>> GetAllProducts()
         {
             return await ControlGetAllProducts();
         }
@@ -144,14 +151,15 @@ namespace Application.Services
         /// <param name="product"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<List<Product>> ControlGetProductsPagination(int page, int size)
+        private async Task<List<ProductInput>> ControlGetProductsPagination(int page, int size)
         {
             try
             {
-                List<Product> productsList = await _productRepository.GetProductsPaginationAsync(page, size);
+                
+                List<ProductInput> productsList = await _productRepository.GetProductsPaginationAsync(page, size);
                 return productsList.Count == 0 ? throw new BusinessException(
-                    nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException)) : productsList;
+                    nameof(GateWayBusinessException.ProductListCannotBeNull),
+                    nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;
             }
             catch (BusinessException bex)
             {
@@ -167,7 +175,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<List<Product>> GetProductsPagination(int page, int size)
+        public async Task<List<ProductInput>> GetProductsPagination(int page, int size)
         {
             return await ControlGetProductsPagination(page, size);
         }
@@ -179,17 +187,26 @@ namespace Application.Services
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task ControlUpdateProduct(ProductToGet product)
+        public async Task<ProductOutput> UpdateProduct(ProductInput product, string _id)
         {
             try
             {
-                await product.ValidateAndThrowsAsync<ProductToGet, ProductUpdateValidator>();
-                var update = await _productRepository.UpdateProductAsync(product);
-                if (update == false)
+                await product.ValidateAndThrowsAsync<ProductInput, ProductValidator>();
+                ProductOutput productOutput = new ProductOutput()
                 {
-                    throw new BusinessException(nameof(GateWayBusinessException.ProductIdIsNotValid),
-                    nameof(GateWayBusinessException.ProductIdIsNotValid));
-                }
+                    _id = _id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    Quantity = product.Quantity,
+                    Description = product.Description,
+                    Category = product.Category,
+                    State = product.State,
+                };
+                if (product.Quantity >= 0 && product.Price >= 0)
+                    return await _productRepository.UpdateProductAsync(productOutput);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid),
+                    nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid));
             }
             catch (BusinessException bex)
             {
@@ -200,14 +217,9 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} updating product: {product} ", ex.Message, product);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                throw new BusinessException(nameof(GateWayBusinessException.ProductIdIsNotValid),
+                    nameof(GateWayBusinessException.ProductIdIsNotValid));
             }
-        }
-        
-        public async Task UpdateProduct(ProductToGet product)
-        {
-            await ControlUpdateProduct(product);
         }
     }
 }

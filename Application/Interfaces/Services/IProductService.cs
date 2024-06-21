@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Metadata;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Services
@@ -11,29 +12,29 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        public Task CreateProduct(Product product);
+        public Task CreateProduct(ProductInput product);
         /// <summary>
         /// Defining contract for the business logic into the product service
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        public Task UpdateProduct(ProductToGet product);
+        public Task<ProductOutput> UpdateProduct(ProductInput product, string _id);
         /// <summary>
         /// product getting by id
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        public Task<ProductToGet> GetProductById(string _id);
+        public Task<ProductOutput> GetProductById(string _id);
         /// <summary>
         /// Get all products
         /// </summary>
         /// <returns></returns>
-        public Task<List<ProductToGet>> GetAllProducts();
+        public Task<List<ProductOutput>> GetAllProducts();
         /// <summary>
         /// 
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public Task<List<Product>> GetProductsPagination(int page, int size);
+        public Task<List<ProductInput>> GetProductsPagination(int page, int size);
     }
 }

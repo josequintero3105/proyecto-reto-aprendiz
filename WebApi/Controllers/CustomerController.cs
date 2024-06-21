@@ -5,6 +5,7 @@ using Application.Interfaces.Services;
 using Application.Interfaces.Common;
 using Core.Entities.MongoDB;
 using System.Net;
+using Application.DTOs.Entries;
 
 namespace WebApi.Controllers
 {
@@ -37,10 +38,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPost()]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Create([FromBody] Customer body)
+        public async Task<IActionResult> Create([FromBody] CustomerInput body)
         {
-            await _handle.HandleRequestContextCatchException(_customerService.CreateCustomer(body));
-            return Created("~/api/Customer/", body);
+            CustomerOutput customer = await _customerService.CreateCustomer(body);
+            return Created("~/api/Customer/", customer);
         }
         /// <summary>
         /// Method Put Update Customer
@@ -50,11 +51,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] Customer body, [FromQuery] string _id)
+        public async Task<IActionResult> Update([FromBody] CustomerInput body, [FromQuery] string _id)
         {
-            body._id = _id;
-            await _handle.HandleRequestContextCatchException(_customerService.UpdateCustomer(body));
-            return Created("~/api/Customer/", body);
+            CustomerOutput customer = await _customerService.UpdateCustomerData(body, _id);
+            return Created("~/api/Customer/", customer);
         }
         /// <summary>
         /// Method Get Get Customer

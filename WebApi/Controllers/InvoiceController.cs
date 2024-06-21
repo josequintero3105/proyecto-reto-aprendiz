@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
@@ -34,10 +35,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPost()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Generate([FromBody] Invoice body)
+        public async Task<IActionResult> Generate([FromBody] InvoiceInput body)
         {
-            await _handle.HandleRequestContextCatchException(_invoiceService.GenerateInvoice(body));
-            return Ok(body);
+            Invoice invoice = await _invoiceService.GenerateInvoice(body);
+            return Ok(invoice);
         }
     }
 }

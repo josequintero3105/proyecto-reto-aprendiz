@@ -7,6 +7,7 @@ using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -46,37 +47,44 @@ namespace Application.Services
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task GenerateInvoice(Invoice invoice)
+        public async Task<Invoice> GenerateInvoice(InvoiceInput invoiceInput)
         {
             try
             {
-                await invoice.ValidateAndThrowsAsync<Invoice, InvoiceValidator>();
+                await invoiceInput.ValidateAndThrowsAsync<InvoiceInput, InvoiceValidator>();
+                Invoice invoice = new Invoice();
+                invoice.ShoppingCartId = invoiceInput.ShoppingCartId;
+                invoice.CustomerId = invoiceInput.CustomerId;
                 invoice.CreatedAt = DateTime.Now;
-                Customer customer = new Customer();
+
+                CustomerOutput customer = new CustomerOutput();
                 ShoppingCart shoppingCart = new ShoppingCart();
                 customer._id = invoice.CustomerId;
                 shoppingCart._id = invoice.ShoppingCartId;
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
                 ShoppingCartCollection shoppingCartCollection = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-                
-                if (shoppingCartCollection != null 
-                    && customerCollection != null 
+
+                if (shoppingCartCollection != null
+                    && customerCollection != null
                     && shoppingCartCollection.ProductsInCart.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
-                    await _invoiceRepository.GenerateInvoiceAsync(invoice);
+                    return await _invoiceRepository.GenerateInvoiceAsync(invoice);
                 }
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
+                    nameof(GateWayBusinessException.NotProductsInCart));
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating invoice: {invoice}"
-                    , bex.Code, bex.Message, invoice);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating invoice: {invoice} ", ex.Message, invoice);
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException));
             }

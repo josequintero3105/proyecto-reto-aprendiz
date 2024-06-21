@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Application.Services;
@@ -37,10 +38,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPost()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Create([FromBody] ShoppingCart body)
+        public async Task<IActionResult> Create([FromBody] ShoppingCartInput body)
         {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.CreateShoppingCart(body));
-            return Ok(body);
+            ShoppingCart shoppingCart = await _shoppingCartService.CreateShoppingCart(body);
+            return Ok(shoppingCart);
         }
 
         /// <summary>

@@ -63,7 +63,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <summary>
         /// Getting The shopping cart
         /// </summary>
-        /// <param name="shoppingCartToFind"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         public async Task<ShoppingCart> GetShoppingCartAsync(string _id)
         {
@@ -166,6 +166,14 @@ namespace Infrastructure.Services.MongoDB.Adapters
             ProductInCartCollection productInCartCollection = _mapper.Map<ProductInCartCollection>(productInCart);
             var filter = Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, shoppingCartCollection._id);
             var add = Builders<ShoppingCartCollection>.Update.Push(c => c.ProductsInCart, productInCartCollection);
+            await _context.ShoppingCartCollection.UpdateOneAsync(filter, add);
+        }
+
+        public async Task AddMoreCountOfCurrentProduct(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart)
+        {
+            ProductInCartCollection productInCartCollection = _mapper.Map<ProductInCartCollection>(productInCart);
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, shoppingCartCollection._id);
+            var add = Builders<ShoppingCartCollection>.Update.Set(productInCartCollection._id, productInCart.QuantityInCart);
             await _context.ShoppingCartCollection.UpdateOneAsync(filter, add);
         }
 
