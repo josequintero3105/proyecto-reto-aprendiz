@@ -40,6 +40,11 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <param name="customer"></param>
         /// <returns></returns>
         Task<bool> DeleteCustomerAsync(string _id);
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customerToCreate"></param>
+        /// <returns></returns>
+        Task<CustomerCollection> CreateAsync(CustomerOutput customerToCreate);
     }
 }

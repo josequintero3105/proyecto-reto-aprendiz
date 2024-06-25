@@ -44,15 +44,26 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
+        /// Create a new invoice for tests
+        /// </summary>
+        /// <param name="InvoiceToCreate"></param>
+        /// <returns></returns>
+        public async Task<InvoiceOutput> GenerateInvoiceAsync(InvoiceOutput InvoiceToCreate)
+        {
+            InvoiceCollection invoiceCollectionToCreate = _mapper.Map<InvoiceCollection>(InvoiceToCreate);
+            await _context.InvoiceCollection.InsertOneAsync(invoiceCollectionToCreate);
+            return _mapper.Map<InvoiceOutput>(InvoiceToCreate);
+        }
+        /// <summary>
         /// Create a new invoice
         /// </summary>
         /// <param name="InvoiceToCreate"></param>
         /// <returns></returns>
-        public async Task<Invoice> GenerateInvoiceAsync(Invoice InvoiceToCreate)
+        public async Task<InvoiceCollection> GenerateAsync(InvoiceOutput InvoiceToCreate)
         {
             InvoiceCollection invoiceCollectionToCreate = _mapper.Map<InvoiceCollection>(InvoiceToCreate);
             await _context.InvoiceCollection.InsertOneAsync(invoiceCollectionToCreate);
-            return _mapper.Map<Invoice>(InvoiceToCreate);
+            return invoiceCollectionToCreate;
         }
     }
 }

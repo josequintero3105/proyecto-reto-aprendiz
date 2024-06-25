@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Transactions;
 using Amazon.Runtime.Internal.Util;
@@ -44,54 +45,61 @@ namespace Application.Services
         /// <summary>
         /// Private method controls the process of create a product
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="productInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task ControlCreateProduct(ProductInput product)
+        public async Task<ProductCollection> CreateProduct(ProductInput productInput)
         {
             try
             {
-                await product.ValidateAndThrowsAsync<ProductInput, ProductValidator>();
-                if (product.Quantity >= 0 && product.Price >= 0 
-                    && product.Quantity <= Int32.MaxValue 
-                    && product.Price <= Int32.MaxValue)
-                    await _productRepository.CreateProductAsync(product);
+                await productInput.ValidateAndThrowsAsync<ProductInput, ProductValidator>();
+                ProductOutput productOutput = new()
+                {
+                    Name = productInput.Name,
+                    Price = productInput.Price,
+                    Quantity = productInput.Quantity,
+                    Description = productInput.Description,
+                    Category = productInput.Category,
+                    State = productInput.State,
+                };
+
+                if (productInput.Quantity >= 0 && productInput.Price >= 0 
+                    && productInput.Quantity <= Int32.MaxValue
+                    && productInput.Price <= Int32.MaxValue)
+                    return await _productRepository.CreateAsync(productOutput);
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid),
                     nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid));
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating product: {product}"
-                    , bex.Code, bex.Message, product);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating product: {productInput}"
+                    , bex.Code, bex.Message, productInput);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating product: {product} ", ex.Message, product);
+                _logger.LogError(ex, "Error: {message} creating product: {productInput} ", ex.Message, productInput);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException));
             }
         }
-       
-        public async Task CreateProduct(ProductInput product)
-        {
-            await ControlCreateProduct(product);
-        }
 
         /// <summary>
-        /// Private method controls to get a product
+        /// Private method controls to get a product by id
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<ProductOutput> ControlGetProductById(string _id)
+        public async Task<ProductOutput> GetProductById(string _id)
         {
             try
             {
-                
-                var productToGet = await _productRepository.GetProductByIdAsync(_id);
-                return productToGet;
+                if (!String.IsNullOrEmpty(_id))
+                    return await _productRepository.GetProductByIdAsync(_id);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
+                    nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
             catch (BusinessException bex)
             {
@@ -107,17 +115,12 @@ namespace Application.Services
             }
         }
 
-        public async Task<ProductOutput> GetProductById(string _id)
-        {
-            return await ControlGetProductById(_id);
-        }
-
         /// <summary>
-        /// Private method controls to get a product
+        /// Private method controls to list all products
         /// </summary>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<List<ProductOutput>> ControlGetAllProducts()
+        public async Task<List<ProductOutput>> GetAllProducts()
         {
             try
             {
@@ -140,26 +143,37 @@ namespace Application.Services
             }
         }
 
-        public async Task<List<ProductOutput>> GetAllProducts()
+        private static bool IsValidInteger(string input)
         {
-            return await ControlGetAllProducts();
+            var regex = new Regex(@"^[+-]?\d+$");
+            if (regex.IsMatch(input) && int.TryParse(input, out _))
+                return true;
+            return false;
         }
 
         /// <summary>
-        /// Private method controls to get a product
+        /// Private method controls to get a product from pages
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="page"></param>
+        /// <param name="size"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task<List<ProductInput>> ControlGetProductsPagination(int page, int size)
+        public async Task<List<ProductInput>> GetProductsPagination(string page, string size)
         {
             try
             {
-                
-                List<ProductInput> productsList = await _productRepository.GetProductsPaginationAsync(page, size);
-                return productsList.Count == 0 ? throw new BusinessException(
-                    nameof(GateWayBusinessException.ProductListCannotBeNull),
-                    nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;
+                if (IsValidInteger(page) && IsValidInteger(size))
+                {
+                    int pageInt = Convert.ToInt32(page);
+                    int sizeInt = Convert.ToInt32(size);
+                    List<ProductInput> productsList = await _productRepository.GetProductsPaginationAsync(pageInt, sizeInt);
+                    return productsList.Count == 0 ? throw new BusinessException(
+                        nameof(GateWayBusinessException.ProductListCannotBeNull),
+                        nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;
+                }
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.PaginationParametersNotValid),
+                    nameof(GateWayBusinessException.PaginationParametersNotValid));
             }
             catch (BusinessException bex)
             {
@@ -175,15 +189,11 @@ namespace Application.Services
             }
         }
 
-        public async Task<List<ProductInput>> GetProductsPagination(int page, int size)
-        {
-            return await ControlGetProductsPagination(page, size);
-        }
-
         /// <summary>
-        /// Calling the business logic from the ProductAdapter
+        /// Update product data searching by id
         /// </summary>
         /// <param name="product"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
         /// <exception cref="Exception"></exception>
@@ -202,11 +212,19 @@ namespace Application.Services
                     Category = product.Category,
                     State = product.State,
                 };
-                if (product.Quantity >= 0 && product.Price >= 0)
-                    return await _productRepository.UpdateProductAsync(productOutput);
+                if (!String.IsNullOrEmpty(_id))
+                {
+                    if (product.Quantity >= 0 && product.Price >= 0
+                    && product.Quantity <= Int32.MaxValue
+                    && product.Price <= Int32.MaxValue)
+                        return await _productRepository.UpdateProductAsync(productOutput);
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid),
+                        nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid));
+                }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid),
-                    nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid));
+                    throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
+                    nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
             catch (BusinessException bex)
             {

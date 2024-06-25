@@ -105,4 +105,19 @@ public enum GateWayBusinessException
 
     [Description("Products Unavailable")]
     ProductsUnavailable = 429,
+
+    [Description("Pagination Parameters Not Valid")]
+    PaginationParametersNotValid = 430,
+
+    [Description("Customer Email Not Valid")]
+    CustomerEmailNotValid = 431,
+
+    [Description("Product Id Cannot Be Null")]
+    ProductIdCannotBeNull = 432,
+
+    [Description("ShoppingCart Id Cannot Be Null")]
+    ShoppingCartIdCannotBeNull = 433,
+
+    [Description("Product Not Exists In The Cart")]
+    ProductNotExistsInTheCart = 434,
 }

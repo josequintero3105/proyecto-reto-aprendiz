@@ -49,7 +49,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Business logic create product
+        /// create product
         /// </summary>
         /// <param name="shoppingCartToCreate"></param>
         /// <returns></returns>
@@ -61,7 +61,19 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Getting The shopping cart
+        /// create product
+        /// </summary>
+        /// <param name="shoppingCartToCreate"></param>
+        /// <returns></returns>
+        public async Task<ShoppingCartCollection> CreateAsync(ShoppingCart shoppingCartToCreate)
+        {
+            ShoppingCartCollection shoppingCartCollectionToCreate = _mapper.Map<ShoppingCartCollection>(shoppingCartToCreate);
+            await _context.ShoppingCartCollection.InsertOneAsync(shoppingCartCollectionToCreate);
+            return shoppingCartCollectionToCreate;
+        }
+
+        /// <summary>
+        /// Get a shopping cart by id
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
@@ -72,6 +84,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
             return _mapper.Map<ShoppingCart>(resultCart.FirstOrDefault());
         }
 
+        /// <summary>
+        /// Method created from unit testing
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
         public async Task<bool> GetShoppingCartFromMongo(string _id)
         {
             var filter = Builders<ShoppingCartCollection>.Filter.Eq(s => s._id, _id);
@@ -168,17 +185,25 @@ namespace Infrastructure.Services.MongoDB.Adapters
             var add = Builders<ShoppingCartCollection>.Update.Push(c => c.ProductsInCart, productInCartCollection);
             await _context.ShoppingCartCollection.UpdateOneAsync(filter, add);
         }
-
+        /// <summary>
+        /// Add more count of a current product
+        /// </summary>
+        /// <param name="shoppingCartCollection"></param>
+        /// <param name="productInCart"></param>
+        /// <returns></returns>
         public async Task AddMoreCountOfCurrentProduct(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart)
         {
             ProductInCartCollection productInCartCollection = _mapper.Map<ProductInCartCollection>(productInCart);
-            var filter = Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, shoppingCartCollection._id);
-            var add = Builders<ShoppingCartCollection>.Update.Set(productInCartCollection._id, productInCart.QuantityInCart);
+            var filter = Builders<ShoppingCartCollection>.Filter.And(
+                Builders<ShoppingCartCollection>.Filter.Eq(c => c._id, shoppingCartCollection._id),
+                Builders<ShoppingCartCollection>.Filter.ElemMatch(d => d.ProductsInCart, p => p._id == productInCartCollection._id)
+            );    
+            var add = Builders<ShoppingCartCollection>.Update.Set("ProductsInCart.$", productInCartCollection);
             await _context.ShoppingCartCollection.UpdateOneAsync(filter, add);
         }
 
         /// <summary>
-        /// 
+        /// Update price from shopping cart
         /// </summary>
         /// <param name="shoppingCartCollection"></param>
         /// <returns></returns>

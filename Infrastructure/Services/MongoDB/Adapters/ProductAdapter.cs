@@ -39,14 +39,14 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <param name="dataBaseName"></param>
         /// <param name="collectionName"></param>
         /// <param name="mapper"></param>
-        public ProductAdapter(string stringMongoConnection, string dataBaseName, string collectionName, IMapper mapper) 
+        public ProductAdapter(string stringMongoConnection, string dataBaseName, IMapper mapper) 
         {
             _context = DataBaseContext.GetMongoDatabase(stringMongoConnection, dataBaseName);
             _mapper = mapper;
         }
 
         /// <summary>
-        /// Business logic create product
+        /// Save a new product to DB
         /// </summary>
         /// <param name="productToCreate"></param>
         /// <returns></returns>
@@ -55,6 +55,18 @@ namespace Infrastructure.Services.MongoDB.Adapters
             ProductCollection productCollectionToCreate = _mapper.Map<ProductCollection>(productToCreate);
             await _context.ProductCollection.InsertOneAsync(productCollectionToCreate);
             return _mapper.Map<ProductInput>(productToCreate);
+        }
+
+        /// <summary>
+        /// Save a new product to DB
+        /// </summary>
+        /// <param name="productToCreate"></param>
+        /// <returns></returns>
+        public async Task<ProductCollection> CreateAsync(ProductOutput productToCreate)
+        {
+            ProductCollection productCollectionToCreate = _mapper.Map<ProductCollection>(productToCreate);
+            await _context.ProductCollection.InsertOneAsync(productCollectionToCreate);
+            return productCollectionToCreate;
         }
 
         /// <summary>
@@ -83,6 +95,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// Get Products for pages
         /// </summary>
         /// <param name="page"></param>
+        /// <param name="size"></param>
         /// <returns></returns>
         public async Task<List<ProductInput>> GetProductsPaginationAsync(int page, int size)
         {

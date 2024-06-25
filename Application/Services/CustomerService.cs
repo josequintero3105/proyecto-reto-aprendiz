@@ -14,6 +14,7 @@ using Application.DTOs.Entries;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
+using Core.Entities.MongoDB;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services
@@ -34,7 +35,10 @@ namespace Application.Services
             _customerRepository = customerRepository;
             _logger = logger;
         }
-
+        /// <summary>
+        /// Get the document types
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, string> GetDocumentTypes()
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>()
@@ -49,10 +53,10 @@ namespace Application.Services
         /// <summary>
         /// Private method controls the process of create a product
         /// </summary>
-        /// <param name="customer"></param>
+        /// <param name="customerInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<CustomerOutput> CreateCustomer(CustomerInput customerInput)
+        public async Task<CustomerCollection> CreateCustomer(CustomerInput customerInput)
         {
             try
             {
@@ -67,7 +71,7 @@ namespace Application.Services
                     Phone = customerInput.Phone
                 };
                 if (keyValues.ContainsKey(customerInput.DocumentType))
-                    return await _customerRepository.CreateCustomerAsync(customer);
+                    return await _customerRepository.CreateAsync(customer);
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
                     nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
@@ -96,8 +100,11 @@ namespace Application.Services
         {
             try
             {
-                var result = await _customerRepository.GetCustomerByIdAsync(_id);
-                return result;
+                if (!String.IsNullOrEmpty(_id))                    
+                    return await _customerRepository.GetCustomerByIdAsync(_id);                
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdCannotBeNull),
+                    nameof(GateWayBusinessException.CustomerIdCannotBeNull));
             }
             catch (BusinessException bex)
             {
@@ -116,7 +123,8 @@ namespace Application.Services
         /// <summary>
         /// Private method controls the process of create a product
         /// </summary>
-        /// <param name="customer"></param>
+        /// <param name="customerInput"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
         public async Task<CustomerOutput> UpdateCustomerData(CustomerInput customerInput, string _id)
@@ -134,11 +142,17 @@ namespace Application.Services
                     Email = customerInput.Email,
                     Phone = customerInput.Phone
                 };
-                if (keyValues.ContainsKey(customerInput.DocumentType))
-                    return await _customerRepository.UpdateCustomerDataAsync(customer);
+                if (!String.IsNullOrEmpty(_id))
+                {
+                    if (keyValues.ContainsKey(customerInput.DocumentType))
+                        return await _customerRepository.UpdateCustomerDataAsync(customer);
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
+                        nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
+                }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
-                    nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdCannotBeNull),
+                    nameof(GateWayBusinessException.CustomerIdCannotBeNull));
             }
             catch (BusinessException bex)
             {
@@ -164,12 +178,19 @@ namespace Application.Services
         {
             try
             {
-                var delete = await _customerRepository.DeleteCustomerAsync(_id);
-                if (delete == false)
-                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),
-                    nameof(GateWayBusinessException.CustomerIdIsNotValid));
+                if (!String.IsNullOrEmpty(_id))
+                    await _customerRepository.DeleteCustomerAsync(_id);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdCannotBeNull),
+                    nameof(GateWayBusinessException.CustomerIdCannotBeNull));
             }
-            catch (FormatException ex)
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.CustomerIdIsNotValid),

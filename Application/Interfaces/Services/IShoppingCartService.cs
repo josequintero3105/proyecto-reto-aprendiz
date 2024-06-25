@@ -16,7 +16,7 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public Task<ShoppingCart> CreateShoppingCart(ShoppingCartInput shoppingCart);
+        public Task<ShoppingCartCollection> CreateShoppingCart(ShoppingCartInput shoppingCart);
         /// <summary>
         /// Get shopping cart by id
         /// </summary>

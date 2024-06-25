@@ -16,81 +16,87 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public Task<ShoppingCart> CreateShoppingCartAsync(ShoppingCart shoppingCart);
+        Task<ShoppingCart> CreateShoppingCartAsync(ShoppingCart shoppingCart);
         /// <summary>
-        /// 
+        /// Get shopping cart by id
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public Task<ShoppingCart> GetShoppingCartAsync(string _id);
+        Task<ShoppingCart> GetShoppingCartAsync(string _id);
         /// <summary>
         /// Method for search in mongo in unit test
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public Task<bool> GetShoppingCartFromMongo(string _id);
+        Task<bool> GetShoppingCartFromMongo(string _id);
         /// <summary>
-        /// 
+        /// Update content from shopping cart
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public Task<bool> UpdateShoppingCartAsync(ShoppingCart shoppingCart);
+        Task<bool> UpdateShoppingCartAsync(ShoppingCart shoppingCart);
         /// <summary>
-        /// 
+        /// Update price total from shopping cart
         /// </summary>
         /// <param name="shoppingCartCollection"></param>
         /// <returns></returns>
-        public Task<bool> UpdatePriceTotalFromShoppingCart(ShoppingCartCollection shoppingCartCollection);
+        Task<bool> UpdatePriceTotalFromShoppingCart(ShoppingCartCollection shoppingCartCollection);
         /// <summary>
-        /// 
+        /// Get shopping cart returns whole the document
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
-        public ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCart);
+        ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCart);
         /// <summary>
-        /// 
+        /// List specific products
         /// </summary>
         /// <param name="productIds"></param>
         /// <returns></returns>
-        public Task<List<ProductCollection>> ListSpecificProducts(List<string> productIds);
+        Task<List<ProductCollection>> ListSpecificProducts(List<string> productIds);
         /// <summary>
-        /// 
+        /// Update quantity from products in stock
         /// </summary>
         /// <param name="productsToAdd"></param>
         /// <returns></returns>
-        public Task<bool> UpdateQuantityForProduct(ProductCollection productsToAdd);
+        Task<bool> UpdateQuantityForProduct(ProductCollection productsToAdd);
         /// <summary>
-        /// 
+        /// Update Quantities from products
         /// </summary>
         /// <param name="listModelProducts"></param>
         /// <returns></returns>
-        public Task UpdateQuantitiesForProducts(List<WriteModel<ProductCollection>> listModelProducts);
+        Task UpdateQuantitiesForProducts(List<WriteModel<ProductCollection>> listModelProducts);
         /// <summary>
-        /// 
+        /// Filter products to to bulk update
         /// </summary>
         /// <param name="listModelProducts"></param>
         /// <param name="products"></param>
-        public void FilterToGetProduct(List<WriteModel<ProductCollection>> listModelProducts, ProductCollection products);
+        void FilterToGetProduct(List<WriteModel<ProductCollection>> listModelProducts, ProductCollection products);
         /// <summary>
-        /// 
+        /// Remove products from shopping cart
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task RemoveProductFromCartAsync(ShoppingCartCollection shoppingCart, string id);
+        Task RemoveProductFromCartAsync(ShoppingCartCollection shoppingCart, string id);
         /// <summary>
-        /// 
+        /// Add products in row into products array from shopping cart
         /// </summary>
         /// <param name="shoppingCartCollection"></param>
         /// <param name="productInCart"></param>
         /// <returns></returns>
-        public Task AddAnotherProductInCartAsync(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart);
+        Task AddAnotherProductInCartAsync(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart);
         /// <summary>
-        /// 
+        /// Update the quantity in specific object into the products array
         /// </summary>
         /// <param name="shoppingCartCollection"></param>
         /// <param name="productInCart"></param>
         /// <returns></returns>
         Task AddMoreCountOfCurrentProduct(ShoppingCartCollection shoppingCartCollection, ProductInCart productInCart);
+        /// <summary>
+        /// Create shopping cart returns whole the document created
+        /// </summary>
+        /// <param name="shoppingCartToCreate"></param>
+        /// <returns></returns>
+        Task<ShoppingCartCollection> CreateAsync(ShoppingCart shoppingCartToCreate);
     }
 }

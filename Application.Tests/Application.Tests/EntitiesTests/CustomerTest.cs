@@ -235,7 +235,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             _customerRepositoryMock.Setup(x => x.GetCustomerByIdAsync(customerOutput._id)).Returns(Task.FromResult(customerOutput));
 
             // Act
-            var result = await _customerController.Get(customerOutput._id);
+            var result = await _customerController.GetCustomerById(customerOutput._id);
             var objectResult = result as OkObjectResult;
 
             // Assert

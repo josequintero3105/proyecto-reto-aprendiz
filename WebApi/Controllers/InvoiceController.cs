@@ -2,6 +2,7 @@
 using Application.DTOs.Entries;
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
+using Core.Entities.MongoDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,8 +38,8 @@ namespace WebApi.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> Generate([FromBody] InvoiceInput body)
         {
-            Invoice invoice = await _invoiceService.GenerateInvoice(body);
-            return Ok(invoice);
+            InvoiceCollection invoice = await _handle.HandleRequestContextException(_invoiceService.Generate, body);
+            return CreatedAtAction(nameof(Generate), new { invoice._id }, invoice);
         }
     }
 }

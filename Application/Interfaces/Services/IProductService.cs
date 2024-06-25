@@ -10,31 +10,33 @@ namespace Application.Interfaces.Services
         /// <summary>
         /// Defining contract for the business logic into the product service 
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="productInput"></param>
         /// <returns></returns>
-        public Task CreateProduct(ProductInput product);
+        public Task<ProductCollection> CreateProduct(ProductInput productInput);
         /// <summary>
         /// Defining contract for the business logic into the product service
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="productInput"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public Task<ProductOutput> UpdateProduct(ProductInput product, string _id);
+        public Task<ProductOutput> UpdateProduct(ProductInput productInput, string _id);
         /// <summary>
         /// product getting by id
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         public Task<ProductOutput> GetProductById(string _id);
         /// <summary>
-        /// Get all products
+        /// List all products
         /// </summary>
         /// <returns></returns>
         public Task<List<ProductOutput>> GetAllProducts();
         /// <summary>
-        /// 
+        /// List Products Per Pagination
         /// </summary>
         /// <param name="page"></param>
+        /// <param name="size"></param>
         /// <returns></returns>
-        public Task<List<ProductInput>> GetProductsPagination(int page, int size);
+        public Task<List<ProductInput>> GetProductsPagination(string page, string size);
     }
 }

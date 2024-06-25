@@ -40,8 +40,8 @@ namespace WebApi.Controllers
         [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] CustomerInput body)
         {
-            CustomerOutput customer = await _customerService.CreateCustomer(body);
-            return Created("~/api/Customer/", customer);
+            CustomerCollection customer = await _handle.HandleRequestContextException(_customerService.CreateCustomer, body);
+            return CreatedAtAction(nameof(Create), new { customer._id }, customer);
         }
         /// <summary>
         /// Method Put Update Customer
@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] CustomerInput body, [FromQuery] string _id)
+        public async Task<IActionResult> Update([FromBody] CustomerInput body, [FromQuery] string? _id = null)
         {
             CustomerOutput customer = await _customerService.UpdateCustomerData(body, _id);
             return Created("~/api/Customer/", customer);
@@ -63,7 +63,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromQuery] string _id)
+        public async Task<IActionResult> GetCustomerById([FromQuery] string? _id = null)
         {
             var result = await _customerService.GetCustomerById(_id);
             return Ok(result);
@@ -76,7 +76,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpDelete()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Delete([FromQuery] string _id)
+        public async Task<IActionResult> Delete([FromQuery] string? _id = null)
         {
             await _handle.HandleRequestContextCatchException(_customerService.DeleteCustomer(_id));
             return Ok("Customer deleted successfully");

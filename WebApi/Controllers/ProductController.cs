@@ -45,8 +45,8 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] ProductInput body)
         {
-            await _handle.HandleRequestContextCatchException(_productService.CreateProduct(body));
-            return Created("~/api/Product/", body);
+            ProductCollection product = await _handle.HandleRequestContextException(_productService.CreateProduct, body);
+            return CreatedAtAction(nameof(Create), new { product._id}, product);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> GetById([FromQuery] string _id)
+        public async Task<IActionResult> GetProductById([FromQuery] string? _id = null)
         {
             var result = await _productService.GetProductById(_id);
             return Ok(result);
@@ -69,7 +69,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> ListProducts()
         {
             var result = await _productService.GetAllProducts();
             return Ok(result);
@@ -83,7 +83,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> GetPage([FromQuery] int page, [FromQuery] int size)
+        public async Task<IActionResult> ListAnyProducts([FromQuery] string page, [FromQuery] string size)
         {
             var result = await _productService.GetProductsPagination(page, size);
             return Ok(result);
@@ -96,7 +96,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] ProductInput body, [FromQuery] string _id)
+        public async Task<IActionResult> Update([FromBody] ProductInput body, [FromQuery] string? _id = null)
         {
             ProductOutput product = await _productService.UpdateProduct(body, _id);
             return Created("~/api/Product/", product);

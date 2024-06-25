@@ -36,7 +36,6 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="stringMongoConnection"></param>
         /// <param name="dataBaseName"></param>
-        /// <param name="collectionName"></param>
         /// <param name="mapper"></param>
         public CustomerAdapter(string stringMongoConnection, string dataBaseName, IMapper mapper)
         {
@@ -55,6 +54,17 @@ namespace Infrastructure.Services.MongoDB.Adapters
             await _context.CustomerCollection.InsertOneAsync(customerCollectionToCreate);
             return _mapper.Map<CustomerOutput>(customerToCreate);
         }
+        /// <summary>
+        /// Create customer returns new customer document in DB
+        /// </summary>
+        /// <param name="customerToCreate"></param>
+        /// <returns></returns>
+        public async Task<CustomerCollection> CreateAsync(CustomerOutput customerToCreate)
+        {
+            CustomerCollection customerCollectionToCreate = _mapper.Map<CustomerCollection>(customerToCreate);
+            await _context.CustomerCollection.InsertOneAsync(customerCollectionToCreate);
+            return customerCollectionToCreate;
+        }
 
         /// <summary>
         /// Get customer by id
@@ -68,13 +78,22 @@ namespace Infrastructure.Services.MongoDB.Adapters
             return _mapper.Map<CustomerOutput>(result.FirstOrDefault());
         }
 
+        /// <summary>
+        /// Get customer for tests returns whole the document
+        /// </summary>
+        /// <param name="customerToFind"></param>
+        /// <returns></returns>
         public CustomerCollection GetCustomer(CustomerOutput customerToFind)
         {
             CustomerCollection customerCollectionToFind = _mapper.Map<CustomerCollection>(customerToFind);
             var IdCustomerFound = Builders<CustomerCollection>.Filter.Eq("_id", ObjectId.Parse(customerCollectionToFind._id));
             return _context.CustomerCollection.Find(IdCustomerFound).FirstOrDefault();
         }
-
+        /// <summary>
+        /// Update customer data async
+        /// </summary>
+        /// <param name="customerToUpdate"></param>
+        /// <returns></returns>
         public async Task<CustomerOutput> UpdateCustomerDataAsync(CustomerOutput customerToUpdate)
         {
             CustomerCollection collectionToUpdate = _mapper.Map<CustomerCollection>(customerToUpdate);
@@ -85,24 +104,16 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Detele customer
+        /// Detele customer from DB
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
         public async Task<bool> DeleteCustomerAsync(string _id)
         {
-            
             var IdFound = Builders<CustomerCollection>.Filter.Eq(c => c._id, _id);
             var result = _context.CustomerCollection.Find(IdFound).FirstOrDefault();
-            if (result != null)
-            {
-                var resultDelete = await _context.CustomerCollection.DeleteOneAsync(IdFound);
-                return resultDelete.DeletedCount == 1;
-            }
-            else
-            {
-                return false;
-            }
+            var resultDelete = await _context.CustomerCollection.DeleteOneAsync(IdFound);
+            return resultDelete.DeletedCount == 1;
         }
     }
 }

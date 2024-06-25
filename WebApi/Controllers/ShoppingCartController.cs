@@ -37,11 +37,11 @@ namespace WebApi.Controllers
         /// <param name="body"></param>
         /// <returns></returns>
         [HttpPost()]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] ShoppingCartInput body)
         {
-            ShoppingCart shoppingCart = await _shoppingCartService.CreateShoppingCart(body);
-            return Ok(shoppingCart);
+            ShoppingCartCollection shoppingCart = await _handle.HandleRequestContextException(_shoppingCartService.CreateShoppingCart, body);
+            return CreatedAtAction(nameof(Create), new { shoppingCart._id }, shoppingCart);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Add([FromBody] ShoppingCart body)
+        public async Task<IActionResult> AddProduct([FromBody] ShoppingCart body)
         {
             await _handle.HandleRequestContextCatchException(_shoppingCartService.AddToShoppingCart(body));
             return Ok(body);
@@ -64,7 +64,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromQuery] string _id)
+        public async Task<IActionResult> GetShoppingCartById([FromQuery] string? _id = null)
         {
             var result = await _shoppingCartService.GetShoppingCartById(_id);
             return Ok(result);
@@ -76,7 +76,7 @@ namespace WebApi.Controllers
         /// <param name="body"></param>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Remove([FromBody] ShoppingCart body)
+        public async Task<IActionResult> RemoveProduct([FromBody] ShoppingCart body)
         {
             await _handle.HandleRequestContextCatchException(_shoppingCartService.RemoveFromShoppingCart(body));
             return Ok("Products removed successfully");

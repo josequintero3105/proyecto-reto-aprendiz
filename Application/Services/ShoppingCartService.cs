@@ -49,15 +49,15 @@ namespace Application.Services
         /// <param name="shoppingCartInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<ShoppingCart> CreateShoppingCart(ShoppingCartInput shoppingCartInput)
+        public async Task<ShoppingCartCollection> CreateShoppingCart(ShoppingCartInput shoppingCartInput)
         {
             try
             {
                 ShoppingCart shoppingCart = new ShoppingCart();
                 shoppingCart.ProductsInCart = shoppingCartInput.ProductsInCart;
-
+                shoppingCart.Active = true;
                 await GetAtLeastOneProduct(shoppingCart);
-                return await _shoppingCartRepository.CreateShoppingCartAsync(shoppingCart);
+                return await _shoppingCartRepository.CreateAsync(shoppingCart);
             }
             catch (BusinessException bex)
             {
@@ -83,9 +83,11 @@ namespace Application.Services
         {
             try
             {
-
-                ShoppingCart shoppingCartToGet = await _shoppingCartRepository.GetShoppingCartAsync(_id);
-                return shoppingCartToGet;
+                if (!String.IsNullOrEmpty(_id))
+                    return await _shoppingCartRepository.GetShoppingCartAsync(_id);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
+                    nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull));
             }
             catch (BusinessException bex)
             {
@@ -152,18 +154,59 @@ namespace Application.Services
             foreach (var products in specificProducts)
             {
                 resultCart.PriceTotal = CalculateTotal(shoppingCart, products, resultCart.PriceTotal);
-                productInCart = GetObjectForArray(shoppingCart, products);
+                productInCart = GetObjectFromArray(shoppingCart, products);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
-                if (!resultCart.ProductsInCart.Any(p => p._id == productInCart._id))
-                    await _shoppingCartRepository.AddAnotherProductInCartAsync(resultCart, productInCart);
-                else
-                {
-                    await _shoppingCartRepository.AddMoreCountOfCurrentProduct(resultCart, productInCart);
-                }  
+                await SearchIfExistsAProductInCart(resultCart, shoppingCart, productInCart, products);
             }
             await ConfirmChangeTotalPrice(listModelProducts, shoppingCart, resultCart);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shoppingCartCollection"></param>
+        /// <param name="shoppingCart"></param>
+        /// <param name="productInCart"></param>
+        /// <param name="productCollection"></param>
+        /// <returns></returns>
+        private async Task SearchIfExistsAProductInCart(ShoppingCartCollection shoppingCartCollection, ShoppingCart shoppingCart, 
+            ProductInCart productInCart, ProductCollection productCollection)
+        {
+            if (shoppingCart._id != null)
+            {
+                if (!shoppingCartCollection.ProductsInCart.Any(p => p._id == productInCart._id))
+                    await _shoppingCartRepository.AddAnotherProductInCartAsync(shoppingCartCollection, productInCart);
+                else
+                {
+                    productInCart.QuantityInCart = GetNewCountForCurrentProduct(shoppingCart, shoppingCartCollection, productCollection);
+                    await _shoppingCartRepository.AddMoreCountOfCurrentProduct(shoppingCartCollection, productInCart);
+                }
+            }
+            else
+                await _shoppingCartRepository.AddAnotherProductInCartAsync(shoppingCartCollection, productInCart);
+        }
+        /// <summary>
+        /// Get New Count For Current Product
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartCollection"></param>
+        /// <param name="products"></param>
+        /// <returns></returns>
+        private int GetNewCountForCurrentProduct(ShoppingCart shoppingCart, ShoppingCartCollection shoppingCartCollection, ProductCollection products)
+        {
+            var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+            var productObjectToFind = shoppingCartCollection.ProductsInCart.First(s => s._id == products._id); 
+            products.Quantity -= productToAdd.QuantityInCart;
+            productToAdd.QuantityInCart += productObjectToFind.QuantityInCart;
+            return productToAdd.QuantityInCart;
+        }
 
+        /// <summary>
+        /// Confirm Change From Total Price
+        /// </summary>
+        /// <param name="listModelProducts"></param>
+        /// <param name="shoppingCart"></param>
+        /// <param name="resultCart"></param>
+        /// <returns></returns>
         private async Task ConfirmChangeTotalPrice(List<WriteModel<ProductCollection>> listModelProducts, ShoppingCart shoppingCart, ShoppingCartCollection resultCart)
         {
             await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
@@ -177,7 +220,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// 
+        /// Define If Shopping Cart Is New Or Not
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
@@ -190,13 +233,13 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// 
+        /// Get Object Of Product From Array
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <param name="products"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private ProductInCart GetObjectForArray(ShoppingCart shoppingCart, ProductCollection products)
+        private ProductInCart GetObjectFromArray(ShoppingCart shoppingCart, ProductCollection products)
         {
             try
             {
@@ -218,7 +261,7 @@ namespace Application.Services
                     nameof(GateWayBusinessException.NotControlledException));
             }
         }
-
+        
         /// <summary>
         /// business logic for calculate
         /// </summary>
@@ -339,17 +382,17 @@ namespace Application.Services
                 PriceTotal -= productToAdd.QuantityInCart * products.Price;
                 return PriceTotal;
             }
-            catch (InvalidOperationException ex)
+            catch (BusinessException bex)
             {
-                _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message} getting product in cart",
+                    bex.Code, bex.Message);
+                    throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                throw new BusinessException(nameof(GateWayBusinessException.ProductNotExistsInTheCart),
+                    nameof(GateWayBusinessException.ProductNotExistsInTheCart));
             }
         }
 

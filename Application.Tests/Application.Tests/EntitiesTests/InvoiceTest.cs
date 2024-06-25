@@ -46,7 +46,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         {
             // Arrange
             InvoiceInput invoice = InvoiceHelperModel.GetInvoiceFromCreation();
-            Invoice invoiceOutput = new Invoice();
+            InvoiceOutput invoiceOutput = new InvoiceOutput();
             _invoiceRepositoryMock.Setup(x => x.GenerateInvoiceAsync(invoiceOutput))
                 .ReturnsAsync(invoiceOutput).Verifiable();
 
@@ -54,7 +54,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             await _invoiceService.GenerateInvoice(invoice);
 
             // Assert
-            Assert.IsType<Invoice>(invoice);
+            Assert.IsType<InvoiceOutput>(invoice);
         }
 
         [Fact]
