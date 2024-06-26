@@ -47,7 +47,7 @@ public enum GateWayBusinessException
     ShoppingCartIdIsNotValid = 409,
 
     [Description("Product Count Cannot Be Less")]
-    ProductCountCannotBeLess = 410,
+    ProductCountNotValid = 410,
 
     [Description("Customer Id Is Not Valid")]
     CustomerIdIsNotValid = 411,
@@ -120,4 +120,10 @@ public enum GateWayBusinessException
 
     [Description("Product Not Exists In The Cart")]
     ProductNotExistsInTheCart = 434,
+
+    [Description("Invoice Id Cannot Be Null")]
+    InvoiceIdCannotBeNull = 435,
+
+    [Description("Invoice Id Is Invalid")]
+    InvoiceIdIsNotValid = 435,
 }

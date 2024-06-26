@@ -216,7 +216,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Add product to shopping cart
+        /// Empty the shopping cart after generate an invoice
         /// </summary>
         /// <param name="shoppingCartToFind"></param>
         /// <returns></returns>

@@ -309,14 +309,14 @@ namespace Application.Tests.Application.Tests.Services
         [Fact]
         public async void ListProducts_When_ProductListIsFound_ExpectsResultList()
         {
-            // Assert
+            // Arrange
             List<ProductOutput> products = ProductHelperModel.ListAllProducts();
             _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
 
             // Act
             await _productService.GetAllProducts();
 
-            // Arrange
+            // Assert
             Assert.IsType<List<ProductOutput>>(products);
         }
 

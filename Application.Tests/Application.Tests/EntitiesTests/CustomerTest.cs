@@ -190,7 +190,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         }
 
         [Fact]
-        public async void GetCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
+        public async void DeleteCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
         {
             // Arrange
             CustomerOutput customer = CustomerHelperModel.GetCustomerFromMongo();

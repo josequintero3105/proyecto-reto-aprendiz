@@ -22,5 +22,11 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <param name="InvoiceToCreate"></param>
         /// <returns></returns>
         Task<InvoiceCollection> GenerateAsync(InvoiceOutput InvoiceToCreate);
+        /// <summary>
+        /// Delete an invoice async
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        Task<bool> DeleteInvoiceAsync(string _id);
     }
 }

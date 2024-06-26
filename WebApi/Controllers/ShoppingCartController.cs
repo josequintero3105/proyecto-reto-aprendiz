@@ -51,10 +51,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> AddProduct([FromBody] ShoppingCart body)
+        public async Task<IActionResult> AddProductToCart([FromBody] ShoppingCartInput body, [FromQuery] string? _id = null)
         {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.AddToShoppingCart(body));
-            return Ok(body);
+            ShoppingCart shoppingCart = await _shoppingCartService.AddToShoppingCart(body, _id);
+            return Ok(shoppingCart);
         }
 
         /// <summary>
@@ -76,9 +76,9 @@ namespace WebApi.Controllers
         /// <param name="body"></param>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> RemoveProduct([FromBody] ShoppingCart body)
+        public async Task<IActionResult> RemoveProductFromCart([FromBody] ShoppingCartInput body, [FromQuery] string? _id = null)
         {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.RemoveFromShoppingCart(body));
+            await _handle.HandleRequestContextCatchException(_shoppingCartService.RemoveFromShoppingCart(body, _id));
             return Ok("Products removed successfully");
         }
     }

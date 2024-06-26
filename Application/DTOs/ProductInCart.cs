@@ -11,6 +11,6 @@ namespace Application.DTOs
         public string? _id { get; set; }
         public string? Name { get; set; }
         public double UnitPrice { get; set; }
-        public int QuantityInCart { get; set; }
+        public double QuantityInCart { get; set; }
     }
 }

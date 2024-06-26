@@ -31,6 +31,6 @@ namespace Core.Entities.MongoDB
         /// Quantity
         /// </summary>
         [BsonElement("QuantityInCart")]
-        public int QuantityInCart { get; set; }
+        public double QuantityInCart { get; set; }
     }
 }

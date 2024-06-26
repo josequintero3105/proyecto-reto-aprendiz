@@ -14,32 +14,34 @@ namespace Application.Interfaces.Services
         /// <summary>
         /// Create shopping cart
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartInput"></param>
         /// <returns></returns>
-        public Task<ShoppingCartCollection> CreateShoppingCart(ShoppingCartInput shoppingCart);
+        Task<ShoppingCartCollection> CreateShoppingCart(ShoppingCartInput shoppingCartInput);
         /// <summary>
         /// Get shopping cart by id
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public Task<ShoppingCart> GetShoppingCartById(string _id);
+        Task<ShoppingCart> GetShoppingCartById(string _id);
         /// <summary>
         /// Get shopping collection from mongo
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public Task<bool> GetShoppingCartCollectionMongo(string _id);
+        Task<bool> GetShoppingCartCollectionMongo(string _id);
         /// <summary>
         /// Add products from shopping cart
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartInput"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public Task AddToShoppingCart(ShoppingCart shoppingCart);
+        Task<ShoppingCart> AddToShoppingCart(ShoppingCartInput shoppingCartInput, string _id);
         /// <summary>
         /// Remove products from shopping cart
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartInput"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public Task RemoveFromShoppingCart(ShoppingCart shoppingCart);
+        Task<ShoppingCart> RemoveFromShoppingCart(ShoppingCartInput shoppingCartInput, string _id);
     }
 }

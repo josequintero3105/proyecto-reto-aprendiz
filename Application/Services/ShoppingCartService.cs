@@ -16,7 +16,6 @@ using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
@@ -53,9 +52,11 @@ namespace Application.Services
         {
             try
             {
-                ShoppingCart shoppingCart = new ShoppingCart();
-                shoppingCart.ProductsInCart = shoppingCartInput.ProductsInCart;
-                shoppingCart.Active = true;
+                ShoppingCart shoppingCart = new()
+                {
+                    ProductsInCart = shoppingCartInput.ProductsInCart,
+                    Active = true
+                };
                 await GetAtLeastOneProduct(shoppingCart);
                 return await _shoppingCartRepository.CreateAsync(shoppingCart);
             }
@@ -63,7 +64,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                throw new BusinessException(bex.Message, bex.Code);
+                    throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -126,17 +127,17 @@ namespace Application.Services
                 var specificProducts = await _shoppingCartRepository.ListSpecificProducts(productIds);
                 return specificProducts;
             }
-            catch (NullReferenceException ex)
+            catch (BusinessException bex)
             {
-                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.ObjectCannotBeEmpty),
-                    nameof(GateWayBusinessException.ObjectCannotBeEmpty));
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                    throw new BusinessException(bex.Message, bex.Code);
             }
-            catch (FormatException ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.ObjectCannotBeEmpty),
-                    nameof(GateWayBusinessException.ObjectCannotBeEmpty));
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
+                    nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
         }
 
@@ -158,10 +159,11 @@ namespace Application.Services
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
                 await SearchIfExistsAProductInCart(resultCart, shoppingCart, productInCart, products);
             }
+            shoppingCart.ProductsInCart.RemoveAll(x => x.Name == null);
             await ConfirmChangeTotalPrice(listModelProducts, shoppingCart, resultCart);
         }
         /// <summary>
-        /// 
+        /// Search if exists a product in cart
         /// </summary>
         /// <param name="shoppingCartCollection"></param>
         /// <param name="shoppingCart"></param>
@@ -195,9 +197,9 @@ namespace Application.Services
         {
             var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
             var productObjectToFind = shoppingCartCollection.ProductsInCart.First(s => s._id == products._id); 
-            products.Quantity -= productToAdd.QuantityInCart;
+            products.Quantity -= (int)productToAdd.QuantityInCart;
             productToAdd.QuantityInCart += productObjectToFind.QuantityInCart;
-            return productToAdd.QuantityInCart;
+            return (int)productToAdd.QuantityInCart;
         }
 
         /// <summary>
@@ -248,17 +250,17 @@ namespace Application.Services
                 productToAdd.UnitPrice = products.Price;
                 return productToAdd;
             }
-            catch (InvalidOperationException ex)
+            catch (BusinessException bex)
             {
-                _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
+                    nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
         }
         
@@ -276,29 +278,29 @@ namespace Application.Services
                 var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
                 if (products.Quantity >= productToAdd.QuantityInCart
                     && productToAdd.QuantityInCart > 0
-                    && productToAdd.QuantityInCart < 20)
+                    && productToAdd.QuantityInCart < Int32.MaxValue)
                 {
-                    products.Quantity -= productToAdd.QuantityInCart;
+                    products.Quantity -= (int)productToAdd.QuantityInCart;
                     PriceTotal += productToAdd.QuantityInCart * products.Price;
                     return PriceTotal;
                 }
                 else
                 {
-                    throw new BusinessException(nameof(GateWayBusinessException.ProductCountCannotBeLess),
-                    nameof(GateWayBusinessException.ProductCountCannotBeLess));
+                    throw new BusinessException(nameof(GateWayBusinessException.ProductCountNotValid),
+                    nameof(GateWayBusinessException.ProductCountNotValid));
                 }
             }
-            catch (BusinessException ex)
+            catch (BusinessException bex)
             {
-                _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                throw new BusinessException(nameof(GateWayBusinessException.ProductCountNotValid),
+                    nameof(GateWayBusinessException.ProductCountNotValid));
             }
         }
 
@@ -321,24 +323,46 @@ namespace Application.Services
         /// <summary>
         /// public access method
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartInput"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task AddToShoppingCart(ShoppingCart shoppingCart)
+        public async Task<ShoppingCart> AddToShoppingCart(ShoppingCartInput shoppingCartInput, string _id)
         {
             try
             {
-                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-                var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-                if (result != null)
-                    await GetAtLeastOneProduct(shoppingCart);
+                if (!String.IsNullOrEmpty(_id))
+                {
+                    ShoppingCart shoppingCart = new()
+                    {
+                        _id = _id,
+                        ProductsInCart = shoppingCartInput.ProductsInCart
+                    };
+                    await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
+                    var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                    if (result != null)
+                    {
+                        await GetAtLeastOneProduct(shoppingCart);
+                        return await _shoppingCartRepository.GetShoppingCartAsync(_id);
+                    }
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                            nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
-                        nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
+                            nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull));
+
             }
-            catch (FormatException ex)
+            catch (BusinessException bex)
             {
-                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                    throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
                     nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
             }
@@ -377,14 +401,14 @@ namespace Application.Services
         {
             try
             {
-                var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
-                products.Quantity += productToAdd.QuantityInCart;
-                PriceTotal -= productToAdd.QuantityInCart * products.Price;
+                var productToRemove = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+                products.Quantity += (int)productToRemove.QuantityInCart;
+                PriceTotal -= productToRemove.QuantityInCart * products.Price;
                 return PriceTotal;
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} getting product in cart",
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}",
                     bex.Code, bex.Message);
                     throw new BusinessException(bex.Message, bex.Code);
             }
@@ -399,24 +423,45 @@ namespace Application.Services
         /// <summary>
         /// public access method
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="shoppingCartInput"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task RemoveFromShoppingCart(ShoppingCart shoppingCart)
+        public async Task<ShoppingCart> RemoveFromShoppingCart(ShoppingCartInput shoppingCartInput, string _id)
         {
             try
             {
-                await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
-                var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-                if (result != null && result.ProductsInCart.Count > 0)
-                    await LogicRemoveFromShoppingCart(shoppingCart);
+                if (!String.IsNullOrEmpty(_id))
+                {
+                    ShoppingCart shoppingCart = new()
+                    {
+                        _id = _id,
+                        ProductsInCart = shoppingCartInput.ProductsInCart
+                    };
+                    await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
+                    var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+                    if (result != null && result.ProductsInCart.Count > 0)
+                    {
+                        await LogicRemoveFromShoppingCart(shoppingCart);
+                        return await _shoppingCartRepository.GetShoppingCartAsync(_id);
+                    }
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                            nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
-                        nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
+                        nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull));
             }
-            catch (FormatException ex)
+            catch (BusinessException bex)
             {
-                _logger.LogError(ex, "Error: {message} getting products list", ex.Message);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                    throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
                     nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
             }

@@ -23,5 +23,11 @@ namespace Application.Interfaces.Services
         /// <param name="invoiceInput"></param>
         /// <returns></returns>
         Task<InvoiceCollection> Generate(InvoiceInput invoiceInput);
+        /// <summary>
+        /// Delete an invoice
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        Task DeleteInvoice(string _id);
     }
 }

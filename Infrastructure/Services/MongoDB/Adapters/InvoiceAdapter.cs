@@ -65,5 +65,17 @@ namespace Infrastructure.Services.MongoDB.Adapters
             await _context.InvoiceCollection.InsertOneAsync(invoiceCollectionToCreate);
             return invoiceCollectionToCreate;
         }
+        /// <summary>
+        /// Detele an invoice from DB
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        public async Task<bool> DeleteInvoiceAsync(string _id)
+        {
+            var IdFound = Builders<InvoiceCollection>.Filter.Eq(c => c._id, _id);
+            var result = _context.InvoiceCollection.Find(IdFound).FirstOrDefault();
+            var resultDelete = await _context.InvoiceCollection.DeleteOneAsync(IdFound);
+            return resultDelete.DeletedCount == 1;
+        }
     }
 }

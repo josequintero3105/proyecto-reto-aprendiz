@@ -84,5 +84,21 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
         }
+
+        [Fact]
+        public async void DeleteCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
+        {
+            // Arrange
+            CustomerOutput customer = CustomerHelperModel.GetCustomerFromMongo();
+            customer._id = "";
+            _customerRepositoryMock.Setup(x => x.DeleteCustomerAsync(customer._id)).ReturnsAsync(false).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _invoiceService.DeleteInvoice(customer._id));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
     }
 }

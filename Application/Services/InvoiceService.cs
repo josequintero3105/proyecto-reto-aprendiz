@@ -42,7 +42,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Private method controls the process of create a shopping cart
+        /// Generate a new invoice for tests
         /// </summary>
         /// <param name="invoiceInput"></param>
         /// <returns></returns>
@@ -119,6 +119,8 @@ namespace Application.Services
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
+                    shoppingCart.Active = true;
+                    await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                     return await _invoiceRepository.GenerateAsync(invoice);
                 }
                 else
@@ -136,6 +138,35 @@ namespace Application.Services
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException));
+            }
+        }
+        /// <summary>
+        /// Delete an invoice
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        public async Task DeleteInvoice(string _id)
+        {
+            try
+            {
+                if (!String.IsNullOrEmpty(_id))
+                    await _invoiceRepository.DeleteInvoiceAsync(_id);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.InvoiceIdCannotBeNull),
+                    nameof(GateWayBusinessException.InvoiceIdCannotBeNull));
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.InvoiceIdIsNotValid),
+                    nameof(GateWayBusinessException.InvoiceIdIsNotValid));
             }
         }
     }
