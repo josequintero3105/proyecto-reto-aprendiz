@@ -43,7 +43,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Private method controls the process of create a product
+        /// Create a product
         /// </summary>
         /// <param name="productInput"></param>
         /// <returns></returns>
@@ -86,7 +86,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Private method controls to get a product by id
+        /// Get a product by id
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
@@ -116,15 +116,15 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Private method controls to list all products
+        /// List All Products
         /// </summary>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<List<ProductOutput>> GetAllProducts()
+        public async Task<List<ProductOutput>> ListProducts()
         {
             try
             {
-                List<ProductOutput> productsList = await _productRepository.GetAllProductsAsync();
+                List<ProductOutput> productsList = await _productRepository.ListProductsAsync();
                 return productsList.Count == 0 ? throw new BusinessException(
                     nameof(GateWayBusinessException.ProductListCannotBeNull),
                     nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;
@@ -152,13 +152,13 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Private method controls to get a product from pages
+        /// List Products Per Pages
         /// </summary>
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<List<ProductInput>> GetProductsPagination(string page, string size)
+        public async Task<List<ProductOutput>> ListProductsPerPage(string page, string size)
         {
             try
             {
@@ -166,7 +166,7 @@ namespace Application.Services
                 {
                     int pageInt = Convert.ToInt32(page);
                     int sizeInt = Convert.ToInt32(size);
-                    List<ProductInput> productsList = await _productRepository.GetProductsPaginationAsync(pageInt, sizeInt);
+                    List<ProductOutput> productsList = await _productRepository.ListProductsPerPageAsync(pageInt, sizeInt);
                     return productsList.Count == 0 ? throw new BusinessException(
                         nameof(GateWayBusinessException.ProductListCannotBeNull),
                         nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;

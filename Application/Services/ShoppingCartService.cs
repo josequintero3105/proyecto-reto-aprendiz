@@ -142,7 +142,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// This method contains the foreach loop
+        /// Logic For Each Product
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
@@ -154,13 +154,15 @@ namespace Application.Services
             var listModelProducts = new List<WriteModel<ProductCollection>>();
             foreach (var products in specificProducts)
             {
+                if (!GetCorrectQuantity(shoppingCart, products))
+                    continue;
                 resultCart.PriceTotal = CalculateTotal(shoppingCart, products, resultCart.PriceTotal);
                 productInCart = GetObjectFromArray(shoppingCart, products);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
                 await SearchIfExistsAProductInCart(resultCart, shoppingCart, productInCart, products);
+                await ConfirmChanges(listModelProducts, shoppingCart, resultCart);
             }
             shoppingCart.ProductsInCart.RemoveAll(x => x.Name == null);
-            await ConfirmChangeTotalPrice(listModelProducts, shoppingCart, resultCart);
         }
         /// <summary>
         /// Search if exists a product in cart
@@ -203,13 +205,13 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Confirm Change From Total Price
+        /// Confirm changes for total price and quantities
         /// </summary>
         /// <param name="listModelProducts"></param>
         /// <param name="shoppingCart"></param>
         /// <param name="resultCart"></param>
         /// <returns></returns>
-        private async Task ConfirmChangeTotalPrice(List<WriteModel<ProductCollection>> listModelProducts, ShoppingCart shoppingCart, ShoppingCartCollection resultCart)
+        private async Task ConfirmChanges(List<WriteModel<ProductCollection>> listModelProducts, ShoppingCart shoppingCart, ShoppingCartCollection resultCart)
         {
             await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
             if (shoppingCart._id != null)
@@ -220,9 +222,9 @@ namespace Application.Services
             }
             shoppingCart.PriceTotal = resultCart.PriceTotal;
         }
-
+        
         /// <summary>
-        /// Define If Shopping Cart Is New Or Not
+        /// Define if shopping cart is new or not
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
@@ -265,7 +267,7 @@ namespace Application.Services
         }
         
         /// <summary>
-        /// business logic for calculate
+        /// Calculate Total For Pay
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <param name="products"></param>
@@ -276,19 +278,9 @@ namespace Application.Services
             try
             {
                 var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
-                if (products.Quantity >= productToAdd.QuantityInCart
-                    && productToAdd.QuantityInCart > 0
-                    && productToAdd.QuantityInCart < Int32.MaxValue)
-                {
-                    products.Quantity -= (int)productToAdd.QuantityInCart;
-                    PriceTotal += productToAdd.QuantityInCart * products.Price;
-                    return PriceTotal;
-                }
-                else
-                {
-                    throw new BusinessException(nameof(GateWayBusinessException.ProductCountNotValid),
-                    nameof(GateWayBusinessException.ProductCountNotValid));
-                }
+                products.Quantity -= (int)productToAdd.QuantityInCart;
+                PriceTotal += productToAdd.QuantityInCart * products.Price;
+                return PriceTotal;
             }
             catch (BusinessException bex)
             {
@@ -302,6 +294,20 @@ namespace Application.Services
                 throw new BusinessException(nameof(GateWayBusinessException.ProductCountNotValid),
                     nameof(GateWayBusinessException.ProductCountNotValid));
             }
+        }
+        /// <summary>
+        /// Get correct quantity
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <param name="products"></param>
+        /// <returns></returns>
+        private static bool GetCorrectQuantity(ShoppingCart shoppingCart, ProductCollection products)
+        {
+            var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+            if (products.Quantity >= productToAdd.QuantityInCart && productToAdd.QuantityInCart > 0 && productToAdd.QuantityInCart < Int32.MaxValue)
+                return true;
+            else
+                return false;
         }
 
         /// <summary>
@@ -321,7 +327,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// public access method
+        /// Add product to shopping cart
         /// </summary>
         /// <param name="shoppingCartInput"></param>
         /// <param name="_id"></param>
@@ -369,7 +375,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Control to delete a product from the cart
+        /// logic for remove a product from shopping cart
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <exception cref="BusinessException"></exception>
@@ -380,18 +386,16 @@ namespace Application.Services
             var listModelProducts = new List<WriteModel<ProductCollection>>();
             foreach (var products in specificProducts)
             {
+                if (!resultCart.ProductsInCart.Any(p => p._id == products._id))
+                    continue;
                 resultCart.PriceTotal = DiscountTotalPrice(resultCart, products, resultCart.PriceTotal);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
                 await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id);
+                await ConfirmChanges(listModelProducts, shoppingCart, resultCart);
             }
-            var resultShopping = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-            await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
-            resultShopping.PriceTotal = resultCart.PriceTotal;
-            await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(resultShopping);
         }
-
         /// <summary>
-        /// Discount total price from cart
+        /// Discount total price for pay
         /// </summary>
         /// <param name="shoppingCart"></param>
         /// <param name="products"></param>
@@ -421,7 +425,7 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// public access method
+        /// Remove a product from shopping cart
         /// </summary>
         /// <param name="shoppingCartInput"></param>
         /// <param name="_id"></param>
@@ -446,8 +450,8 @@ namespace Application.Services
                         return await _shoppingCartRepository.GetShoppingCartAsync(_id);
                     }
                     else
-                        throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
-                            nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                        throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
+                            nameof(GateWayBusinessException.NotProductsInCart));
                 }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),

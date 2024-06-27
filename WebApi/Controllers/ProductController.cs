@@ -63,7 +63,7 @@ namespace WebApiHttp.Controllers
         }
 
         /// <summary>
-        /// Method Get Product
+        /// Method List Products
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>
@@ -71,7 +71,7 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> ListProducts()
         {
-            var result = await _productService.GetAllProducts();
+            var result = await _productService.ListProducts();
             return Ok(result);
         }
 
@@ -85,7 +85,7 @@ namespace WebApiHttp.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> ListAnyProducts([FromQuery] string page, [FromQuery] string size)
         {
-            var result = await _productService.GetProductsPagination(page, size);
+            var result = await _productService.ListProductsPerPage(page, size);
             return Ok(result);
         }
 

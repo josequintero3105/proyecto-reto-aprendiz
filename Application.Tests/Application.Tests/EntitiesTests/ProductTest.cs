@@ -311,10 +311,10 @@ namespace Application.Tests.Application.Tests.Services
         {
             // Arrange
             List<ProductOutput> products = ProductHelperModel.ListAllProducts();
-            _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
+            _productRepositoryMock.Setup(x => x.ListProductsAsync()).ReturnsAsync(products).Verifiable();
 
             // Act
-            await _productService.GetAllProducts();
+            await _productService.ListProducts();
 
             // Assert
             Assert.IsType<List<ProductOutput>>(products);
@@ -325,11 +325,11 @@ namespace Application.Tests.Application.Tests.Services
         {
             // Arrange
             List<ProductOutput> products = ProductHelperModel.ListAllProductsIsEmpty();
-            _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
+            _productRepositoryMock.Setup(x => x.ListProductsAsync()).ReturnsAsync(products).Verifiable();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _productService.GetAllProducts());
+                (async () => await _productService.ListProducts());
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());            

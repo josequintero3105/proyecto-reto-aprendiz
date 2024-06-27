@@ -85,23 +85,23 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// Get Product By Id
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ProductOutput>> GetAllProductsAsync()
+        public async Task<List<ProductOutput>> ListProductsAsync()
         {
             var result = await _context.ProductCollection.FindAsync(Builders<ProductCollection>.Filter.Eq(x => x.State, true));
             return _mapper.Map<List<ProductOutput>>(result.ToList());
         }
 
         /// <summary>
-        /// Get Products for pages
+        /// Get Products per pages
         /// </summary>
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public async Task<List<ProductInput>> GetProductsPaginationAsync(int page, int size)
+        public async Task<List<ProductOutput>> ListProductsPerPageAsync(int page, int size)
         {
             var result = await _context.ProductCollection.Find(Builders<ProductCollection>.Filter.Eq(x => x.State, true))
                 .Skip((page - 1) * size).Limit(size).ToListAsync();
-            return _mapper.Map<List<ProductInput>>(result.ToList());
+            return _mapper.Map<List<ProductOutput>>(result.ToList());
         }
 
         /// <summary>

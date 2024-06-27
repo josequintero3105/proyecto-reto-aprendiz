@@ -34,14 +34,14 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// List All Products
         /// </summary>
         /// <returns></returns>
-        Task<List<ProductOutput>> GetAllProductsAsync();
+        Task<List<ProductOutput>> ListProductsAsync();
         /// <summary>
         /// List Products Per Pagination
         /// </summary>
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public Task<List<ProductInput>> GetProductsPaginationAsync(int page, int size);
+        public Task<List<ProductOutput>> ListProductsPerPageAsync(int page, int size);
         /// <summary>
         /// Create customer returns whole the document
         /// </summary>

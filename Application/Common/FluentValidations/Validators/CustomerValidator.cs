@@ -70,7 +70,7 @@ namespace Application.Common.FluentValidations.Validators
                 .MaximumLength(20)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerPhoneCannotBeVeryLong).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerPhoneCannotBeVeryLong))
-                .Matches("^[a-zA-Z0-9 ]+$")
+                .Matches("^[0-9]+$")
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
                 .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
         }
