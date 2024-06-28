@@ -34,6 +34,9 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         private readonly Mock<ICustomerRepository> _customerRepositoryMock = new();
         private readonly Mock<ILogger<InvoiceService>> _loggerMock = new();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public InvoiceTest() 
         {
             _invoiceRepositoryMock = new Mock<IInvoiceRepository>();

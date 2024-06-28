@@ -59,71 +59,65 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         }
 
         [Fact]
-        public async Task CreateShoppingCart_Then_ExpectsResultEqualShoppingCart()
+        public async Task CreateShoppingCart_Then_ExpectsBussinessException()
         {
             // Arrange
-            ShoppingCartInput shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
-            ShoppingCart shoppingCartOutPut = new ShoppingCart();
-            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCartOutPut))
-                .ReturnsAsync(shoppingCartOutPut).Verifiable();
+            ShoppingCartInput shoppingCartInput = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            List<string> strings = ShoppingCartHelperModel.GetProductIds();
+            List<WriteModel<ProductCollection>> writeModels = ShoppingCartHelperModel.writeModels();
+            List<ProductCollection> productCollections = ShoppingCartHelperModel.productCollections();
+            ShoppingCartCollection shoppingCartCollection = ShoppingCartHelperModel.GetShoppingCartCollectionFromMongo();
+            ProductInCart productInCart = ShoppingCartHelperModel.productInCart();
+            ShoppingCart shoppingCartOutPut = new()
+            {
+                ProductsInCart = shoppingCartInput.ProductsInCart
+            };
+            _shoppingCartRepositoryMock.Setup(x => x.ListSpecificProducts(strings)).Verifiable();
+            _shoppingCartRepositoryMock.Setup(x => x.FilterToGetProduct(writeModels, productCollections[0])).Verifiable();
+            _shoppingCartRepositoryMock.Setup(x => x.AddAnotherProductInCartAsync(shoppingCartCollection, productInCart)).Verifiable();
+            _shoppingCartRepositoryMock.Setup(x => x.UpdateQuantityForProduct(productCollections[0])).Verifiable();
+            _shoppingCartRepositoryMock.Setup(x => x.UpdatePriceTotalFromShoppingCart(shoppingCartCollection)).Verifiable();
+            _shoppingCartRepositoryMock.Setup(x => x.CreateAsync(shoppingCartOutPut)).Verifiable();
 
             // Act
-            await _shoppingCartService.CreateShoppingCart(shoppingCart);
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.CreateShoppingCart(shoppingCartInput));
 
             // Assert
-            Assert.IsType<ShoppingCartInput>(shoppingCart);
+            Assert.Equal(typeof(BusinessException), result.GetType());
         }
 
         [Fact]
-        public async Task CreateShoppingCart_Then_ResultCartIsNotNull()
+        public async Task CreateShoppingCart_WhenProductListIsNull_Then_ExpectsBusinessException()
         {
             // Arrange
-            ShoppingCartInput shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            ShoppingCartInput shoppingCartInput = ShoppingCartHelperModel.GetShoppingCartForCreation();
             ShoppingCart shoppingCartOutPut = new ShoppingCart();
             _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCartOutPut))
                 .ReturnsAsync(shoppingCartOutPut).Verifiable();
 
             // Act
-            await _shoppingCartService.CreateShoppingCart(shoppingCart);
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.CreateShoppingCart(shoppingCartInput));
 
             // Assert
-            Assert.NotNull(shoppingCart);
+            Assert.Equal(typeof(BusinessException), result.GetType());
         }
 
         [Fact]
         public async Task CreateShoppingCart_Then_ExpectsVerifyCreation()
         {
             // Arrange
-            ShoppingCartInput shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            ShoppingCartInput shoppingCartInput = ShoppingCartHelperModel.GetShoppingCartForCreation();
             _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(It.Is<ShoppingCart>
-                (x => x.ProductsInCart == shoppingCart.ProductsInCart
-               
-                ))).Verifiable();
+                (x => x.ProductsInCart == shoppingCartInput.ProductsInCart))).Verifiable();
 
             // Act
-            await _shoppingCartService.CreateShoppingCart(shoppingCart);
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.CreateShoppingCart(shoppingCartInput));
 
             // Assert
-            _shoppingCartRepositoryMock.Verify();
-        }
-
-        [Fact]
-        public async Task CreateShoppingCart_When_ResponseIsCorrect_Then_ExpectsResponseOk()
-        {
-            // Arrange
-            var shoppingCart = ShoppingCartHelperModel.GetShoppingCartForCreation();
-            ShoppingCart shoppingCartOutPut = new ShoppingCart();
-            _shoppingCartController.ControllerContext.RouteData.Values.Add("action", "Post");
-            _shoppingCartRepositoryMock.Setup(x => x.CreateShoppingCartAsync(shoppingCartOutPut))
-                .Returns(Task.FromResult(shoppingCartOutPut));
-
-            // Act
-            var result = await _shoppingCartController.Create(shoppingCart);
-            var objectResult = result as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal((int)HttpStatusCode.OK, objectResult?.StatusCode);
+            Assert.Equal(typeof(BusinessException), result.GetType());
         }
 
         [Fact]

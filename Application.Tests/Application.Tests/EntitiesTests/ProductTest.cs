@@ -164,7 +164,7 @@ namespace Application.Tests.Application.Tests.Services
                 .ReturnsAsync(product).Verifiable();
 
             // Act
-            await _productController.Create(product);
+            await _productService.CreateProduct(product);
 
             // Assert
             Assert.True(product.Price == 0);

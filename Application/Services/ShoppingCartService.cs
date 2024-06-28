@@ -316,7 +316,7 @@ namespace Application.Services
         /// <param name="shoppingCart"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        private async Task GetAtLeastOneProduct(ShoppingCart shoppingCart)
+        public async Task GetAtLeastOneProduct(ShoppingCart shoppingCart)
         {
             var specificProducts = await ListProductCollections(shoppingCart);
             if (specificProducts.Count > 0)

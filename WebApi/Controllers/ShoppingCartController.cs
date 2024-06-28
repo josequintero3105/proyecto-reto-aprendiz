@@ -78,8 +78,8 @@ namespace WebApi.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> RemoveProductFromCart([FromBody] ShoppingCartInput body, [FromQuery] string? _id = null)
         {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.RemoveFromShoppingCart(body, _id));
-            return Ok("Products removed successfully");
+            ShoppingCart shoppingCart = await _shoppingCartService.RemoveFromShoppingCart(body, _id);
+            return Ok(shoppingCart);
         }
     }
 }
