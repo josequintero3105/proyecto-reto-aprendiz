@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Core.Entities.MongoDB;
 using Microsoft.Identity.Client;
 using MongoDB.Bson;
@@ -13,9 +14,9 @@ namespace Application.Tests.Application.Tests.DTOs
 {
     public static class ProductHelperModel
     {
-        public static Product GetProductForCreation()
+        public static ProductInput GetProductForCreation()
         {
-            return new Product
+            return new ProductInput
             {
                 Name = "Test",
                 Price = 10.000,
@@ -26,9 +27,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static ProductToGet GetProductFromMongo()
+        public static ProductOutput GetProductFromMongo()
         {
-            return new ProductToGet
+            return new ProductOutput
             {
                 _id = "661feb4a110728200e31903e",
                 Name = "Test",
@@ -40,9 +41,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static List<ProductToGet> ListAllProducts() => new List<ProductToGet>
+        public static List<ProductOutput> ListAllProducts() => new List<ProductOutput>
         {
-            new ProductToGet
+            new ProductOutput
             {
                 Name = "Test",
                 Price = 0,
@@ -53,13 +54,13 @@ namespace Application.Tests.Application.Tests.DTOs
             }
         };
 
-        public static List<ProductToGet> ListAllProductsIsEmpty() => new List<ProductToGet>
+        public static List<ProductOutput> ListAllProductsIsEmpty() => new List<ProductOutput>
         {
             
         };
         
 
-        public static Product GetProductForCreationWithProductNameEmpty() => new Product()
+        public static ProductInput GetProductForCreationWithProductNameEmpty() => new ProductInput()
         {
             
             Name = "",
@@ -70,7 +71,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static Product GetProductForCreationWithProductNameWrongFormat() => new Product()
+        public static ProductInput GetProductForCreationWithProductNameWrongFormat() => new ProductInput()
         {
             
             Name = "+,-.'?",
@@ -81,7 +82,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static Product GetProductForCreationWithProductDescriptionEmpty() => new Product()
+        public static ProductInput GetProductForCreationWithProductDescriptionEmpty() => new ProductInput()
         {
             Name = "Test",
             Price = 10.000,
@@ -91,7 +92,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static Product GetProductForCreationWithProductDescriptionWrongFormat() => new Product()
+        public static ProductInput GetProductForCreationWithProductDescriptionWrongFormat() => new ProductInput()
         {
             Name = "Test",
             Price = 10.000,
@@ -101,7 +102,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static Product GetProductForCreationWithProductCategoryEmpty() => new Product()
+        public static ProductInput GetProductForCreationWithProductCategoryEmpty() => new ProductInput()
         {
             Name = "Test",
             Price = 10.000,
@@ -111,7 +112,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static Product GetProductForCreationWithProductCategoryWrongFormat() => new Product()
+        public static ProductInput GetProductForCreationWithProductCategoryWrongFormat() => new ProductInput()
         {
             Name = "Test",
             Price = 10.000,
@@ -121,7 +122,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static Product GetProductForCreationWithoutProductPrice() => new Product()
+        public static ProductInput GetProductForCreationWithoutProductPrice() => new ProductInput()
         {
             
             Name = "Test",
@@ -132,9 +133,8 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductToGet GetProductForUpdateWithProductNameEmpty() => new ProductToGet()
+        public static ProductInput GetProductForUpdateWithProductNameEmpty() => new ProductInput()
         {
-            _id = "661805457b1da8ba4cb52995",
             Name = "",
             Price = 10.000,
             Quantity = 1,
@@ -143,7 +143,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductToGet GetProductForUpdateWithProductNameWrongFormat() => new ProductToGet()
+        public static ProductOutput GetProductForUpdateWithProductNameWrongFormat() => new ProductOutput()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "+,-.'?",
@@ -154,9 +154,8 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductToGet GetProductForUpdateWithProductDescriptionEmpty() => new ProductToGet()
+        public static ProductInput GetProductForUpdateWithProductDescriptionEmpty() => new ProductInput()
         {
-            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -165,7 +164,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductToGet GetProductForUpdateWithProductDescriptionWrongFormat() => new ProductToGet()
+        public static ProductOutput GetProductForUpdateWithProductDescriptionWrongFormat() => new ProductOutput()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",
@@ -176,9 +175,8 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductToGet GetProductForUpdateWithProductCategoryEmpty() => new ProductToGet()
+        public static ProductInput GetProductForUpdateWithProductCategoryEmpty() => new ProductInput()
         {
-            _id = "661805457b1da8ba4cb52995",
             Name = "Test",
             Price = 10.000,
             Quantity = 1,
@@ -187,7 +185,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductToGet GetProductForUpdateWithProductCategoryWrongFormat() => new ProductToGet()
+        public static ProductOutput GetProductForUpdateWithProductCategoryWrongFormat() => new ProductOutput()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",
@@ -198,7 +196,7 @@ namespace Application.Tests.Application.Tests.DTOs
             State = true
         };
 
-        public static ProductToGet GetProductForUpdateWithoutProductPrice() => new ProductToGet()
+        public static ProductOutput GetProductForUpdateWithoutProductPrice() => new ProductOutput()
         {
             _id = "661805457b1da8ba4cb52995",
             Name = "Test",

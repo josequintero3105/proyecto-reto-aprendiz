@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs
 {
-    public class Invoice
+    public class InvoiceOutput
     {
-        public string? _id {  get; set; }
+        public string? _id { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
         public string? ShoppingCartId { get; set; }

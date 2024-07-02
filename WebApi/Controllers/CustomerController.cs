@@ -5,6 +5,7 @@ using Application.Interfaces.Services;
 using Application.Interfaces.Common;
 using Core.Entities.MongoDB;
 using System.Net;
+using Application.DTOs.Entries;
 
 namespace WebApi.Controllers
 {
@@ -37,10 +38,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPost()]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Create([FromBody] Customer body)
+        public async Task<IActionResult> Create([FromBody] CustomerInput body)
         {
-            await _handle.HandleRequestContextCatchException(_customerService.CreateCustomer(body));
-            return Created("~/api/Customer/", body);
+            CustomerCollection customer = await _handle.HandleRequestContextException(_customerService.CreateCustomer, body);
+            return CreatedAtAction(nameof(Create), new { customer._id }, customer);
         }
         /// <summary>
         /// Method Put Update Customer
@@ -50,11 +51,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Update([FromBody] Customer body, [FromQuery] string _id)
+        public async Task<IActionResult> Update([FromBody] CustomerInput body, [FromQuery] string? _id = null)
         {
-            body._id = _id;
-            await _handle.HandleRequestContextCatchException(_customerService.UpdateCustomer(body));
-            return Created("~/api/Customer/", body);
+            CustomerOutput customer = await _customerService.UpdateCustomerData(body, _id);
+            return Created("~/api/Customer/", customer);
         }
         /// <summary>
         /// Method Get Get Customer
@@ -63,7 +63,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromQuery] string _id)
+        public async Task<IActionResult> GetCustomerById([FromQuery] string? _id = null)
         {
             var result = await _customerService.GetCustomerById(_id);
             return Ok(result);
@@ -76,7 +76,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpDelete()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Delete([FromQuery] string _id)
+        public async Task<IActionResult> Delete([FromQuery] string? _id = null)
         {
             await _handle.HandleRequestContextCatchException(_customerService.DeleteCustomer(_id));
             return Ok("Customer deleted successfully");

@@ -4,34 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Entries;
+using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Services
 {
     public interface ICustomerService
     {
         /// <summary>
-        /// 
+        /// Update data from customer
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task CreateCustomer(Customer customer);
+        Task<CustomerOutput> UpdateCustomerData(CustomerInput customer, string _id);
         /// <summary>
-        /// 
+        /// Get customer by id
         /// </summary>
-        /// <param name="customer"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        Task UpdateCustomer(Customer customer);
+        Task<CustomerOutput> GetCustomerById(string _id);
         /// <summary>
-        /// 
+        /// Delete a customer
         /// </summary>
-        /// <param name="customer"></param>
-        /// <returns></returns>
-        Task<Customer> GetCustomerById(string _id);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="customer"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
         Task DeleteCustomer(string _id);
+        /// <summary>
+        /// Create a new customer
+        /// </summary>
+        /// <param name="customerInput"></param>
+        /// <returns></returns>
+        Task<CustomerCollection> CreateCustomer(CustomerInput customerInput);
     }
 }

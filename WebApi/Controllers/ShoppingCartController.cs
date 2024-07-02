@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Application.Services;
@@ -36,11 +37,11 @@ namespace WebApi.Controllers
         /// <param name="body"></param>
         /// <returns></returns>
         [HttpPost()]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> Create([FromBody] ShoppingCart body)
+        [ProducesResponseType(201)]
+        public async Task<IActionResult> Create([FromBody] ShoppingCartInput body)
         {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.CreateShoppingCart(body));
-            return Ok(body);
+            ShoppingCartCollection shoppingCart = await _handle.HandleRequestContextException(_shoppingCartService.CreateShoppingCart, body);
+            return CreatedAtAction(nameof(Create), new { shoppingCart._id }, shoppingCart);
         }
 
         /// <summary>
@@ -50,10 +51,10 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Add([FromBody] ShoppingCart body)
+        public async Task<IActionResult> AddProductToCart([FromBody] ShoppingCartInput body, [FromQuery] string? _id = null)
         {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.AddToShoppingCart(body));
-            return Ok(body);
+            ShoppingCart shoppingCart = await _shoppingCartService.AddToShoppingCart(body, _id);
+            return Ok(shoppingCart);
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace WebApi.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Get([FromQuery] string _id)
+        public async Task<IActionResult> GetShoppingCartById([FromQuery] string? _id = null)
         {
             var result = await _shoppingCartService.GetShoppingCartById(_id);
             return Ok(result);
@@ -75,10 +76,10 @@ namespace WebApi.Controllers
         /// <param name="body"></param>
         [HttpPut()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Remove([FromBody] ShoppingCart body)
+        public async Task<IActionResult> RemoveProductFromCart([FromBody] ShoppingCartInput body, [FromQuery] string? _id = null)
         {
-            await _handle.HandleRequestContextCatchException(_shoppingCartService.RemoveFromShoppingCart(body));
-            return Ok("Products removed successfully");
+            ShoppingCart shoppingCart = await _shoppingCartService.RemoveFromShoppingCart(body, _id);
+            return Ok(shoppingCart);
         }
     }
 }

@@ -11,6 +11,7 @@ using MongoDB.Bson;
 using AutoMapper;
 using MongoDB.Driver;
 using System.Drawing;
+using Application.DTOs.Entries;
 
 namespace Infrastructure.Services.MongoDB.Adapters
 {
@@ -38,22 +39,34 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// <param name="dataBaseName"></param>
         /// <param name="collectionName"></param>
         /// <param name="mapper"></param>
-        public ProductAdapter(string stringMongoConnection, string dataBaseName, string collectionName, IMapper mapper) 
+        public ProductAdapter(string stringMongoConnection, string dataBaseName, IMapper mapper) 
         {
             _context = DataBaseContext.GetMongoDatabase(stringMongoConnection, dataBaseName);
             _mapper = mapper;
         }
 
         /// <summary>
-        /// Business logic create product
+        /// Save a new product to DB
         /// </summary>
         /// <param name="productToCreate"></param>
         /// <returns></returns>
-        public async Task<Product> CreateProductAsync(Product productToCreate)
+        public async Task<ProductInput> CreateProductAsync(ProductInput productToCreate)
         {
             ProductCollection productCollectionToCreate = _mapper.Map<ProductCollection>(productToCreate);
             await _context.ProductCollection.InsertOneAsync(productCollectionToCreate);
-            return _mapper.Map<Product>(productToCreate);
+            return _mapper.Map<ProductInput>(productToCreate);
+        }
+
+        /// <summary>
+        /// Save a new product to DB
+        /// </summary>
+        /// <param name="productToCreate"></param>
+        /// <returns></returns>
+        public async Task<ProductCollection> CreateAsync(ProductOutput productToCreate)
+        {
+            ProductCollection productCollectionToCreate = _mapper.Map<ProductCollection>(productToCreate);
+            await _context.ProductCollection.InsertOneAsync(productCollectionToCreate);
+            return productCollectionToCreate;
         }
 
         /// <summary>
@@ -61,33 +74,34 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public async Task<ProductToGet> GetProductByIdAsync(string _id)
+        public async Task<ProductOutput> GetProductByIdAsync(string _id)
         {
             var IdFound = Builders<ProductCollection>.Filter.Eq(x => x._id, _id);
             var result = await _context.ProductCollection.FindAsync(IdFound);
-            return _mapper.Map<ProductToGet>(result.FirstOrDefault());
+            return _mapper.Map<ProductOutput>(result.FirstOrDefault());
         }
 
         /// <summary>
         /// Get Product By Id
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ProductToGet>> GetAllProductsAsync()
+        public async Task<List<ProductOutput>> ListProductsAsync()
         {
             var result = await _context.ProductCollection.FindAsync(Builders<ProductCollection>.Filter.Eq(x => x.State, true));
-            return _mapper.Map<List<ProductToGet>>(result.ToList());
+            return _mapper.Map<List<ProductOutput>>(result.ToList());
         }
 
         /// <summary>
-        /// Get Products for pages
+        /// Get Products per pages
         /// </summary>
         /// <param name="page"></param>
+        /// <param name="size"></param>
         /// <returns></returns>
-        public async Task<List<Product>> GetProductsPaginationAsync(int page, int size)
+        public async Task<List<ProductOutput>> ListProductsPerPageAsync(int page, int size)
         {
             var result = await _context.ProductCollection.Find(Builders<ProductCollection>.Filter.Eq(x => x.State, true))
                 .Skip((page - 1) * size).Limit(size).ToListAsync();
-            return _mapper.Map<List<Product>>(result.ToList());
+            return _mapper.Map<List<ProductOutput>>(result.ToList());
         }
 
         /// <summary>
@@ -95,20 +109,13 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="productToUpdate"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateProductAsync(ProductToGet productToUpdate)
+        public async Task<ProductOutput> UpdateProductAsync(ProductOutput productToUpdate)
         {
-            ProductCollection productCollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
-            var IdFound = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(productCollectionToUpdate._id));
+            ProductCollection CollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
+            var IdFound = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(CollectionToUpdate._id));
             var result = _context.ProductCollection.Find(IdFound).FirstOrDefault();
-            if (result != null)
-            {
-                var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFound, productCollectionToUpdate);
-                return resultUpdate.ModifiedCount == 1;
-            }
-            else
-            {
-                return false;
-            }
+            var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFound, CollectionToUpdate);
+            return _mapper.Map<ProductOutput>(productToUpdate);
         }
     }
 }

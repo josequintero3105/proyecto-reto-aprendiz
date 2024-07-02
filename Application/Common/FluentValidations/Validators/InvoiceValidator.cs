@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Common.Helpers.Exceptions;
 using FluentValidation;
 
 namespace Application.Common.FluentValidations.Validators
 {
-    public class InvoiceValidator : AbstractValidator<Invoice>
+    public class InvoiceValidator : AbstractValidator<InvoiceInput>
     {
         public InvoiceValidator() 
         {
@@ -32,10 +33,10 @@ namespace Application.Common.FluentValidations.Validators
                 .WithMessage(nameof(GateWayBusinessException.CustomerIdIsNotValid))
                 .MaximumLength(24)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerIdIsNotValid).ToString())
-                .WithMessage(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid))
+                .WithMessage(nameof(GateWayBusinessException.CustomerIdIsNotValid))
                 .MinimumLength(24)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerIdIsNotValid).ToString())
-                .WithMessage(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid))
+                .WithMessage(nameof(GateWayBusinessException.CustomerIdIsNotValid))
                 .Matches("^[a-zA-Z0-9 ]+$")
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
                 .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));

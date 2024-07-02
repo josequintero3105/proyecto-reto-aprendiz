@@ -7,6 +7,7 @@ using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -41,44 +42,131 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Private method controls the process of create a shopping cart
+        /// Generate a new invoice for tests
         /// </summary>
-        /// <param name="shoppingCart"></param>
+        /// <param name="invoiceInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task GenerateInvoice(Invoice invoice)
+        public async Task<InvoiceOutput> GenerateInvoice(InvoiceInput invoiceInput)
         {
             try
             {
-                await invoice.ValidateAndThrowsAsync<Invoice, InvoiceValidator>();
+                await invoiceInput.ValidateAndThrowsAsync<InvoiceInput, InvoiceValidator>();
+                InvoiceOutput invoice = new InvoiceOutput();
+                invoice.ShoppingCartId = invoiceInput.ShoppingCartId;
+                invoice.CustomerId = invoiceInput.CustomerId;
                 invoice.CreatedAt = DateTime.Now;
-                Customer customer = new Customer();
+
+                CustomerOutput customer = new CustomerOutput();
                 ShoppingCart shoppingCart = new ShoppingCart();
                 customer._id = invoice.CustomerId;
                 shoppingCart._id = invoice.ShoppingCartId;
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
                 ShoppingCartCollection shoppingCartCollection = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-                
-                if (shoppingCartCollection != null 
-                    && customerCollection != null 
+
+                if (shoppingCartCollection != null
+                    && customerCollection != null
                     && shoppingCartCollection.ProductsInCart.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
-                    await _invoiceRepository.GenerateInvoiceAsync(invoice);
+                    return await _invoiceRepository.GenerateInvoiceAsync(invoice);
                 }
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
+                    nameof(GateWayBusinessException.NotProductsInCart));
             }
             catch (BusinessException bex)
             {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message} creating invoice: {invoice}"
-                    , bex.Code, bex.Message, invoice);
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
                 throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error: {message} creating invoice: {invoice} ", ex.Message, invoice);
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
                     nameof(GateWayBusinessException.NotControlledException));
+            }
+        }
+        /// <summary>
+        /// Generate a new invoice
+        /// </summary>
+        /// <param name="invoiceInput"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        public async Task<InvoiceCollection> Generate(InvoiceInput invoiceInput)
+        {
+            try
+            {
+                await invoiceInput.ValidateAndThrowsAsync<InvoiceInput, InvoiceValidator>();
+                InvoiceOutput invoice = new InvoiceOutput();
+                
+                invoice.ShoppingCartId = invoiceInput.ShoppingCartId;
+                invoice.CustomerId = invoiceInput.CustomerId;
+                invoice.CreatedAt = DateTime.Now;
+
+                CustomerOutput customer = new CustomerOutput();
+                ShoppingCart shoppingCart = new ShoppingCart();
+                customer._id = invoice.CustomerId;
+                shoppingCart._id = invoice.ShoppingCartId;
+                CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
+                ShoppingCartCollection shoppingCartCollection = _shoppingCartRepository.GetShoppingCart(shoppingCart);
+
+                if (shoppingCartCollection != null
+                    && customerCollection != null
+                    && shoppingCartCollection.ProductsInCart.Count != 0)
+                {
+                    invoice.CustomerName = customerCollection.Name;
+                    invoice.Total = shoppingCartCollection.PriceTotal;
+                    shoppingCart.Active = true;
+                    await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
+                    return await _invoiceRepository.GenerateAsync(invoice);
+                }
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
+                    nameof(GateWayBusinessException.NotProductsInCart));
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message} ", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
+                    nameof(GateWayBusinessException.NotControlledException));
+            }
+        }
+        /// <summary>
+        /// Delete an invoice
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        public async Task DeleteInvoice(string _id)
+        {
+            try
+            {
+                if (!String.IsNullOrEmpty(_id))
+                    await _invoiceRepository.DeleteInvoiceAsync(_id);
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.InvoiceIdCannotBeNull),
+                    nameof(GateWayBusinessException.InvoiceIdCannotBeNull));
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.InvoiceIdIsNotValid),
+                    nameof(GateWayBusinessException.InvoiceIdIsNotValid));
             }
         }
     }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Application.Interfaces.Common;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
@@ -45,22 +46,23 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateCustomer_When_AllFieldNotEmpty_Then_ExpectsResultEqualCustomer()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreation();
-            _customerRepositoryMock.Setup(x => x.CreateCustomerAsync(customer))
-                .ReturnsAsync(customer).Verifiable();
+            CustomerInput customerInput = CustomerHelperModel.GetCustomerForCreation();
+            CustomerOutput customerOutput = CustomerHelperModel.GetCustomerFromMongo();
+            _customerRepositoryMock.Setup(x => x.CreateCustomerAsync(customerOutput))
+                .ReturnsAsync(customerOutput).Verifiable();
 
             // Act
-            await _customerService.CreateCustomer(customer);
+            await _customerService.CreateCustomer(customerInput);
 
             // Assert
-            Assert.IsType<Customer>(customer);
+            Assert.IsType<CustomerOutput>(customerOutput);
         }
 
         [Fact]
         public async void CreateCustomer_When_CustomerNameIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithNameEmpty();
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithNameEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -74,7 +76,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateCustomer_When_CustomerDocumentIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentEmpty();
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -88,7 +90,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateCustomer_When_CustomerDocumentTypeIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentTypeEmpty();
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithDocumentTypeEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -102,7 +104,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateCustomer_When_CustomerEmailIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithEmailEmpty();
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithEmailEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -116,7 +118,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateCustomer_When_CustomerPhoneIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithPhoneEmpty();
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithPhoneEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -130,25 +132,28 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void UpdateCustomer_When_CustomerAllFieldsAreValid_Then_ExpectsResultEqualCustomer()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForUpdate();
-            _customerRepositoryMock.Setup(x => x.UpdateCustomerAsync(customer)).ReturnsAsync(true).Verifiable();
+            CustomerInput customerInput = CustomerHelperModel.GetCustomerForCreation();
+            CustomerOutput customer = CustomerHelperModel.GetCustomerFromMongo();
+            customer._id = "6644d3d6a20a7c5dc4ed2680";
+            _customerRepositoryMock.Setup(x => x.UpdateCustomerDataAsync(customer)).ReturnsAsync(customer).Verifiable();
 
             // Act
-            await _customerService.UpdateCustomer(customer);
+            await _customerService.UpdateCustomerData(customerInput, customer._id);
 
             // Assert
-            Assert.IsType<Customer>(customer);
+            Assert.IsType<CustomerOutput>(customer);
         }
 
         [Fact]
         public async void UpdateCustomer_When_CustomerNameIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithNameEmpty();
-
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithNameEmpty();
+            CustomerOutput customerOutput = CustomerHelperModel.GetCustomerFromMongo();
+            customerOutput._id = "6644d3d6a20a7c5dc4ed2680";
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _customerService.UpdateCustomer(customer));
+                (async () => await _customerService.UpdateCustomerData(customer, customerOutput._id));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
@@ -158,11 +163,12 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void UpdateCustomer_When_CustomerEmailIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithEmailEmpty();
-
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithEmailEmpty();
+            CustomerOutput customerOutput = CustomerHelperModel.GetCustomerFromMongo();
+            customerOutput._id = "6644d3d6a20a7c5dc4ed2680";
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _customerService.UpdateCustomer(customer));
+                (async () => await _customerService.UpdateCustomerData(customer, customerOutput._id));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
@@ -172,21 +178,22 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void UpdateCustomer_When_CustomerPhoneIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithPhoneEmpty();
-
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreationOrUpdateWithPhoneEmpty();
+            CustomerOutput customerOutput = CustomerHelperModel.GetCustomerFromMongo();
+            customerOutput._id = "6644d3d6a20a7c5dc4ed2680";
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _customerService.UpdateCustomer(customer));
+                (async () => await _customerService.UpdateCustomerData(customer, customerOutput._id));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
         }
 
         [Fact]
-        public async void GetCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
+        public async void DeleteCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForUpdate();
+            CustomerOutput customer = CustomerHelperModel.GetCustomerFromMongo();
             customer._id = "";
             _customerRepositoryMock.Setup(x => x.DeleteCustomerAsync(customer._id)).ReturnsAsync(false).Verifiable();
 
@@ -202,9 +209,11 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateCustomer_Then_CodeStatusIsCreated()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreation();
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreation();
+            CustomerOutput customerOutput = CustomerHelperModel.GetCustomerFromMongo();
+            customerOutput._id = "6644d3d6a20a7c5dc4ed2680";
             _customerController.ControllerContext.RouteData.Values.Add("action", "Post");
-            _customerRepositoryMock.Setup(x => x.CreateCustomerAsync(customer)).Returns(Task.FromResult(customer));
+            _customerRepositoryMock.Setup(x => x.CreateCustomerAsync(customerOutput)).Returns(Task.FromResult(customerOutput));
 
             // Act
             var result = await _customerController.Create(customer);
@@ -219,13 +228,14 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void GetCustomer_Then_CodeStatusIsOk()
         {
             // Arrange
-            Customer customer = CustomerHelperModel.GetCustomerForCreation();
-            customer._id = "6644d3d6a20a7c5dc4ed2680";
+            CustomerInput customer = CustomerHelperModel.GetCustomerForCreation();
+            CustomerOutput customerOutput = CustomerHelperModel.GetCustomerFromMongo();
+            customerOutput._id = "6644d3d6a20a7c5dc4ed2680";
             _customerController.ControllerContext.RouteData.Values.Add("action", "Get");
-            _customerRepositoryMock.Setup(x => x.GetCustomerByIdAsync(customer._id)).Returns(Task.FromResult(customer));
+            _customerRepositoryMock.Setup(x => x.GetCustomerByIdAsync(customerOutput._id)).Returns(Task.FromResult(customerOutput));
 
             // Act
-            var result = await _customerController.Get(customer._id);
+            var result = await _customerController.GetCustomerById(customerOutput._id);
             var objectResult = result as OkObjectResult;
 
             // Assert

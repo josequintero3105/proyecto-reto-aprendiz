@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Metadata;
 using Application.DTOs;
+using Application.DTOs.Entries;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Services
@@ -9,31 +10,33 @@ namespace Application.Interfaces.Services
         /// <summary>
         /// Defining contract for the business logic into the product service 
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="productInput"></param>
         /// <returns></returns>
-        public Task CreateProduct(Product product);
+        Task<ProductCollection> CreateProduct(ProductInput productInput);
         /// <summary>
         /// Defining contract for the business logic into the product service
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="productInput"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public Task UpdateProduct(ProductToGet product);
+        Task<ProductOutput> UpdateProduct(ProductInput productInput, string _id);
         /// <summary>
         /// product getting by id
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        public Task<ProductToGet> GetProductById(string _id);
+        Task<ProductOutput> GetProductById(string _id);
         /// <summary>
-        /// Get all products
+        /// List all products
         /// </summary>
         /// <returns></returns>
-        public Task<List<ProductToGet>> GetAllProducts();
+        Task<List<ProductOutput>> ListProducts();
         /// <summary>
-        /// 
+        /// List Products Per Pagination
         /// </summary>
         /// <param name="page"></param>
+        /// <param name="size"></param>
         /// <returns></returns>
-        public Task<List<Product>> GetProductsPagination(int page, int size);
+        Task<List<ProductOutput>> ListProductsPerPage(string page, string size);
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System.Net.NetworkInformation;
-using Application.DTOs;
+using Application.DTOs.Entries;
 using Common.Helpers.Exceptions;
 using FluentValidation;
 
 namespace Application.Common.FluentValidations.Validators
 {
-    public class ProductValidator : AbstractValidator<Product>
+    public class ProductValidator : AbstractValidator<ProductInput>
     {
         public ProductValidator()
         {

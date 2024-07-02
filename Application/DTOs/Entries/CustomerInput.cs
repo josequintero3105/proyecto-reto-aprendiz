@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTOs
+namespace Application.DTOs.Entries
 {
-    public class Customer
+    public class CustomerInput
     {
-        public string? _id {  get; set; }
         public string? DocumentType { get; set; }
         public string? Document { get; set; }
         public string? Name { get; set; }

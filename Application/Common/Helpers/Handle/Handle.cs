@@ -43,5 +43,30 @@ namespace Application.Common.Helpers.Handle
                 throw;
             }
         }
+        /// <summary>
+        /// async task HandleRequestContextException
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="Y"></typeparam>
+        /// <param name="useCaseFunction"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public async Task<Y> HandleRequestContextException<T, Y>(Func<T, Task<Y>> useCaseFunction, T entity)
+        {
+            try
+            {
+                return await useCaseFunction(entity);
+            }
+            catch (BusinessException be)
+            {
+                LoggerMessageDefinition.BusinessException(_logger, be.Source, be.Code, be);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                LoggerMessageDefinition.ErrorNotControllerException(_logger, ex.Source, (int)BusinessExceptionTypes.NotControlledException, ex);
+                throw;
+            }
+        }
     }
 }

@@ -15,30 +15,36 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task<Customer> CreateCustomerAsync(Customer customer);
+        Task<CustomerOutput> CreateCustomerAsync(CustomerOutput customer);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        Task<Customer> GetCustomerByIdAsync(string _id);
+        Task<CustomerOutput> GetCustomerByIdAsync(string _id);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        CustomerCollection GetCustomer(Customer customer);
+        CustomerCollection GetCustomer(CustomerOutput customer);
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="customer"></param>
+        /// <param name="customerToUpdate"></param>
         /// <returns></returns>
-        Task<bool> UpdateCustomerAsync(Customer customer);
+        Task<CustomerOutput> UpdateCustomerDataAsync(CustomerOutput customerToUpdate);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
         Task<bool> DeleteCustomerAsync(string _id);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customerToCreate"></param>
+        /// <returns></returns>
+        Task<CustomerCollection> CreateAsync(CustomerOutput customerToCreate);
     }
 }

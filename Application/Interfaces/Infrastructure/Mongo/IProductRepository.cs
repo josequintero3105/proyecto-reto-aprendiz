@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
 using Application.DTOs.Commands;
+using Application.DTOs.Entries;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Infrastructure.Mongo
@@ -16,29 +17,36 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<Product> CreateProductAsync(Product product);
+        Task<ProductInput> CreateProductAsync(ProductInput product);
         /// <summary>
         /// Defining contract from update product in the database
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<bool> UpdateProductAsync(ProductToGet product);
+        Task<ProductOutput> UpdateProductAsync(ProductOutput product);
         /// <summary>
-        /// 
+        /// Get product by id
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="_id"></param>
         /// <returns></returns>
-        Task<ProductToGet> GetProductByIdAsync(string _id);
+        Task<ProductOutput> GetProductByIdAsync(string _id);
         /// <summary>
-        /// 
+        /// List All Products
         /// </summary>
         /// <returns></returns>
-        Task<List<ProductToGet>> GetAllProductsAsync();
+        Task<List<ProductOutput>> ListProductsAsync();
         /// <summary>
-        /// 
+        /// List Products Per Pagination
         /// </summary>
         /// <param name="page"></param>
+        /// <param name="size"></param>
         /// <returns></returns>
-        public Task<List<Product>> GetProductsPaginationAsync(int page, int size);
+        public Task<List<ProductOutput>> ListProductsPerPageAsync(int page, int size);
+        /// <summary>
+        /// Create customer returns whole the document
+        /// </summary>
+        /// <param name="productToCreate"></param>
+        /// <returns></returns>
+        Task<ProductCollection> CreateAsync(ProductOutput productToCreate);
     }
 }

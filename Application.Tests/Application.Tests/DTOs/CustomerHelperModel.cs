@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Entries;
 
 namespace Application.Tests.Application.Tests.DTOs
 {
     public static class CustomerHelperModel
     {
-        public static Customer GetCustomerForCreation()
+        public static CustomerInput GetCustomerForCreation()
         {
-            return new Customer
+            return new CustomerInput
             {
                 Name = "name",
                 Document = "111",
@@ -21,9 +22,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Customer GetCustomerForCreationOrUpdateWithDocumentEmpty()
+        public static CustomerInput GetCustomerForCreationOrUpdateWithDocumentEmpty()
         {
-            return new Customer
+            return new CustomerInput
             {
                 Name = "name",
                 Document = "",
@@ -33,9 +34,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Customer GetCustomerForCreationOrUpdateWithDocumentTypeEmpty()
+        public static CustomerInput GetCustomerForCreationOrUpdateWithDocumentTypeEmpty()
         {
-            return new Customer
+            return new CustomerInput
             {
                 Name = "name",
                 Document = "111",
@@ -45,9 +46,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Customer GetCustomerForCreationOrUpdateWithNameEmpty()
+        public static CustomerInput GetCustomerForCreationOrUpdateWithNameEmpty()
         {
-            return new Customer
+            return new CustomerInput
             {
                 Name = "",
                 Document = "111",
@@ -57,9 +58,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Customer GetCustomerForCreationOrUpdateWithEmailEmpty()
+        public static CustomerInput GetCustomerForCreationOrUpdateWithEmailEmpty()
         {
-            return new Customer
+            return new CustomerInput
             {
                 Name = "name",
                 Document = "111",
@@ -69,9 +70,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Customer GetCustomerForCreationOrUpdateWithPhoneEmpty()
+        public static CustomerInput GetCustomerForCreationOrUpdateWithPhoneEmpty()
         {
-            return new Customer
+            return new CustomerInput
             {
                 Name = "name",
                 Document = "111",
@@ -81,9 +82,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Customer GetCustomerForUpdate()
+        public static CustomerOutput GetCustomerFromMongo()
         {
-            return new Customer
+            return new CustomerOutput
             {
                 _id = "6644d3d6a20a7c5dc4ed2680",
                 Name = "name",
@@ -94,9 +95,9 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static Customer GetCustomerForDelete()
+        public static CustomerOutput GetCustomerForDelete()
         {
-            return new Customer
+            return new CustomerOutput
             {
                 _id = "6644d3d6a20a7c5dc4ed2680"
             };

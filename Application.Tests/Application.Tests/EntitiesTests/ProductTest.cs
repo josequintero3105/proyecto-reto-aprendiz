@@ -26,6 +26,8 @@ using Microsoft.Extensions.Logging;
 using Application.Interfaces.Common;
 using Xunit.Sdk;
 using Common.Helpers.Exceptions;
+using Application.DTOs.Entries;
+using System.Security.Cryptography;
 
 namespace Application.Tests.Application.Tests.Services
 {
@@ -58,7 +60,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductNameIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductNameEmpty();
+            ProductInput product = ProductHelperModel.GetProductForCreationWithProductNameEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -72,7 +74,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductNameWrongFormat_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductNameWrongFormat();
+            ProductInput product = ProductHelperModel.GetProductForCreationWithProductNameWrongFormat();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -86,7 +88,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductDescriptionIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductDescriptionEmpty();
+            ProductInput product = ProductHelperModel.GetProductForCreationWithProductDescriptionEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -100,7 +102,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductDescriptionWrongFormat_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductDescriptionWrongFormat();
+            ProductInput product = ProductHelperModel.GetProductForCreationWithProductDescriptionWrongFormat();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -114,7 +116,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductCategoryIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductCategoryEmpty();
+            ProductInput product = ProductHelperModel.GetProductForCreationWithProductCategoryEmpty();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -128,7 +130,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductCategoryWrongFormat_Then_ExpectsBusinessException()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithProductCategoryWrongFormat();
+            ProductInput product = ProductHelperModel.GetProductForCreationWithProductCategoryWrongFormat();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
@@ -142,7 +144,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductFieldsNotEmpty_Then_ResultEqualProduct()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreation();
+            ProductInput product = ProductHelperModel.GetProductForCreation();
             _productRepositoryMock.Setup(repo => repo.CreateProductAsync(product))
                 .ReturnsAsync(product).Verifiable();
 
@@ -150,19 +152,19 @@ namespace Application.Tests.Application.Tests.Services
             await _productService.CreateProduct(product);
 
             // Assert
-            Assert.IsType<Product>(product);
+            Assert.IsType<ProductInput>(product);
         }
 
         [Fact]
         public async void CreateProduct_When_ProductPriceEqualToZero_Then_ExpectsVerifyToCreateNewProduct()
         {
             // Arrange
-            Product product = ProductHelperModel.GetProductForCreationWithoutProductPrice();
+            ProductInput product = ProductHelperModel.GetProductForCreationWithoutProductPrice();
             _productRepositoryMock.Setup(repo => repo.CreateProductAsync(product))
                 .ReturnsAsync(product).Verifiable();
 
             // Act
-            await _productController.Create(product);
+            await _productService.CreateProduct(product);
 
             // Assert
             Assert.True(product.Price == 0);
@@ -172,7 +174,7 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_With_NoFieldsEmpty_Then_ExpectsVerify()
         {
             // Arrange
-            Product product = new Product();
+            ProductInput product = new ProductInput();
             product.Name = "Producto de prueba";
             product.Price = 10.000;
             product.Quantity = 10;
@@ -180,7 +182,7 @@ namespace Application.Tests.Application.Tests.Services
             product.Category = "Categoria";
             product.State = true;
 
-            _productRepositoryMock.Setup(x => x.CreateProductAsync(It.Is<Product>
+            _productRepositoryMock.Setup(x => x.CreateProductAsync(It.Is<ProductInput>
                 (x => x.Name == product.Name &&
                 x.Price == product.Price &&
                 x.Quantity == product.Quantity &&
@@ -200,28 +202,31 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_When_ObjectIdMongoIsValid_Then_ResultEqualProduct()
         {
             // Arrange
-            ProductToGet product = ProductHelperModel.GetProductFromMongo();
-            _productRepositoryMock.Setup(repo => repo.UpdateProductAsync(product)).ReturnsAsync(true).Verifiable();
+            ProductInput productInput = ProductHelperModel.GetProductForCreation();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            productOutput._id = "661feb4a110728200e31903e";
+            _productRepositoryMock.Setup(repo => repo.UpdateProductAsync(productOutput)).ReturnsAsync(productOutput).Verifiable();
 
             // Act
-            await _productService.UpdateProduct(product);
+            await _productService.UpdateProduct(productInput, productOutput._id);
 
             // Assert
-            Assert.IsType<ProductToGet>(product);
+            Assert.IsType<ProductOutput>(productOutput);
         }
 
         [Fact]
         public async Task UpdateProduct_ProductNameIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            ProductToGet product = ProductHelperModel.GetProductForUpdateWithProductNameEmpty();
+            ProductInput productInput = ProductHelperModel.GetProductForUpdateWithProductNameEmpty();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
             ProductCollection productCollection = new ProductCollection();
-
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductToGet>())).Returns(productCollection);
+            productOutput._id = "661805457b1da8ba4cb52995";
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductOutput>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _productService.UpdateProduct(product));
+                (async () => await _productService.UpdateProduct(productInput, productOutput._id));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
@@ -231,14 +236,16 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductDescriptionIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            ProductToGet product = ProductHelperModel.GetProductForUpdateWithProductDescriptionEmpty();
+            ProductInput productInput = ProductHelperModel.GetProductForUpdateWithProductDescriptionEmpty();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
             ProductCollection productCollection = new ProductCollection();
+            productOutput._id = "661805457b1da8ba4cb52995";
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductToGet>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductOutput>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _productService.UpdateProduct(product));
+                (async () => await _productService.UpdateProduct(productInput, productOutput._id));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
@@ -248,14 +255,16 @@ namespace Application.Tests.Application.Tests.Services
         public async Task UpdateProduct_ProductCategoryIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
-            ProductToGet product = ProductHelperModel.GetProductForUpdateWithProductCategoryEmpty();
+            ProductInput productInput = ProductHelperModel.GetProductForUpdateWithProductCategoryEmpty();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
             ProductCollection productCollection = new ProductCollection();
+            productOutput._id = "661805457b1da8ba4cb52995";
 
-            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductToGet>())).Returns(productCollection);
+            _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductOutput>())).Returns(productCollection);
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _productService.UpdateProduct(product));
+                (async () => await _productService.UpdateProduct(productInput, productOutput._id));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
@@ -275,7 +284,7 @@ namespace Application.Tests.Application.Tests.Services
             await _productService.GetProductById(productFound._id);
 
             // Assert
-            Assert.IsType<ProductToGet>(productFound);
+            Assert.IsType<ProductOutput>(productFound);
         }
 
         [Fact]
@@ -300,27 +309,27 @@ namespace Application.Tests.Application.Tests.Services
         [Fact]
         public async void ListProducts_When_ProductListIsFound_ExpectsResultList()
         {
-            // Assert
-            List<ProductToGet> products = ProductHelperModel.ListAllProducts();
-            _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
+            // Arrange
+            List<ProductOutput> products = ProductHelperModel.ListAllProducts();
+            _productRepositoryMock.Setup(x => x.ListProductsAsync()).ReturnsAsync(products).Verifiable();
 
             // Act
-            await _productService.GetAllProducts();
+            await _productService.ListProducts();
 
-            // Arrange
-            Assert.IsType<List<ProductToGet>>(products);
+            // Assert
+            Assert.IsType<List<ProductOutput>>(products);
         }
 
         [Fact]
         public async void ListProduct_When_ListProductsIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            List<ProductToGet> products = ProductHelperModel.ListAllProductsIsEmpty();
-            _productRepositoryMock.Setup(x => x.GetAllProductsAsync()).ReturnsAsync(products).Verifiable();
+            List<ProductOutput> products = ProductHelperModel.ListAllProductsIsEmpty();
+            _productRepositoryMock.Setup(x => x.ListProductsAsync()).ReturnsAsync(products).Verifiable();
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _productService.GetAllProducts());
+                (async () => await _productService.ListProducts());
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());            
