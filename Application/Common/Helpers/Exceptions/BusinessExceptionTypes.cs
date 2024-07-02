@@ -125,5 +125,8 @@ public enum GateWayBusinessException
     InvoiceIdCannotBeNull = 435,
 
     [Description("Invoice Id Is Invalid")]
-    InvoiceIdIsNotValid = 435,
+    InvoiceIdIsNotValid = 436,
+
+    [Description("Pagination Parameters Cannot Be Null")]
+    PaginationParametersCannotBeNull = 437,
 }
