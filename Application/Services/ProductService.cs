@@ -184,8 +184,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} creating product ", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.NotControlledException),
-                    nameof(GateWayBusinessException.NotControlledException));
+                throw new BusinessException(nameof(GateWayBusinessException.PaginationParametersNotValid),
+                    nameof(GateWayBusinessException.PaginationParametersNotValid));
             }
         }
 
