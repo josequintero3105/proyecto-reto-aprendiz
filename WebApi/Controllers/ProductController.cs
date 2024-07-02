@@ -83,7 +83,7 @@ namespace WebApiHttp.Controllers
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> ListAnyProducts([FromQuery] string page, [FromQuery] string size)
+        public async Task<IActionResult> ListAnyProducts([FromQuery] string? page = null, [FromQuery] string? size = null)
         {
             var result = await _productService.ListProductsPerPage(page, size);
             return Ok(result);

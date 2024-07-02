@@ -162,18 +162,24 @@ namespace Application.Services
         {
             try
             {
-                if (IsValidInteger(page) && IsValidInteger(size))
+                if (!String.IsNullOrEmpty(page) && !String.IsNullOrEmpty(size))
                 {
-                    int pageInt = Convert.ToInt32(page);
-                    int sizeInt = Convert.ToInt32(size);
-                    List<ProductOutput> productsList = await _productRepository.ListProductsPerPageAsync(pageInt, sizeInt);
-                    return productsList.Count == 0 ? throw new BusinessException(
-                        nameof(GateWayBusinessException.ProductListCannotBeNull),
-                        nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;
+                    if (IsValidInteger(page) && IsValidInteger(size))
+                    {
+                        int pageInt = Convert.ToInt32(page);
+                        int sizeInt = Convert.ToInt32(size);
+                        List<ProductOutput> productsList = await _productRepository.ListProductsPerPageAsync(pageInt, sizeInt);
+                        return productsList.Count == 0 ? throw new BusinessException(
+                            nameof(GateWayBusinessException.ProductListCannotBeNull),
+                            nameof(GateWayBusinessException.ProductListCannotBeNull)) : productsList;
+                    }
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.PaginationParametersNotValid),
+                        nameof(GateWayBusinessException.PaginationParametersNotValid));
                 }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.PaginationParametersNotValid),
-                    nameof(GateWayBusinessException.PaginationParametersNotValid));
+                    throw new BusinessException(nameof(GateWayBusinessException.PaginationParametersCannotBeNull),
+                        nameof(GateWayBusinessException.PaginationParametersCannotBeNull));
             }
             catch (BusinessException bex)
             {
