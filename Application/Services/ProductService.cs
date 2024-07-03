@@ -227,13 +227,20 @@ namespace Application.Services
                 };
                 if (!String.IsNullOrEmpty(_id))
                 {
-                    if (product.Quantity >= 0 && product.Price >= 0
-                    && product.Quantity <= Int32.MaxValue
-                    && product.Price <= Int32.MaxValue)
-                        return await _productRepository.UpdateProductAsync(productOutput);
+                    var result = await _productRepository.GetProductByIdAsync(_id);
+                    if (result != null)
+                    {
+                        if (product.Quantity >= 0 && product.Price >= 0
+                        && product.Quantity <= Int32.MaxValue
+                        && product.Price <= Int32.MaxValue)
+                            return await _productRepository.UpdateProductAsync(productOutput);
+                        else
+                            throw new BusinessException(nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid),
+                            nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid));
+                    }
                     else
-                        throw new BusinessException(nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid),
-                        nameof(GateWayBusinessException.ProductQuantityOrPriceInvalid));
+                        throw new BusinessException(nameof(GateWayBusinessException.ProductIdNotFound),
+                            nameof(GateWayBusinessException.ProductIdNotFound));
                 }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),

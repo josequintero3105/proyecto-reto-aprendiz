@@ -152,11 +152,18 @@ namespace Application.Services
                 };
                 if (!String.IsNullOrEmpty(_id))
                 {
-                    if (keyValues.ContainsKey(customerInput.DocumentType))
-                        return await _customerRepository.UpdateCustomerDataAsync(customer);
-                    else
-                        throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
-                        nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
+                    var result = await _customerRepository.GetCustomerByIdAsync(_id);
+                    if (result != null)
+                    {
+                        if (keyValues.ContainsKey(customerInput.DocumentType))
+                            return await _customerRepository.UpdateCustomerDataAsync(customer);
+                        else
+                            throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
+                            nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
+                    }
+                    else                    
+                        throw new BusinessException(nameof(GateWayBusinessException.CustomerIdNotFound),
+                        nameof(GateWayBusinessException.CustomerIdNotFound));
                 }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerIdCannotBeNull),
