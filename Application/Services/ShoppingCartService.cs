@@ -85,7 +85,14 @@ namespace Application.Services
             try
             {
                 if (!String.IsNullOrEmpty(_id))
-                    return await _shoppingCartRepository.GetShoppingCartAsync(_id);
+                {
+                    var result = await _shoppingCartRepository.GetShoppingCartAsync(_id);
+                    if (result != null)
+                        return result;
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdNotFound),
+                        nameof(GateWayBusinessException.ShoppingCartIdNotFound));
+                }   
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
                     nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull));

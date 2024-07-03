@@ -16,6 +16,7 @@ using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 
 namespace Application.Services
 {
@@ -100,8 +101,15 @@ namespace Application.Services
         {
             try
             {
-                if (!String.IsNullOrEmpty(_id))                    
-                    return await _customerRepository.GetCustomerByIdAsync(_id);                
+                if (!String.IsNullOrEmpty(_id))
+                {
+                    var result = await _customerRepository.GetCustomerByIdAsync(_id);
+                    if (result != null)
+                        return result;
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.CustomerIdNotFound),
+                        nameof(GateWayBusinessException.CustomerIdNotFound));
+                }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerIdCannotBeNull),
                     nameof(GateWayBusinessException.CustomerIdCannotBeNull));
@@ -179,7 +187,12 @@ namespace Application.Services
             try
             {
                 if (!String.IsNullOrEmpty(_id))
-                    await _customerRepository.DeleteCustomerAsync(_id);
+                {
+                    var result = await _customerRepository.DeleteCustomerAsync(_id);
+                    if (result == false)
+                        throw new BusinessException(nameof(GateWayBusinessException.CustomerIdNotFound),
+                        nameof(GateWayBusinessException.CustomerIdNotFound));
+                }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerIdCannotBeNull),
                     nameof(GateWayBusinessException.CustomerIdCannotBeNull));

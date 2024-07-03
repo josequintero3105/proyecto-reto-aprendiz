@@ -151,7 +151,12 @@ namespace Application.Services
             try
             {
                 if (!String.IsNullOrEmpty(_id))
-                    await _invoiceRepository.DeleteInvoiceAsync(_id);
+                {
+                    var result = await _invoiceRepository.DeleteInvoiceAsync(_id);
+                    if (result == false)
+                        throw new BusinessException(nameof(GateWayBusinessException.InvoiceIdNotFound),
+                        nameof(GateWayBusinessException.InvoiceIdNotFound));
+                }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.InvoiceIdCannotBeNull),
                     nameof(GateWayBusinessException.InvoiceIdCannotBeNull));
