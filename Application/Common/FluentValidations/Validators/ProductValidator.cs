@@ -14,8 +14,8 @@ namespace Application.Common.FluentValidations.Validators
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductNameCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.ProductNameCannotBeEmpty))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters))
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductNameIsNotValid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductNameIsNotValid))
                 .MaximumLength(50)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CharactersLenghtNotValid).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CharactersLenghtNotValid));
@@ -32,8 +32,8 @@ namespace Application.Common.FluentValidations.Validators
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductDescriptionCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.ProductDescriptionCannotBeEmpty))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters))
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductDescriptionIsNotValid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductDescriptionIsNotValid))
                 .MaximumLength(200)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CharactersLenghtNotValid).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CharactersLenghtNotValid));
@@ -42,8 +42,8 @@ namespace Application.Common.FluentValidations.Validators
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductCategoryCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.ProductCategoryCannotBeEmpty))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters))
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.ProductCategoryIsNotValid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.ProductCategoryIsNotValid))
                 .MaximumLength(50)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CharactersLenghtNotValid).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CharactersLenghtNotValid));

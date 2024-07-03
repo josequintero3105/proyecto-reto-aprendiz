@@ -25,8 +25,8 @@ namespace Application.Common.FluentValidations.Validators
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerNameCannotBeVeryLong).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerNameCannotBeVeryLong))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerNameIsNotValid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerNameIsNotValid));
             RuleFor(c => c.DocumentType)
                 .NotNull()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerDocumentTypeCannotBeEmpty).ToString())
@@ -35,8 +35,8 @@ namespace Application.Common.FluentValidations.Validators
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerDocumentTypeCannotBeEmpty).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerDocumentTypeCannotBeEmpty))
                 .Matches("^[a-zA-Z0-9 ]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerDocumentTypeIsInvalid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid));
             RuleFor(c => c.Document)
                 .NotNull()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerDocumentCannotBeEmpty).ToString())
@@ -47,9 +47,9 @@ namespace Application.Common.FluentValidations.Validators
                 .MaximumLength(20)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerDocumentCannotBeVeryLong).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerDocumentCannotBeVeryLong))
-                .Matches("^[a-zA-Z0-9 ]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
+                .Matches("^[0-9]+$")
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerDocumentIsNotValid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerDocumentIsNotValid));
             RuleFor(c => c.Email)
                 .NotNull()
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerEmailCannotBeEmpty).ToString())
@@ -71,8 +71,8 @@ namespace Application.Common.FluentValidations.Validators
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerPhoneCannotBeVeryLong).ToString())
                 .WithMessage(nameof(GateWayBusinessException.CustomerPhoneCannotBeVeryLong))
                 .Matches("^[0-9]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.NotAllowSpecialCharacters).ToString())
-                .WithMessage(nameof(GateWayBusinessException.NotAllowSpecialCharacters));
+                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerPhoneIsNotValid).ToString())
+                .WithMessage(nameof(GateWayBusinessException.CustomerPhoneIsNotValid));
         }
     }
 }
