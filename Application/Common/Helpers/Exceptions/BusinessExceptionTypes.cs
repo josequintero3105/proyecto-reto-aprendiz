@@ -129,4 +129,16 @@ public enum GateWayBusinessException
 
     [Description("Pagination Parameters Cannot Be Null")]
     PaginationParametersCannotBeNull = 437,
+
+    [Description("Product Id Not Found")]
+    ProductIdNotFound = 438,
+
+    [Description("Customer Id Not Found")]
+    CustomerIdNotFound = 439,
+
+    [Description("ShoppingCart Id Not Found")]
+    ShoppingCartIdNotFound = 440,
+
+    [Description("Invoice Id Not Found")]
+    InvoiceIdNotFound = 441,
 }

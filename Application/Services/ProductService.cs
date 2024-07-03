@@ -63,7 +63,7 @@ namespace Application.Services
                     State = productInput.State,
                 };
 
-                if (productInput.Quantity >= 0 && productInput.Price >= 0 
+                if (productInput.Quantity >= 0 && productInput.Price >= 0
                     && productInput.Quantity <= Int32.MaxValue
                     && productInput.Price <= Int32.MaxValue)
                     return await _productRepository.CreateAsync(productOutput);
@@ -96,7 +96,14 @@ namespace Application.Services
             try
             {
                 if (!String.IsNullOrEmpty(_id))
-                    return await _productRepository.GetProductByIdAsync(_id);
+                {
+                    var result = await _productRepository.GetProductByIdAsync(_id);
+                    if (result != null)
+                        return result;
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.ProductIdNotFound),
+                        nameof(GateWayBusinessException.ProductIdNotFound));
+                }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
                     nameof(GateWayBusinessException.ProductIdCannotBeNull));
