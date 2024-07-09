@@ -12,6 +12,6 @@ namespace Application.DTOs
         public string? _id { get; set; }
         public List<ProductInCart>? ProductsInCart { get; set; }
         public double PriceTotal { get; set;}
-        public bool Active {  get; set; }
+        public string? Status { get; set; }
     }
 }

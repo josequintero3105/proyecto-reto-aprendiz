@@ -8,7 +8,7 @@ using MongoDB.Bson;
 
 namespace Core.Entities.MongoDB
 {
-    public class ShoppingCartCollection
+    public class PaymentMethodCollection
     {
         /// <summary>
         /// _id
@@ -18,13 +18,16 @@ namespace Core.Entities.MongoDB
         [BsonElement("_id")]
         public string? _id { get; set; }
 
-        [BsonElement("ProductsInCart")]
-        public List<ProductInCartCollection>? ProductsInCart { get; set; }
+        /// <summary>
+        /// PaymentMethodId
+        /// </summary>
+        [BsonElement("PaymentMethodId")]
+        public int PaymentMethodId { get; set; }
 
-        [BsonElement("PriceTotal")]
-        public double PriceTotal { get; set; }
+        [BsonElement("BankCode")]
+        public int BankCode { get; set; }
 
-        [BsonElement("Status")]
-        public string? Status { get; set; }
+        [BsonElement("UserType")]
+        public int UserType { get; set; }
     }
 }

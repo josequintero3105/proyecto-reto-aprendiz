@@ -119,7 +119,6 @@ namespace Application.Services
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
-                    shoppingCart.Active = true;
                     await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                     return await _invoiceRepository.GenerateAsync(invoice);
                 }

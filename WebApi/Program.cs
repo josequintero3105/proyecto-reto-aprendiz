@@ -29,6 +29,8 @@ builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartAdapter>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerAdapter>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ITransactionRepository, TransactionAdapter>();
 
 IWebHostEnvironment environment = builder.Environment;
 IConfiguration configuration = builder.Configuration;
@@ -58,6 +60,8 @@ builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartAdapter>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerAdapter>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ITransactionRepository, TransactionAdapter>();
 builder.Services.AddScoped<IHandle, Application.Common.Helpers.Handle.Handle>();
 builder.Services.AddMongoDataBase(
     builder.Configuration.GetSection("AppSettings:ConnectionString").Value,

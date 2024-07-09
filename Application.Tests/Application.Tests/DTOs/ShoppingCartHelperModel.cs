@@ -52,7 +52,6 @@ namespace Application.Tests.Application.Tests.DTOs
                 },
             },
             PriceTotal = 40000,
-            Active = true
         };
 
         public static ShoppingCartCollection GetShoppingCartCollectionFromMongo() => new ShoppingCartCollection()
@@ -72,7 +71,6 @@ namespace Application.Tests.Application.Tests.DTOs
                 },
             },
             PriceTotal = 40000,
-            Active = true
         };
 
         public static ShoppingCart GetShoppingCartForRemoveProducts() => new ShoppingCart()

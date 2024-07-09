@@ -55,7 +55,7 @@ namespace Application.Services
                 ShoppingCart shoppingCart = new()
                 {
                     ProductsInCart = shoppingCartInput.ProductsInCart,
-                    Active = true
+                    Status = "Pending"
                 };
                 await GetAtLeastOneProduct(shoppingCart);
                 return await _shoppingCartRepository.CreateAsync(shoppingCart);

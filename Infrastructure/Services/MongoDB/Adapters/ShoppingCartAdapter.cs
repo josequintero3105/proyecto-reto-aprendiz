@@ -104,10 +104,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            var filter = Builders<ShoppingCartCollection>.Filter.And(
-                Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id)),
-                Builders<ShoppingCartCollection>.Filter.Eq(x => x.Active, true)
-            );
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
             return _context.ShoppingCartCollection.Find(filter).FirstOrDefault();
         }
 
