@@ -21,9 +21,9 @@ namespace Application.DTOs.Entries
         /// </summary>
         public PaymentMethod? PaymentMethod { get; set; }
         /// <summary>
-        ///     Status
+        ///     Sandbox
         /// </summary>
-        public string? Status { get; set; }
+        public Sandbox? Sandbox { get; set; }
         /// <summary>
         ///     Currency    
         /// </summary>
@@ -47,6 +47,6 @@ namespace Application.DTOs.Entries
         /// <summary>
         ///     Customer
         /// </summary>
-        public CustomerOutput? Customer { get; set; }
+        public CustomerInput? Customer { get; set; }
     }
 }

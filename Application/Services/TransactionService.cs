@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Common.FluentValidations.Extentions;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
 using Application.DTOs.Entries;
@@ -37,9 +38,26 @@ namespace Application.Services
         /// <param name="transactionInput"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<TransactionCollection> CreateTransaction(TransactionInput transactionInput)
+        public async Task<TransactionCollection> CreateTransaction(TransactionInput transactionInput)
         {
-            throw new NotImplementedException();
+            try
+            {
+                TransactionOutput transactionOutput = new()
+                {
+                    Invoice = transactionInput.Invoice,
+                    Description = transactionInput.Description,
+                    Currency = transactionInput.Currency,
+                    Value = transactionInput.Value,
+                    UrlConfirmation = transactionInput.UrlConfirmation,
+                    UrlResponse = transactionInput.UrlResponse,
+                };
+                return await _transactionRepository.CreateTransactionAsync(transactionOutput);
+            }
+            catch (BusinessException)
+            {
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdNotFound),
+                    nameof(GateWayBusinessException.TransactionIdNotFound));
+            }
         }
 
         /// <summary>
@@ -56,12 +74,12 @@ namespace Application.Services
                 if (result != null)
                     return result;
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.CustomerIdNotFound),
-                    nameof(GateWayBusinessException.CustomerIdNotFound));
+                    throw new BusinessException(nameof(GateWayBusinessException.TransactionIdNotFound),
+                    nameof(GateWayBusinessException.TransactionIdNotFound));
             }
             else
-                throw new BusinessException(nameof(GateWayBusinessException.CustomerIdCannotBeNull),
-                nameof(GateWayBusinessException.CustomerIdCannotBeNull));
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdCannotBeNull),
+                nameof(GateWayBusinessException.TransactionIdCannotBeNull));
         }
     }
 }

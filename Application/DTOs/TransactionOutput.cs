@@ -45,5 +45,9 @@ namespace Application.DTOs
         ///     MethodConfirmation
         /// </summary>
         public string? MethodConfirmation { get; set; }
+        /// <summary>
+        ///     CustomerOutput
+        /// </summary>
+        public CustomerOutput? customerOutput { get; set; }
     }
 }

@@ -45,6 +45,7 @@ builder.Host.ConfigureAppConfiguration((context, config) =>
         .Build();
 
 });
+
 #endregion ProgramConfiguration
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -68,7 +69,10 @@ builder.Services.AddMongoDataBase(
     builder.Configuration.GetSection("AppSettings:Database").Value
     
 );
-
+builder.Services.AddHttpClient("pasarela", c => {
+    c.BaseAddress = new Uri("https://devapi.credinet.co/pay/");
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
 builder.Services.AddHealthChecks();
 
 // Application configures

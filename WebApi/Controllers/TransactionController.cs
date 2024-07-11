@@ -15,37 +15,43 @@ namespace WebApi.Controllers
     {
         private readonly ITransactionService _transactionService;
         private readonly IHandle _handle;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient = new HttpClient();
 
-        public TransactionController(ITransactionService transactionService, IHandle handle)
+        public TransactionController(ITransactionService transactionService, IHandle handle, IHttpClientFactory httpClientFactory, HttpClient httpClient)
         {
             _transactionService = transactionService;
             _handle = handle;
+            _httpClientFactory = httpClientFactory;
+            _httpClient = httpClient;
         }
 
         /// <summary>
-        /// Create a new transaction
+        /// Method Test
         /// </summary>
-        /// <param name="transactionInput"></param>
         /// <returns></returns>
+        //[HttpGet]
+        //public async Task<IActionResult> Test()
+        //{
+        //    var client = _httpClientFactory.CreateClient("pasarela");
+        //    var result = await client.GetAsync("https://devapi.credinet.co/pay/");
+        //    return Ok(result);
+        //}
+
         [HttpPost]
-        [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] TransactionInput transactionInput)
         {
-            TransactionCollection transactionCollection = await _transactionService.CreateTransaction(transactionInput);
-            return CreatedAtAction(nameof(Create), new {transactionCollection._id}, transactionCollection);
+            var response = await _httpClient.PostAsJsonAsync("https://devapi.credinet.co/pay/create", transactionInput);
+            var responseString = await response.Content.ReadAsStringAsync();
+            return Created("~/api/Transaction/", responseString);
         }
 
-        /// <summary>
-        /// GetTransactionById
-        /// </summary>
-        /// <param name="_id"></param>
-        /// <returns></returns>
-        [HttpGet()]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> GetTransactionById([FromQuery] string? _id = null)
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] string? _id = null)
         {
-            var result = await _transactionService.GetTransactionById(_id);
-            return Ok(result);
+            var response = await _httpClient.GetAsync("https://devapi.credinet.co/pay/GetTransactionResponse?transactionId=" + _id + "");
+            var responseString = await response.Content.ReadAsStringAsync();
+            return Ok(responseString);
         }
     }
 }
