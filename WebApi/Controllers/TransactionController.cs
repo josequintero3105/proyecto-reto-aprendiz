@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Core.Entities.MongoDB;
@@ -38,20 +39,27 @@ namespace WebApi.Controllers
         //    return Ok(result);
         //}
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TransactionInput transactionInput)
-        {
-            var response = await _httpClient.PostAsJsonAsync("https://devapi.credinet.co/pay/create", transactionInput);
-            var responseString = await response.Content.ReadAsStringAsync();
-            return Created("~/api/Transaction/", responseString);
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> Create([FromBody] TransactionInput transactionInput)
+        //{
+        //    var response = await _httpClient.PostAsJsonAsync("https://devapi.credinet.co/pay/create", transactionInput);
+        //    var responseString = await response.Content.ReadAsStringAsync();
+        //    return Created("~/api/Transaction/", responseString);
+        //}
+
+        //[HttpGet]
+        //public async Task<IActionResult> Get([FromQuery] string? _id = null)
+        //{
+        //    var response = await _httpClient.GetAsync("https://devapi.credinet.co/pay/GetTransactionResponse?transactionId=" + _id + "");
+        //    var responseString = await response.Content.ReadAsStringAsync();
+        //    return Ok(responseString);
+        //}
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string? _id = null)
         {
-            var response = await _httpClient.GetAsync("https://devapi.credinet.co/pay/GetTransactionResponse?transactionId=" + _id + "");
-            var responseString = await response.Content.ReadAsStringAsync();
-            return Ok(responseString);
+            TransactionResponse transactionResponse = await _transactionService.GetTransactionById(_id!);
+            return Ok(transactionResponse);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Services
@@ -14,14 +15,16 @@ namespace Application.Interfaces.Services
         /// <summary>
         /// CreateTransaction
         /// </summary>
+        /// <param name="headers"></param>
         /// <param name="transactionInput"></param>
+        /// <param name="url"></param>
         /// <returns></returns>
-        Task<TransactionCollection> CreateTransaction(TransactionInput transactionInput);
+        public Task<HttpResponseMessage> CreateTransaction(string url, TransactionInput transactionInput, IDictionary<string, string> headers);
         /// <summary>
         /// Create Transaction Async
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        Task<TransactionOutput> GetTransactionById(string _id);
+        public Task<TransactionResponse> GetTransactionById(string _id);
     }
 }
