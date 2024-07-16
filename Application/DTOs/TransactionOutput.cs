@@ -48,6 +48,6 @@ namespace Application.DTOs
         /// <summary>
         ///     CustomerOutput
         /// </summary>
-        public CustomerOutput? customerOutput { get; set; }
+        public CustomerOutput? Client { get; set; }
     }
 }

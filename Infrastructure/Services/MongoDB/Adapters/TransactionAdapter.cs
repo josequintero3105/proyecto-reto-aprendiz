@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.DTOs.Commands;
+using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Mongo;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Core.Entities.MongoDB;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Services.MongoDB.Adapters
 {
@@ -40,27 +47,15 @@ namespace Infrastructure.Services.MongoDB.Adapters
             _context = DataBaseContext.GetMongoDatabase(stringMongoConnection, dataBaseName);
             _mapper = mapper;
         }
-        /// <summary>
-        /// CreateTransaction
-        /// </summary>
-        /// <param name="transactionOutput"></param>
-        /// <returns></returns>
-        public async Task<TransactionCollection> CreateTransactionAsync(TransactionOutput transactionOutput)
+
+        public Task<TransactionOutput> CreateTransactionAsync(TransactionInput transactionInput)
         {
-            TransactionCollection transactionCollection = _mapper.Map<TransactionCollection>(transactionOutput);
-            await _context.TransactionCollection.InsertOneAsync(transactionCollection);
-            return transactionCollection;
+            throw new NotImplementedException();
         }
-        /// <summary>
-        /// GetTransactionById
-        /// </summary>
-        /// <param name="_id"></param>
-        /// <returns></returns>
-        public async Task<TransactionOutput> GetTransactionByIdAsync(string _id)
+
+        public Task<TransactionOutput> GetTransactionByIdAsync(string _id)
         {
-            var IdFound = Builders<TransactionCollection>.Filter.Eq(c => c._id, _id);
-            var result = await _context.TransactionCollection.FindAsync(IdFound);
-            return _mapper.Map<TransactionOutput>(result.FirstOrDefault());
+            throw new NotImplementedException();
         }
     }
 }

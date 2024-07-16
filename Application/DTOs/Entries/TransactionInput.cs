@@ -47,6 +47,6 @@ namespace Application.DTOs.Entries
         /// <summary>
         ///     Customer
         /// </summary>
-        public CustomerInput? Customer { get; set; }
+        public CustomerInput? Client { get; set; }
     }
 }

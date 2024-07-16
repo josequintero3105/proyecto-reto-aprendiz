@@ -31,7 +31,7 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerAdapter>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionAdapter>();
-
+builder.Services.AddHttpClientServices();
 IWebHostEnvironment environment = builder.Environment;
 IConfiguration configuration = builder.Configuration;
 
@@ -63,16 +63,13 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerAdapter>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionAdapter>();
+builder.Services.AddHttpClientServices();
 builder.Services.AddScoped<IHandle, Application.Common.Helpers.Handle.Handle>();
 builder.Services.AddMongoDataBase(
-    builder.Configuration.GetSection("AppSettings:ConnectionString").Value,
-    builder.Configuration.GetSection("AppSettings:Database").Value
+    builder.Configuration.GetSection("AppSettings:ConnectionString").Value!,
+    builder.Configuration.GetSection("AppSettings:Database").Value!
     
 );
-builder.Services.AddHttpClient("pasarela", c => {
-    c.BaseAddress = new Uri("https://devapi.credinet.co/pay/");
-    c.Timeout = TimeSpan.FromSeconds(10);
-});
 builder.Services.AddHealthChecks();
 
 // Application configures

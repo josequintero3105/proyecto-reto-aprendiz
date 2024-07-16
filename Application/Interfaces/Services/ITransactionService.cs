@@ -15,16 +15,14 @@ namespace Application.Interfaces.Services
         /// <summary>
         /// CreateTransaction
         /// </summary>
-        /// <param name="headers"></param>
         /// <param name="transactionInput"></param>
-        /// <param name="url"></param>
         /// <returns></returns>
-        public Task<HttpResponseMessage> CreateTransaction(string url, TransactionInput transactionInput, IDictionary<string, string> headers);
+        Task<TransactionOutput> CreateTransaction(TransactionInput transactionInput);
         /// <summary>
         /// Create Transaction Async
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public Task<TransactionResponse> GetTransactionById(string _id);
+        Task<TransactionResponse> GetTransactionById(string _id);
     }
 }
