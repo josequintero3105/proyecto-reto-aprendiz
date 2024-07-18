@@ -35,8 +35,7 @@ namespace Infrastructure.Services.Rest
         {
             CommandResponse<T> commandResponse = new();
             Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.Headers);
-            HttpResponseMessage httpResponseMessage = await _clientService.GetServiceAsync(
-                "https://devapi.credinet.co/pay/",
+            HttpResponseMessage httpResponseMessage = await _clientService.GetServiceAsync("https://devapi.credinet.co/pay/",
                 request, null, headers);
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
             T genericOutput = JsonConvert.DeserializeObject<T>(response)!;

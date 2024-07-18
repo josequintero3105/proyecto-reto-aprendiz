@@ -11,6 +11,8 @@ using Application.Interfaces.Infrastructure.Mongo;
 using Infrastructure.Services.MongoDB.Adapters;
 using Application.Interfaces.Common;
 using Application.Common.Helpers.Handle;
+using Application.Interfaces.Infrastructure.Commands;
+using Application.Common.Helpers.Commands;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -31,6 +33,7 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerAdapter>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionAdapter>();
+builder.Services.AddScoped<ICommandEventRepository, CommandEvent>();
 builder.Services.AddHttpClientServices();
 IWebHostEnvironment environment = builder.Environment;
 IConfiguration configuration = builder.Configuration;
@@ -70,6 +73,16 @@ builder.Services.AddMongoDataBase(
     builder.Configuration.GetSection("AppSettings:Database").Value!
     
 );
+//builder.Services.AddApiPasarela(
+//    builder.Configuration.GetSection("ApiSettings:Url").Value!,
+//    builder.Configuration.GetSection("ApiSettings:Ocp-Apim-Subscription-Key").Value!,
+//    builder.Configuration.GetSection("ApiSettings:ApplicationKey").Value!,
+//    builder.Configuration.GetSection("ApiSettings:ApplicationToken").Value!, 
+//    builder.Configuration.GetSection("ApiSettings:SCLocation").Value!,
+//    builder.Configuration.GetSection("ApiSettings:SCOrigen").Value!,
+//    builder.Configuration.GetSection("ApiSettings:country").Value!,
+//    builder.Configuration.GetSection("ApiSettings:Cookie").Value!
+//);
 builder.Services.AddHealthChecks();
 
 // Application configures

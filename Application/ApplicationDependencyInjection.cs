@@ -21,5 +21,11 @@ namespace Application
             services.AddAutoMapper(typeof(MappingProfile));
             return services;
         }
+
+        public static IServiceCollection RegisterCommon(this IServiceCollection services)
+        {
+            services.AddScoped<ICommandEventRepository, CommandEvent>();
+            return services;
+        }
     }
 }

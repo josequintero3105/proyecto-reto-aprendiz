@@ -11,7 +11,7 @@ using Core.Enumerations;
 
 namespace Application.Common.Helpers.Commands
 {
-    public class CommandEvent : ICommandRepository
+    public class CommandEvent : ICommandEventRepository
     {
         private readonly IProductRepository _productRepository;
         private readonly ITransactionRepository _transactionRepository;
@@ -41,6 +41,13 @@ namespace Application.Common.Helpers.Commands
             return await _productRepository.CreateProductAsync(data);
         }
 
+        /// <summary>
+        /// Execute Transactions
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="transactionActions"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public async Task<CommandResponse<T>> ExecuteTransactions<T>(TransactionActions transactionActions, dynamic data)
         {
             CommandResponse<T> response = new();

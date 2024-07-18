@@ -13,6 +13,7 @@ namespace WebApi.Configuration
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(MappingProfile));
+            services.RegisterCommon();
             return services;
         }
 

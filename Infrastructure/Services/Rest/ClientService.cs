@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,6 +15,7 @@ using Application.Interfaces.Infrastructure.RestService;
 using Common.Helpers.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Infrastructure.Services.Rest
 {
@@ -48,8 +52,17 @@ namespace Infrastructure.Services.Rest
                 string json = JsonConvert.SerializeObject(transactionInput);
                 HttpContent content = new StringContent(json, Encoding.UTF8);
                 var _client = BuildClientHttp(headers);
+                LoggerMessageDefinition.StartedServiceLog(_logger, url, json);
                 HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
-                var respose = await httpResponseMessage.Content.ReadAsStringAsync();
+                var response = await httpResponseMessage.Content.ReadAsStringAsync();
+                if (httpResponseMessage.IsSuccessStatusCode)
+                    LoggerMessageDefinition.FinalizedServiceLog(_logger, nameof(PostServiceAsync), response);
+                else
+                {
+                    string error = string.Format("StatusCode: {0} -> Status: {1} -> Url: {2}",
+                        (int)httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase, url);
+                    LoggerMessageDefinition.ErrorServiceLog(_logger, error, response);
+                }
                 return httpResponseMessage;
             }
             catch (BusinessException)
@@ -76,6 +89,14 @@ namespace Infrastructure.Services.Rest
                 string fullUrl = BuildUrl(url, path, queryString);
                 HttpResponseMessage httpResponseMessage = await _client.GetAsync(fullUrl);
                 var response = await httpResponseMessage.Content.ReadAsStringAsync();
+                if (httpResponseMessage.IsSuccessStatusCode)
+                    LoggerMessageDefinition.FinalizedServiceLog(_logger, nameof(PostServiceAsync), response);
+                else
+                {
+                    string error = string.Format("StatusCode: {0} -> Status: {1} -> Url: {2}",
+                        (int)httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase, url);
+                    LoggerMessageDefinition.ErrorServiceLog(_logger, error, response);
+                }
                 return httpResponseMessage;
             }
             catch (BusinessException)

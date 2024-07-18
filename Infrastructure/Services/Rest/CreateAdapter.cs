@@ -72,8 +72,8 @@ namespace Infrastructure.Services.Rest
 
             CommandResponse<T> commandResponse = new();
             Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(transaction.Headers);
-            headers.Add("Authorization", "Bearer");
-            HttpResponseMessage httpResponseMessage = await _clientService.PostServiceAsync("https://devapi.credinet.co/pay/",
+            headers.Add("Authorization", "Bearer ");
+            HttpResponseMessage httpResponseMessage = await _clientService.PostServiceAsync("https://devapi.credinet.co/pay/create",
                 transactionInput, headers);
             T genericOutput = default!;
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
