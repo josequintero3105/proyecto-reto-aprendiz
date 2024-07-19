@@ -106,6 +106,11 @@ namespace Infrastructure.Services.Rest
             }
         }
 
+        public Task<T> GetServiceAsync<T>(string url, string path, NameValueCollection? queryString = null, IDictionary<string, string>? headers = null)
+        {
+            throw new NotImplementedException();
+        }
+
         private HttpClient BuildClientHttp(IDictionary<string, string>? headers)
         {
             var _client = _httpClientFactory.CreateClient();

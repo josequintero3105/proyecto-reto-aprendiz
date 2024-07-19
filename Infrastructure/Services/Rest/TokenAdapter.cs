@@ -21,12 +21,11 @@ namespace Infrastructure.Services.Rest
         }
         public async Task<CommandResponse<T>> GetTokenAdapter<T>(dynamic request)
         {
-            return null!;
-            //CommandResponse<T> commnadResponse = new();
-            //var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>("");
-            //GenericOutput<T, ErrorOutput> response = await _clientService.GetServiceAsync<GenericOutput<T, ErrorOutput>>("", request, null, headers);
-            //if(response.data is not null) commnadResponse.Item = response.data;
-            //return commnadResponse;
+            CommandResponse<T> commnadResponse = new();
+            var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>("");
+            GenericOutput<T, ErrorOutput> response = await _clientService.GetServiceAsync<GenericOutput<T, ErrorOutput>>("", request, null, headers);
+            if (response.data is not null) commnadResponse.Item = response.data;
+            return commnadResponse;
         }
     }
 }

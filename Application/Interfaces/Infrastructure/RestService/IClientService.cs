@@ -12,5 +12,6 @@ namespace Application.Interfaces.Infrastructure.RestService
     {
         Task<HttpResponseMessage> PostServiceAsync(string url, TransactionInput transactionInput, IDictionary<string, string> headers);
         Task<HttpResponseMessage> GetServiceAsync(string url, string path, NameValueCollection? queryString = null, IDictionary<string, string>? headers = null);
+        Task<T> GetServiceAsync<T>(string url, string path, NameValueCollection? queryString = null, IDictionary<string, string>? headers = null);
     }
 }
