@@ -15,6 +15,7 @@ using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
+using Core.Enumerations;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
@@ -30,16 +31,18 @@ namespace Application.Services
         /// Variables
         /// </summary>
         private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly ITransactionService _transactionService;
         private readonly ILogger<ShoppingCartService> _logger;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="shoppingCartRepository"></param>
         /// <param name="logger"></param>
-        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository, ILogger<ShoppingCartService> logger)
+        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository, ILogger<ShoppingCartService> logger, ITransactionService transactionService)
         {
             _shoppingCartRepository = shoppingCartRepository;
             _logger = logger;
+            _transactionService = transactionService;
         }
 
         /// <summary>
@@ -475,6 +478,66 @@ namespace Application.Services
                 _logger.LogError(ex, "Error: {message}", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
                     nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
+        }
+
+        public async Task ProcessTransaction(TransactionInput transactionInput)
+        {
+            try
+            {
+                var transactionResponse = await _transactionService.ProcessTransaction(transactionInput);
+                var resultCart = await _shoppingCartRepository.GetShoppingCartAsync(transactionInput.Invoice!);
+                if (resultCart != null)
+                {
+                    switch (transactionResponse.TransactionStatus)
+                    {
+                        case "Approved":
+                            resultCart.Status = TransactionCoreStatus.Approved.ToString();
+                            await _shoppingCartRepository.UpdateShoppingCartAsync(resultCart);
+                            break;
+
+                        case "Pending":
+                            resultCart.Status = TransactionCoreStatus.Pending.ToString();
+                            await RestoreProductStock(resultCart, transactionInput.Invoice!);
+                            break;
+
+                        default:
+                            resultCart.Status = TransactionCoreStatus.Rejected.ToString();
+                            break;
+                    }
+                }
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+            }
+            
+        }
+
+        public async Task RestoreProductStock(ShoppingCart shoppingCart, string _id)
+        {
+            while (shoppingCart.Status == "Pending")
+            {
+                var transactionStatus = await _transactionService.CheckTransactionStatus(_id);
+                if (transactionStatus.transactionStatus == "Approved")
+                {
+                    shoppingCart.Status = "Aprobado";
+                    break;
+                }
+                else if (transactionStatus.transactionStatus == "Pending")
+                {
+                    shoppingCart.Status = "Sin_Procesar";
+                    await RemoveFromShoppingCart(null!, _id);
+                    break;
+                }
             }
         }
     }

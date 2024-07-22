@@ -33,7 +33,7 @@ namespace Application.DTOs
         /// <summary>
         ///     Status
         /// </summary>
-        public string? Status { get; set; }
+        public string? TransactionStatus { get; set; }
         /// <summary>
         ///     Currency    
         /// </summary>
@@ -55,13 +55,13 @@ namespace Application.DTOs
         /// </summary>
         public PaymentMethodResponse? PaymentMethodResponse { get; set; }
         /// <summary>
-        ///     UrlResponse
-        /// </summary>
-        public string? UrlResponse { get; set; }
-        /// <summary>
         ///     UrlConfirmation
         /// </summary>
         public string? UrlConfirmation { get; set; }
+        /// <summary>
+        ///     UrlResponse
+        /// </summary>
+        public string? UrlResponse { get; set; }
         /// <summary>
         ///     MethodConfirmation
         /// </summary>

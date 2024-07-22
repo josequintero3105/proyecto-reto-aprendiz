@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,18 +49,15 @@ namespace Application.Common.Helpers.Commands
         /// <param name="transactionActions"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task<CommandResponse<T>> ExecuteTransactions<T>(TransactionActions transactionActions, dynamic data)
+        public async Task<CommandResponse<T>> ExecuteCreateTransaction<T>(dynamic data)
         {
-            CommandResponse<T> response = new();
-            switch ((int)transactionActions)
-            {
-                case (int)TransactionActions.CreateTransaction:
-                    response = await _createRepository.PostCreateAdapter<T>(data);
-                    break;
-                case (int)TransactionActions.GetTransaction:
-                    response = await _getRepository.GetTAdapter<T>(data);
-                    break;
-            }
+            CommandResponse<T> response = await _createRepository.PostCreateAdapter<T>(data);     
+            return response;
+        }
+
+        public async Task<CommandResponse<T>> ExecuteGetTransaction<T>(dynamic data, NameValueCollection _id)
+        {
+            CommandResponse<T> response = await _getRepository.GetTAdapter(data, _id);
             return response;
         }
     }

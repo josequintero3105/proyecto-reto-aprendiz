@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -31,21 +32,13 @@ namespace Infrastructure.Services.Rest
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<CommandResponse<T>> GetTAdapter<T>(dynamic request)
+        public async Task<HttpResponseMessage> GetTAdapter(dynamic request, NameValueCollection _id)
         {
-            CommandResponse<T> commandResponse = new();
             Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.Headers);
             HttpResponseMessage httpResponseMessage = await _clientService.GetServiceAsync("https://devapi.credinet.co/pay/",
-                request, null, headers);
-            var response = await httpResponseMessage.Content.ReadAsStringAsync();
-            T genericOutput = JsonConvert.DeserializeObject<T>(response)!;
-            HttpStatusCode statusCode = httpResponseMessage.StatusCode;
-            commandResponse.ItemInOutput = new System.Collections.Hashtable()
-            {
-                {typeof(T), genericOutput},
-                {typeof(HttpStatusCode), statusCode }
-            };
-            return commandResponse;
+                request, _id, headers);
+            await httpResponseMessage.Content.ReadAsStringAsync();
+            return httpResponseMessage;
         }
     }
 }

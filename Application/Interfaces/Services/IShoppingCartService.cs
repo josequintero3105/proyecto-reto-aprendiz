@@ -43,5 +43,11 @@ namespace Application.Interfaces.Services
         /// <param name="_id"></param>
         /// <returns></returns>
         Task<ShoppingCart> RemoveFromShoppingCart(ShoppingCartInput shoppingCartInput, string _id);
+        /// <summary>
+        /// Process Transaction
+        /// </summary>
+        /// <param name="transactionInput"></param>
+        /// <returns></returns>
+        Task ProcessTransaction(TransactionInput transactionInput);
     }
 }

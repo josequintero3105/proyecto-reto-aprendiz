@@ -23,6 +23,9 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        Task<TransactionResponse> GetTransactionById(string _id);
+        Task<HttpResponseMessage> GetTransactionById(dynamic path, dynamic _id);
+
+        Task<TransactionOutput> ProcessTransaction(TransactionInput transactionInput);
+        Task<TransactionResponse> CheckTransactionStatus(string _id);
     }
 }

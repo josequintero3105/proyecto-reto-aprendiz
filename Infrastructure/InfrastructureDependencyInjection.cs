@@ -6,6 +6,7 @@ using Application.Services;
 using Infrastructure.Services.MongoDB;
 using Infrastructure.Services.MongoDB.Adapters;
 using Infrastructure.Services.Rest;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure
@@ -18,16 +19,8 @@ namespace Infrastructure
             return services;
         }
 
-        //public static IServiceCollection AddApiPasarela(this IServiceCollection services, 
-        //    string url, string subscription, string key, string token, string location, string origin, string country, string cookie)
-        //{
-        //    services.AddSingleton<IApiContext>(provider => new ApiContext(url, subscription, key, token, location, origin, country, cookie));
-        //    return services;
-        //}
-
         public static IServiceCollection AddHttpClientServices(this IServiceCollection services)
         {
-            services.AddHttpClient();
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<ICreateRepository, CreateAdapter>();
             services.AddScoped<IGetRepository, GetAdapter>();

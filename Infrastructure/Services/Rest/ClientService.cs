@@ -113,7 +113,7 @@ namespace Infrastructure.Services.Rest
 
         private HttpClient BuildClientHttp(IDictionary<string, string>? headers)
         {
-            var _client = _httpClientFactory.CreateClient();
+            var _client = _httpClientFactory.CreateClient("Pasarela");
             _client.DefaultRequestHeaders.Clear();
             if (headers != null) foreach (var header in headers) _client.DefaultRequestHeaders.Add(header.Key, header.Value);
             return _client;
@@ -125,7 +125,7 @@ namespace Infrastructure.Services.Rest
             if (queryString != null && queryString.Count > 0)
             {
                 string query = ToQueryString(queryString);
-                fullUrl = $"{baseUrl}/" + $"{path}{query}";
+                fullUrl = $"{baseUrl}/" + $"{path}?transactionId={query}";
             }
             else
             {

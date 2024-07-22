@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Transactions;
+using Amazon.Runtime.Internal;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.Helpers.Exceptions;
 using Application.DTOs;
@@ -17,6 +19,7 @@ using Application.DTOs.Entries;
 using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Commands;
 using Application.Interfaces.Infrastructure.Mongo;
+using Application.Interfaces.Infrastructure.RestService;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
@@ -34,18 +37,34 @@ namespace Application.Services
         /// <summary>
         /// Variables
         /// </summary>
-        private readonly ITransactionRepository _transactionRepository;
         private readonly ICommandEventRepository _commandEventRepository;
         private readonly ILogger<TransactionService> _logger;
+        private readonly IGetRepository _getRepository;
+        private readonly HttpClient _httpClient;
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="transactionRepository"></param>
-        public TransactionService(ITransactionRepository transactionRepository, ILogger<TransactionService> logger, ICommandEventRepository commandEventRepository)
+        
+        public TransactionService(IHttpClientFactory httpClientFactory, ILogger<TransactionService> logger, ICommandEventRepository commandEventRepository, IGetRepository getRepository)
         {
-            _transactionRepository = transactionRepository;
             _logger = logger;
             _commandEventRepository = commandEventRepository;
+            _getRepository = getRepository;
+            _httpClient = httpClientFactory.CreateClient("Pasarela");
+        }
+
+        public async Task<TransactionOutput> ProcessTransaction(TransactionInput transactionInput)
+        {
+            var response = await _httpClient.PostAsJsonAsync("create", transactionInput);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<TransactionOutput>();
+        }
+
+        public async Task<TransactionResponse> CheckTransactionStatus(string _id)
+        {
+            var response = await _httpClient.GetAsync($"GetTransactionResponse?transactionId={_id}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<TransactionResponse>();
         }
 
         /// <summary>
@@ -57,21 +76,17 @@ namespace Application.Services
         public async Task<TransactionOutput> CreateTransaction(TransactionInput transactionInput)
         {
             CommandResponse<GenericOutput<TransactionOutput, ErrorOutput>> commandResponseCreateTransaction =
-                await _commandEventRepository.ExecuteTransactions<GenericOutput<TransactionOutput, ErrorOutput>>(
-                    TransactionActions.CreateTransaction, transactionInput);
-
-            GenericOutput<TransactionOutput, ErrorOutput> wompiOutput = (GenericOutput<TransactionOutput, ErrorOutput>)commandResponseCreateTransaction.ItemInOutput![typeof(GenericOutput<TransactionOutput, ErrorOutput>)]!;
+                await _commandEventRepository.ExecuteCreateTransaction<GenericOutput<TransactionOutput, ErrorOutput>>(transactionInput);
+            PaymentMethod paymentMethod = (PaymentMethod)commandResponseCreateTransaction.ItemInOutput![typeof(PaymentMethod)]!;
+            GenericOutput<TransactionOutput, ErrorOutput> StatusOutput = (GenericOutput<TransactionOutput, ErrorOutput>)commandResponseCreateTransaction.ItemInOutput![typeof(GenericOutput<TransactionOutput, ErrorOutput>)]!;
 
             TransactionOutput transactionOutput = new()
             {
+                _id = string.Empty,
                 Invoice = transactionInput.Invoice,
                 Description = transactionInput.Description,
-                PaymentMethod = new()
-                {
-                    PaymentMethodId = 1,
-                    BankCode = 1077,
-                    UserType = 0,
-                },
+                PaymentMethod = paymentMethod,
+                TransactionStatus = (StatusOutput.data != null) ? TransactionCoreStatus.Pending.ToString() : TransactionCoreStatus.Rejected.ToString(),
                 CreationDate = DateTime.Now,
                 Currency = transactionInput.Currency,
                 Value = transactionInput.Value,
@@ -88,40 +103,17 @@ namespace Application.Services
         /// <param name="_id"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<TransactionResponse> GetTransactionById(string _id)
+        public async Task<HttpResponseMessage> GetTransactionById(dynamic path, dynamic _id)
         {
             try
             {
                 if (!String.IsNullOrEmpty(_id))
                 {
-                    using (var client = new HttpClient())
-                    {
-                        HttpResponseMessage responseMessage =
-                            await client.GetAsync($"https://devapi.credinet.co/pay/GetTransactionResponse?transactionId={_id}");
-                        responseMessage.EnsureSuccessStatusCode();
-                        string responseBody = await responseMessage.Content.ReadAsStringAsync();
-                        JObject jsonObject = JObject.Parse(responseBody);
-                        dynamic innerObject = JsonConvert.DeserializeObject(responseBody)!;
-                        TransactionResponse transactionResponse = new()
-                        {
-                            _id = jsonObject["_id"]!.ToString(),
-                            invoice = jsonObject["invoice"]!.ToString(),
-                            storeId = jsonObject["storeId"]!.ToString(),
-                            vendorId = jsonObject["vendorId"]!.ToString(),
-                            description = jsonObject["description"]!.ToString(),
-                            paymentMethod = innerObject.levels["paymentMethod"],
-                            transactionStatus = jsonObject["transactionStatus"]!.ToString(),
-                            currency = jsonObject["currency"]!.ToString(),
-                            value = double.Parse(jsonObject["value"]!.ToString()),
-                            sandbox = innerObject.levels["sandBox"],
-                            creationDate = (DateTime)jsonObject["creationDate"]!,
-                            paymentMethodResponse = innerObject.levels["paymentMethodResponse"],
-                            UrlConfirmation = jsonObject["urlConfirmacion"]!.ToString(),
-                            UrlResponse = jsonObject["urlResponse"]!.ToString(),
-                            MethodConfirmation = jsonObject["methodConfirmation"]!.ToString()
-                        };
-                        return transactionResponse;
-                    }
+                    CommandResponse<GenericOutput<TransactionOutput, ErrorOutput>> commandResponseCreateTransaction =
+                        await _commandEventRepository.ExecuteCreateTransaction<GenericOutput<TransactionOutput, ErrorOutput>>(path);
+                    GenericOutput<TransactionOutput, ErrorOutput> StatusOutput = (GenericOutput<TransactionOutput, ErrorOutput>)commandResponseCreateTransaction.ItemInOutput![typeof(GenericOutput<TransactionOutput, ErrorOutput>)]!;
+                    HttpResponseMessage response = await _getRepository.GetTAdapter(path, _id);
+                    return response;
                 }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.TransactionIdCannotBeNull),
@@ -129,8 +121,8 @@ namespace Application.Services
             }
             catch (HttpRequestException)
             {
-                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdCannotBeNull),
-                    nameof(GateWayBusinessException.TransactionIdCannotBeNull));
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdNotFound),
+                    nameof(GateWayBusinessException.TransactionIdNotFound));
             }
         }
     }

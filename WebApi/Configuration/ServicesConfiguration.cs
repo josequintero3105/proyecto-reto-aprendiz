@@ -2,6 +2,7 @@
 using Application;
 using Application.Common.Utilities;
 using Application.DTOs;
+using Infrastructure;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using RestApi.Filters;
@@ -13,6 +14,7 @@ namespace WebApi.Configuration
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(MappingProfile));
+            services.AddHttpClientServices();
             services.RegisterCommon();
             return services;
         }

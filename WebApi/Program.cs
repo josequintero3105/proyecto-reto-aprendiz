@@ -13,6 +13,7 @@ using Application.Interfaces.Common;
 using Application.Common.Helpers.Handle;
 using Application.Interfaces.Infrastructure.Commands;
 using Application.Common.Helpers.Commands;
+using Application.Common.FluentValidations.Extentions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -67,22 +68,21 @@ builder.Services.AddScoped<ICustomerRepository, CustomerAdapter>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionAdapter>();
 builder.Services.AddHttpClientServices();
+builder.Services.AddHttpClient("Pasarela", client => {
+    client.BaseAddress = new Uri(builder.Configuration.GetSection("ApiSettings:BaseUrl").Value!);
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer");
+    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "b0dc8eb7924540e1913ab262b8500721");
+    client.DefaultRequestHeaders.Add("ApplicationKey", "5d9b85f784c9d000019a9bff");
+    client.DefaultRequestHeaders.Add("ApplicationToken", "5d9b6bd284c9d000019a9bfd");
+    client.DefaultRequestHeaders.Add("SCLocation", "0,0");
+    client.DefaultRequestHeaders.Add("SCOrigen", "Qa");
+    client.DefaultRequestHeaders.Add("country", "co");
+});
 builder.Services.AddScoped<IHandle, Application.Common.Helpers.Handle.Handle>();
 builder.Services.AddMongoDataBase(
     builder.Configuration.GetSection("AppSettings:ConnectionString").Value!,
     builder.Configuration.GetSection("AppSettings:Database").Value!
-    
 );
-//builder.Services.AddApiPasarela(
-//    builder.Configuration.GetSection("ApiSettings:Url").Value!,
-//    builder.Configuration.GetSection("ApiSettings:Ocp-Apim-Subscription-Key").Value!,
-//    builder.Configuration.GetSection("ApiSettings:ApplicationKey").Value!,
-//    builder.Configuration.GetSection("ApiSettings:ApplicationToken").Value!, 
-//    builder.Configuration.GetSection("ApiSettings:SCLocation").Value!,
-//    builder.Configuration.GetSection("ApiSettings:SCOrigen").Value!,
-//    builder.Configuration.GetSection("ApiSettings:country").Value!,
-//    builder.Configuration.GetSection("ApiSettings:Cookie").Value!
-//);
 builder.Services.AddHealthChecks();
 
 // Application configures

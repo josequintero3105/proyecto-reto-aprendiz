@@ -40,6 +40,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         /// </summary>
         private readonly Mock<IShoppingCartRepository> _shoppingCartRepositoryMock = new();
         private readonly Mock<IShoppingCartService> _shoppingCartServiceMock = new();
+        private readonly Mock<ITransactionService> _transacionServiceMock = new();
         private readonly Mock<ILogger<ShoppingCartService>> _loggerMock = new();
         private readonly Mock<IMapper> _mapperMock = new();
         private readonly Mock<IHandle> _handleMock = new();
@@ -50,7 +51,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public ShoppingCartTest() 
         {
             _shoppingCartRepositoryMock = new Mock<IShoppingCartRepository>();
-            _shoppingCartService = new ShoppingCartService(_shoppingCartRepositoryMock.Object, _loggerMock.Object);
+            _shoppingCartService = new ShoppingCartService(_shoppingCartRepositoryMock.Object, _loggerMock.Object, _transacionServiceMock.Object);
             _shoppingCartController = new ShoppingCartController(_shoppingCartServiceMock.Object, _handleMock.Object);
             
             _shoppingCartController.ControllerContext.RouteData = new RouteData();

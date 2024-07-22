@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,6 @@ namespace Application.Interfaces.Infrastructure.RestService
 {
     public interface IGetRepository
     {
-        Task<CommandResponse<T>> GetTAdapter<T>(dynamic request);
+        Task<HttpResponseMessage> GetTAdapter(dynamic request, NameValueCollection _id);
     }
 }
