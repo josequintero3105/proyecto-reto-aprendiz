@@ -24,11 +24,11 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <returns></returns>
         Task<ShoppingCart> GetShoppingCartAsync(string _id);
         /// <summary>
-        /// Method for search in mongo in unit test
+        /// Method post for reset
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        Task<bool> GetShoppingCartFromMongo(string _id);
+        ShoppingCartCollection GetShoppingCartForReset(string _id);
         /// <summary>
         /// Update content from shopping cart
         /// </summary>

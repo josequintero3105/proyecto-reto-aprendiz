@@ -89,11 +89,10 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public async Task<bool> GetShoppingCartFromMongo(string _id)
+        public ShoppingCartCollection GetShoppingCartForReset(string _id)
         {
             var filter = Builders<ShoppingCartCollection>.Filter.Eq(s => s._id, _id);
-            var shoppingCartCollection = await _context.ShoppingCartCollection.Find(filter).FirstOrDefaultAsync();
-            return shoppingCartCollection != null;
+            return _context.ShoppingCartCollection.Find(filter).FirstOrDefault();
         }
 
         /// <summary>

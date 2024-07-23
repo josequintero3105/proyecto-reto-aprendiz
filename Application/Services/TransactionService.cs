@@ -55,16 +55,34 @@ namespace Application.Services
 
         public async Task<TransactionOutput> ProcessTransaction(TransactionInput transactionInput)
         {
-            var response = await _httpClient.PostAsJsonAsync("create", transactionInput);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<TransactionOutput>();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string json = JsonConvert.SerializeObject(transactionInput);
+            HttpContent content = new StringContent(json, Encoding.UTF8);
+            var response = await _httpClient.PostAsync("create", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<TransactionOutput>();
+                return result!;
+            }
+            else
+            {
+                throw new Exception();
+            }
+            
         }
 
         public async Task<TransactionResponse> CheckTransactionStatus(string _id)
         {
             var response = await _httpClient.GetAsync($"GetTransactionResponse?transactionId={_id}");
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<TransactionResponse>();
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<TransactionResponse>();
+                return result!;
+            }
+            else
+            {
+                throw new HttpRequestException();
+            }
         }
 
         /// <summary>

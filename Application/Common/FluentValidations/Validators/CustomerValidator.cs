@@ -134,10 +134,7 @@ namespace Application.Common.FluentValidations.Validators
                 .WithMessage(nameof(GateWayBusinessException.CustomerIpAddressCannotBeNull))
                 .MaximumLength(20)
                 .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerIpAddressCannotBeVeryLong).ToString())
-                .WithMessage(nameof(GateWayBusinessException.CustomerIpAddressCannotBeVeryLong))
-                .Matches("^[0-9]+$")
-                .WithErrorCode(Convert.ToInt32(GateWayBusinessException.CustomerIpAddressIsNotValid).ToString())
-                .WithMessage(nameof(GateWayBusinessException.CustomerIpAddressIsNotValid));
+                .WithMessage(nameof(GateWayBusinessException.CustomerIpAddressCannotBeVeryLong));
         }
     }
 }

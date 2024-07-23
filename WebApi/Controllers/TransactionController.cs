@@ -30,18 +30,16 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TransactionInput transactionInput)
+        public async Task<IActionResult> Process([FromBody] TransactionInput transactionInput)
         {
-            //TransactionOutput transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
-            //return CreatedAtAction(nameof(Create), new { transactionOutput._id}, transactionOutput);
-            await _shoppingCartService.ProcessTransaction(transactionInput);
+            await _shoppingCartService.ChangeCartStatus(transactionInput);
             return Ok();
         }
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string? _id = null)
         {
-            var result = await _transactionService.GetTransactionById(null!, _id!);
+            var result = await _shoppingCartService.ResetShoppingCart(_id!);
             return Ok(result);
         }
     }

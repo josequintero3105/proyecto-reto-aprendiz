@@ -115,16 +115,6 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Method for unit test
-        /// </summary>
-        /// <param name="_id"></param>
-        /// <returns></returns>
-        public async Task<bool> GetShoppingCartCollectionMongo(string _id)
-        {
-            return await _shoppingCartRepository.GetShoppingCartFromMongo(_id);
-        }
-
-        /// <summary>
         /// Lis only the specific products of the json format
         /// </summary>
         /// <param name="shoppingCart"></param>
@@ -424,13 +414,109 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}",
                     bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message} ", ex.Message);
                 throw new BusinessException(nameof(GateWayBusinessException.ProductNotExistsInTheCart),
                     nameof(GateWayBusinessException.ProductNotExistsInTheCart));
+            }
+        }
+        /// <summary>
+        /// Logic for transaction rejected
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        private async Task LogicForTransactionRejected(string _id)
+        {
+            var resultCart = _shoppingCartRepository.GetShoppingCartForReset(_id);
+            var specificProducts = await ListProductsInCart(resultCart);
+            var listModelProducts = new List<WriteModel<ProductCollection>>();
+            foreach (var products in specificProducts)
+            {                
+                resultCart.PriceTotal = DiscountTotalPrice(resultCart, products, resultCart.PriceTotal);
+                _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
+                await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id!);
+                await ConfirmRestore(listModelProducts);
+            }
+        }
+
+        /// <summary>
+        /// Confirme Restore Stock
+        /// </summary>
+        /// <param name="listModelProducts"></param>
+        /// <param name="resultCartCollection"></param>
+        /// <returns></returns>
+        private async Task ConfirmRestore(List<WriteModel<ProductCollection>> listModelProducts)
+        {
+            await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
+        }
+
+        /// <summary>
+        /// Lis only the specific products of the json format
+        /// </summary>
+        /// <param name="shoppingCartCollection"></param>
+        /// <returns></returns>
+        private async Task<List<ProductCollection>> ListProductsInCart(ShoppingCartCollection shoppingCartCollection)
+        {
+            try
+            {
+                List<string> productIds = shoppingCartCollection.ProductsInCart!.Select(p => p._id!.ToString()).ToList();
+                var specificProducts = await _shoppingCartRepository.ListSpecificProducts(productIds);
+                return specificProducts;
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
+                    nameof(GateWayBusinessException.ProductIdCannotBeNull));
+            }
+        }
+
+        /// <summary>
+        /// Remove a product from shopping cart
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        public async Task<ShoppingCart> ResetShoppingCart(string _id)
+        {
+            try
+            {
+                if (!String.IsNullOrEmpty(_id))
+                {
+                    var resultCartCollection = _shoppingCartRepository.GetShoppingCartForReset(_id);
+                    if (resultCartCollection != null && resultCartCollection.ProductsInCart!.Count > 0)
+                    {
+                        await LogicForTransactionRejected(_id);
+                        return await _shoppingCartRepository.GetShoppingCartAsync(_id);
+                    }
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
+                            nameof(GateWayBusinessException.NotProductsInCart));
+                }
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
+                        nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull));
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
             }
         }
 
@@ -481,7 +567,7 @@ namespace Application.Services
             }
         }
 
-        public async Task ProcessTransaction(TransactionInput transactionInput)
+        public async Task ChangeCartStatus(TransactionInput transactionInput)
         {
             try
             {
@@ -503,6 +589,7 @@ namespace Application.Services
 
                         default:
                             resultCart.Status = TransactionCoreStatus.Rejected.ToString();
+                            await _shoppingCartRepository.UpdateShoppingCartAsync(resultCart);
                             break;
                     }
                 }
@@ -516,8 +603,8 @@ namespace Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
-                    nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdNotFound),
+                    nameof(GateWayBusinessException.TransactionIdNotFound));
             }
             
         }

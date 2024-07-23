@@ -21,6 +21,7 @@ namespace Infrastructure
 
         public static IServiceCollection AddHttpClientServices(this IServiceCollection services)
         {
+            services.AddTransient<ITransactionService, TransactionService>();
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<ICreateRepository, CreateAdapter>();
             services.AddScoped<IGetRepository, GetAdapter>();

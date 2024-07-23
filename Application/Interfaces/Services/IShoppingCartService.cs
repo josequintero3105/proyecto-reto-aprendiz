@@ -24,11 +24,11 @@ namespace Application.Interfaces.Services
         /// <returns></returns>
         Task<ShoppingCart> GetShoppingCartById(string _id);
         /// <summary>
-        /// Get shopping collection from mongo
+        /// Reset Shopping Cart
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        Task<bool> GetShoppingCartCollectionMongo(string _id);
+        Task<ShoppingCart> ResetShoppingCart(string _id);
         /// <summary>
         /// Add products from shopping cart
         /// </summary>
@@ -48,6 +48,6 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="transactionInput"></param>
         /// <returns></returns>
-        Task ProcessTransaction(TransactionInput transactionInput);
+        Task ChangeCartStatus(TransactionInput transactionInput);
     }
 }
