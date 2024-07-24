@@ -57,7 +57,7 @@ namespace Application.Services
         {
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             string json = JsonConvert.SerializeObject(transactionInput);
-            HttpContent content = new StringContent(json, Encoding.UTF8);
+            HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync("create", content);
             if (response.IsSuccessStatusCode)
             {
@@ -66,12 +66,11 @@ namespace Application.Services
             }
             else
             {
-                throw new Exception();
+                throw new HttpRequestException();
             }
-            
         }
 
-        public async Task<TransactionResponse> CheckTransactionStatus(string _id)
+        public async Task<TransactionResponse> GetTransaction(string _id)
         {
             var response = await _httpClient.GetAsync($"GetTransactionResponse?transactionId={_id}");
             if (response.IsSuccessStatusCode)

@@ -26,6 +26,6 @@ namespace Application.Interfaces.Services
         Task<HttpResponseMessage> GetTransactionById(dynamic path, dynamic _id);
 
         Task<TransactionOutput> ProcessTransaction(TransactionInput transactionInput);
-        Task<TransactionResponse> CheckTransactionStatus(string _id);
+        Task<TransactionResponse> GetTransaction(string _id);
     }
 }

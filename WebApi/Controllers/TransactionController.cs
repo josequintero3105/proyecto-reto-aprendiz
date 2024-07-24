@@ -18,22 +18,21 @@ namespace WebApi.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
-        private readonly IHandle _handle;
         private readonly IShoppingCartService _shoppingCartService;
-        
+        private readonly IHandle _handle;
 
-        public TransactionController(ITransactionService transactionService, IHandle handle, IShoppingCartService shoppingCartService)
+        public TransactionController(IShoppingCartService shoppingCartService, IHandle handle, ITransactionService transactionService)
         {
-            _transactionService = transactionService;
-            _handle = handle;
             _shoppingCartService = shoppingCartService;
+            _handle = handle;
+            _transactionService = transactionService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Process([FromBody] TransactionInput transactionInput)
         {
-            await _shoppingCartService.ChangeCartStatus(transactionInput);
-            return Ok();
+            var result = await _shoppingCartService.GetCartForTransaction(transactionInput);
+            return Ok(result._id);
         }
 
         [HttpGet]

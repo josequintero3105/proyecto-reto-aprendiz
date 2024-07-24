@@ -56,7 +56,7 @@ namespace Infrastructure.Services.Rest
                 MethodConfirmation = transaction.MethodConfirmation,
                 Client = new()
                 {
-                    DocumentType = transaction.DocumentType,
+                    DocType = transaction.DocumentType,
                     Document = transaction.Document,
                     Name = transaction.Name,
                     LastName = transaction.LastName,

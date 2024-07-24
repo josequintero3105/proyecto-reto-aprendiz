@@ -48,6 +48,6 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="transactionInput"></param>
         /// <returns></returns>
-        Task ChangeCartStatus(TransactionInput transactionInput);
+        Task<TransactionOutput> GetCartForTransaction(TransactionInput transactionInput);
     }
 }

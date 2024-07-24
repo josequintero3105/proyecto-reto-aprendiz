@@ -85,7 +85,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Method created from unit testing
+        /// Get Shopping Cart For Reset
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>

@@ -24,4 +24,16 @@ namespace Core.Enumerations
         [Description("Transaction is Approved")]
         Approved = 6,
     }
+
+    public enum ShoppingCartStatus
+    {
+        [Description("Shopping Cart Approved")]
+        Approved = 1,
+
+        [Description("Shopping Cart Pending")]
+        Pending = 2,
+
+        [Description("Shopping Cart Unprocessing")]
+        Unprocessing = 3,
+    }
 }

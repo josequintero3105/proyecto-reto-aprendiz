@@ -15,43 +15,43 @@ namespace Application.DTOs.Responses
         /// <summary>
         ///     Invoice
         /// </summary>
-        public string? invoice { get; set; }
+        public string? Invoice { get; set; }
         /// <summary>
         ///     StoreId
         /// </summary>
-        public string? storeId { get; set; }
+        public string? StoreId { get; set; }
         /// <summary>
         /// VendorId
         /// </summary>
-        public string? vendorId { get; set; }
+        public string? VendorId { get; set; }
         /// <summary>
         /// Description
         /// </summary>
-        public string? description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         ///     paymentMethod
         /// </summary>
-        public PaymentMethod? paymentMethod { get; set; }
+        public PaymentMethod? PaymentMethod { get; set; }
         /// <summary>
         ///     TransactionStatus
         /// </summary>
-        public string? transactionStatus { get; set; }
+        public string? TransactionStatus { get; set; }
         /// <summary>
         ///     Currency
         /// </summary>
-        public string? currency { get; set; }
+        public string? Currency { get; set; }
         /// <summary>
         ///     Value
         /// </summary>
-        public double value { get; set; }
+        public double Value { get; set; }
         /// <summary>
         ///     SandBox
         /// </summary>
-        public Sandbox? sandbox { get; set; }
+        public Sandbox? Sandbox { get; set; }
         /// <summary>
         ///     CreationDate
         /// </summary>
-        public DateTime? creationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
         /// <summary>
         ///     UrlResponse
         /// </summary>
@@ -67,6 +67,6 @@ namespace Application.DTOs.Responses
         /// <summary>
         ///     PaymentMethodResponse
         /// </summary>
-        public PaymentMethodResponse? paymentMethodResponse { get; set; }
+        public PaymentMethodResponse? PaymentMethodResponse { get; set; }
     }
 }

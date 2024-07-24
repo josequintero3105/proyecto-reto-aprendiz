@@ -16,6 +16,7 @@ using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
 using Core.Entities.MongoDB;
 using Core.Enumerations;
+using DnsClient.Internal;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
@@ -123,7 +124,7 @@ namespace Application.Services
         {
             try
             {
-                List<string> productIds = shoppingCart.ProductsInCart.Select(p => p._id.ToString()).ToList();
+                List<string> productIds = shoppingCart.ProductsInCart!.Select(p => p._id!.ToString()).ToList();
                 var specificProducts = await _shoppingCartRepository.ListSpecificProducts(productIds);
                 return specificProducts;
             }
@@ -152,6 +153,7 @@ namespace Application.Services
             ProductInCart productInCart;
             var specificProducts = await ListProductCollections(shoppingCart);
             var listModelProducts = new List<WriteModel<ProductCollection>>();
+            resultCart.Status = ShoppingCartStatus.Pending.ToString();
             foreach (var products in specificProducts)
             {
                 if (!GetCorrectQuantity(shoppingCart, products))
@@ -162,7 +164,7 @@ namespace Application.Services
                 await SearchIfExistsAProductInCart(resultCart, shoppingCart, productInCart, products);
                 await ConfirmChanges(listModelProducts, shoppingCart, resultCart);
             }
-            shoppingCart.ProductsInCart.RemoveAll(x => x.Name == null);
+            shoppingCart.ProductsInCart!.RemoveAll(x => x.Name == null);
         }
         /// <summary>
         /// Search if exists a product in cart
@@ -177,7 +179,7 @@ namespace Application.Services
         {
             if (shoppingCart._id != null)
             {
-                if (!shoppingCartCollection.ProductsInCart.Any(p => p._id == productInCart._id))
+                if (!shoppingCartCollection.ProductsInCart!.Any(p => p._id == productInCart._id))
                     await _shoppingCartRepository.AddAnotherProductInCartAsync(shoppingCartCollection, productInCart);
                 else
                 {
@@ -197,8 +199,8 @@ namespace Application.Services
         /// <returns></returns>
         private int GetNewCountForCurrentProduct(ShoppingCart shoppingCart, ShoppingCartCollection shoppingCartCollection, ProductCollection products)
         {
-            var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
-            var productObjectToFind = shoppingCartCollection.ProductsInCart.First(s => s._id == products._id); 
+            var productToAdd = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
+            var productObjectToFind = shoppingCartCollection.ProductsInCart!.First(s => s._id == products._id); 
             products.Quantity -= (int)productToAdd.QuantityInCart;
             productToAdd.QuantityInCart += productObjectToFind.QuantityInCart;
             return (int)productToAdd.QuantityInCart;
@@ -218,9 +220,15 @@ namespace Application.Services
             {
                 var resultShopping = _shoppingCartRepository.GetShoppingCart(shoppingCart);
                 resultShopping.PriceTotal = resultCart.PriceTotal;
+                resultShopping.Status = resultCart.Status;
                 await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(resultShopping);
             }
             shoppingCart.PriceTotal = resultCart.PriceTotal;
+        }
+
+        private async Task ChangeStatusToApproved(ShoppingCartCollection shoppingCartCollection)
+        {
+            await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(shoppingCartCollection);
         }
         
         /// <summary>
@@ -247,7 +255,7 @@ namespace Application.Services
         {
             try
             {
-                var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+                var productToAdd = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
                 productToAdd.Name = products.Name;
                 productToAdd.UnitPrice = products.Price;
                 return productToAdd;
@@ -277,7 +285,7 @@ namespace Application.Services
         {
             try
             {
-                var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+                var productToAdd = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
                 products.Quantity -= (int)productToAdd.QuantityInCart;
                 PriceTotal += productToAdd.QuantityInCart * products.Price;
                 return PriceTotal;
@@ -303,7 +311,7 @@ namespace Application.Services
         /// <returns></returns>
         private static bool GetCorrectQuantity(ShoppingCart shoppingCart, ProductCollection products)
         {
-            var productToAdd = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+            var productToAdd = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
             if (products.Quantity >= productToAdd.QuantityInCart && productToAdd.QuantityInCart > 0 && productToAdd.QuantityInCart < Int32.MaxValue)
                 return true;
             else
@@ -386,11 +394,11 @@ namespace Application.Services
             var listModelProducts = new List<WriteModel<ProductCollection>>();
             foreach (var products in specificProducts)
             {
-                if (!resultCart.ProductsInCart.Any(p => p._id == products._id))
+                if (!resultCart.ProductsInCart!.Any(p => p._id == products._id))
                     continue;
                 resultCart.PriceTotal = DiscountTotalPrice(resultCart, products, resultCart.PriceTotal);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
-                await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id);
+                await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id!);
                 await ConfirmChanges(listModelProducts, shoppingCart, resultCart);
             }
         }
@@ -405,7 +413,7 @@ namespace Application.Services
         {
             try
             {
-                var productToRemove = shoppingCart.ProductsInCart.First(s => s._id == products._id);
+                var productToRemove = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
                 products.Quantity += (int)productToRemove.QuantityInCart;
                 PriceTotal -= productToRemove.QuantityInCart * products.Price;
                 return PriceTotal;
@@ -430,27 +438,18 @@ namespace Application.Services
         /// <returns></returns>
         private async Task LogicForTransactionRejected(string _id)
         {
+            ShoppingCart shoppingCart = await _shoppingCartRepository.GetShoppingCartAsync(_id);
             var resultCart = _shoppingCartRepository.GetShoppingCartForReset(_id);
             var specificProducts = await ListProductsInCart(resultCart);
             var listModelProducts = new List<WriteModel<ProductCollection>>();
+            resultCart.Status = ShoppingCartStatus.Unprocessing.ToString();
             foreach (var products in specificProducts)
             {                
                 resultCart.PriceTotal = DiscountTotalPrice(resultCart, products, resultCart.PriceTotal);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
                 await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id!);
-                await ConfirmRestore(listModelProducts);
+                await ConfirmChanges(listModelProducts, shoppingCart, resultCart);
             }
-        }
-
-        /// <summary>
-        /// Confirme Restore Stock
-        /// </summary>
-        /// <param name="listModelProducts"></param>
-        /// <param name="resultCartCollection"></param>
-        /// <returns></returns>
-        private async Task ConfirmRestore(List<WriteModel<ProductCollection>> listModelProducts)
-        {
-            await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
         }
 
         /// <summary>
@@ -540,7 +539,7 @@ namespace Application.Services
                     };
                     await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
                     var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-                    if (result != null && result.ProductsInCart.Count > 0)
+                    if (result != null && result.ProductsInCart!.Count > 0)
                     {
                         await LogicRemoveFromShoppingCart(shoppingCart);
                         return await _shoppingCartRepository.GetShoppingCartAsync(_id);
@@ -567,62 +566,48 @@ namespace Application.Services
             }
         }
 
-        public async Task ChangeCartStatus(TransactionInput transactionInput)
+        /// <summary>
+        /// Get Cart For Transaction
+        /// </summary>
+        /// <param name="transactionInput"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessException"></exception>
+        public async Task<TransactionOutput> GetCartForTransaction(TransactionInput transactionInput)
         {
-            try
+            var shoppingCart = await _shoppingCartRepository.GetShoppingCartAsync(transactionInput.Invoice!);
+            if (shoppingCart != null && shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
             {
-                var transactionResponse = await _transactionService.ProcessTransaction(transactionInput);
-                var resultCart = await _shoppingCartRepository.GetShoppingCartAsync(transactionInput.Invoice!);
-                if (resultCart != null)
-                {
-                    switch (transactionResponse.TransactionStatus)
-                    {
-                        case "Approved":
-                            resultCart.Status = TransactionCoreStatus.Approved.ToString();
-                            await _shoppingCartRepository.UpdateShoppingCartAsync(resultCart);
-                            break;
-
-                        case "Pending":
-                            resultCart.Status = TransactionCoreStatus.Pending.ToString();
-                            await RestoreProductStock(resultCart, transactionInput.Invoice!);
-                            break;
-
-                        default:
-                            resultCart.Status = TransactionCoreStatus.Rejected.ToString();
-                            await _shoppingCartRepository.UpdateShoppingCartAsync(resultCart);
-                            break;
-                    }
-                }
+                var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
+                await DefineFinalStatus(shoppingCart, transactionOutput, transactionInput.Invoice!);
+                return transactionOutput;
             }
-            catch (BusinessException bex)
-            {
-                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
-                    , bex.Code, bex.Message);
-                throw new BusinessException(bex.Message, bex.Code);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error: {message}", ex.Message);
-                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdNotFound),
-                    nameof(GateWayBusinessException.TransactionIdNotFound));
-            }
-            
+            else
+                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartNotExists),
+                    nameof(GateWayBusinessException.ShoppingCartNotExists));
         }
 
-        public async Task RestoreProductStock(ShoppingCart shoppingCart, string _id)
+        /// <summary>
+        /// Define Final Status For Transaction
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <param name="transactionOutput"></param>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        private async Task DefineFinalStatus(ShoppingCart shoppingCart, TransactionOutput transactionOutput, string _id)
         {
-            while (shoppingCart.Status == "Pending")
+            while (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending))
             {
-                var transactionStatus = await _transactionService.CheckTransactionStatus(_id);
-                if (transactionStatus.transactionStatus == "Approved")
+                var transactionResponse = await _transactionService.GetTransaction(transactionOutput._id!);
+                if (transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.Approved.ToString()))
                 {
-                    shoppingCart.Status = "Aprobado";
+                    shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
+                    await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                     break;
                 }
-                else if (transactionStatus.transactionStatus == "Pending")
+                else if (!transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.Pending.ToString()))
                 {
-                    shoppingCart.Status = "Sin_Procesar";
-                    await RemoveFromShoppingCart(null!, _id);
+                    shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
+                    await ResetShoppingCart(_id);
                     break;
                 }
             }
