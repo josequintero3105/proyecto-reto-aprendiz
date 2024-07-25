@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs.Entries;
+using Application.DTOs.ApiEntities.Input;
 
 namespace Application.Interfaces.Infrastructure.RestService
 {

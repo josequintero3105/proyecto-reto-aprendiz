@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
-using Application.DTOs;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Application.Services;
@@ -28,6 +27,7 @@ using Xunit.Sdk;
 using Common.Helpers.Exceptions;
 using Application.DTOs.Entries;
 using System.Security.Cryptography;
+using Application.DTOs.Responses;
 
 namespace Application.Tests.Application.Tests.Services
 {

@@ -4,18 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTOs.Responses
+namespace Application.DTOs.ApiEntities.Output
 {
-    public class PaymentMethodResponse
+    public class PaymentMethodDetailResponse
     {
         /// <summary>
         ///     transactionId
         /// </summary>
         public string? transactionId { get; set; }
-        /// <summary>
-        ///     driverId
-        /// </summary>
-        public string? driverId { get; set; }
         /// <summary>
         ///     statusResponse
         /// </summary>
@@ -40,9 +36,5 @@ namespace Application.DTOs.Responses
         ///     receipt
         /// </summary>
         public string? receipt { get; set; }
-        /// <summary>
-        ///     paymentRedirectUrl
-        /// </summary>
-        public string? paymentRedirectUrl { get; set; }
     }
 }

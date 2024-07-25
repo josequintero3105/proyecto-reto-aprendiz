@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 using System.Web;
 using Application.Common.Helpers.Exceptions;
 using Application.Common.Helpers.Logger;
-using Application.DTOs.Entries;
 using Application.Interfaces.Infrastructure.RestService;
 using Common.Helpers.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Application.DTOs.ApiEntities.Input;
 
 namespace Infrastructure.Services.Rest
 {

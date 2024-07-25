@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
 using Application.Interfaces.Services;
 using Application.Interfaces.Common;
 using Core.Entities.MongoDB;
 using System.Net;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 
 namespace WebApi.Controllers
 {

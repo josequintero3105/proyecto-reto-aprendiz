@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Commands;
-using Application.DTOs;
+using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Commands;
 using Application.Interfaces.Services;
 using Application.Services;

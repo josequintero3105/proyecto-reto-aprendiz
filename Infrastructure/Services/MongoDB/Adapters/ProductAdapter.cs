@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Commands;
 using Application.Interfaces.Infrastructure.Mongo;
 using Core.Entities.MongoDB;
@@ -12,6 +11,7 @@ using AutoMapper;
 using MongoDB.Driver;
 using System.Drawing;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 
 namespace Infrastructure.Services.MongoDB.Adapters
 {

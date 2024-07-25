@@ -1,5 +1,5 @@
-﻿using Application.DTOs;
-using Application.DTOs.Entries;
+﻿using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Application.Services;

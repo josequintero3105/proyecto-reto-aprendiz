@@ -6,8 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.Runtime.SharedInterfaces;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Core.Entities.MongoDB;
 using MongoDB.Driver;
 

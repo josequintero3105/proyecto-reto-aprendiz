@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.DTOs.ApiEntities.Input;
+using Application.DTOs.ApiEntities.Output;
 
-namespace Application.DTOs.Responses
+namespace Application.DTOs.ApiEntities.Response
 {
     public class TransactionResponse
     {
@@ -31,7 +33,7 @@ namespace Application.DTOs.Responses
         /// <summary>
         ///     paymentMethod
         /// </summary>
-        public PaymentMethod? PaymentMethod { get; set; }
+        public PaymentMethodOutput? PaymentMethod { get; set; }
         /// <summary>
         ///     TransactionStatus
         /// </summary>
@@ -47,7 +49,7 @@ namespace Application.DTOs.Responses
         /// <summary>
         ///     SandBox
         /// </summary>
-        public Sandbox? Sandbox { get; set; }
+        public SandboxInactive? Sandbox { get; set; }
         /// <summary>
         ///     CreationDate
         /// </summary>

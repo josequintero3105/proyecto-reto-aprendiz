@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 
 namespace Application.Tests.Application.Tests.DTOs
 {

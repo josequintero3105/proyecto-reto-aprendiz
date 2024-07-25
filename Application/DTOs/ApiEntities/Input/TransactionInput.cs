@@ -3,25 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs.Responses;
 
-namespace Application.DTOs
+namespace Application.DTOs.ApiEntities.Input
 {
-    public class TransactionOutput
+    public class TransactionInput
     {
-        public string? _id { get; set; }
         /// <summary>
         ///     TransactionId
         /// </summary>
         public string? Invoice { get; set; }
-        /// <summary>
-        ///     Store
-        /// </summary>
-        public string? StoreId {  get; set; }
-        /// <summary>
-        ///     VendorId
-        /// </summary>
-        public string? VendorId { get; set; }
         /// <summary>
         ///     Description
         /// </summary>
@@ -31,9 +21,9 @@ namespace Application.DTOs
         /// </summary>
         public PaymentMethod? PaymentMethod { get; set; }
         /// <summary>
-        ///     Status
+        ///     Sandbox
         /// </summary>
-        public string? TransactionStatus { get; set; }
+        public Sandbox? Sandbox { get; set; }
         /// <summary>
         ///     Currency    
         /// </summary>
@@ -43,28 +33,20 @@ namespace Application.DTOs
         /// </summary>
         public double Value { get; set; }
         /// <summary>
-        ///     Sandbox
+        ///     UrlResponse
         /// </summary>
-        public Sandbox? sandbox { get; set; }
-        /// <summary>
-        ///     CreationDate
-        /// </summary>
-        public DateTime CreationDate { get; set; }
-        /// <summary>
-        ///     PaymentMethodResponse
-        /// </summary>
-        public PaymentMethodResponse? PaymentMethodResponse { get; set; }
+        public string? UrlResponse { get; set; }
         /// <summary>
         ///     UrlConfirmation
         /// </summary>
         public string? UrlConfirmation { get; set; }
         /// <summary>
-        ///     UrlResponse
-        /// </summary>
-        public string? UrlResponse { get; set; }
-        /// <summary>
         ///     MethodConfirmation
         /// </summary>
         public string? MethodConfirmation { get; set; }
+        /// <summary>
+        ///     Customer
+        /// </summary>
+        public Client? Client { get; set; }
     }
 }

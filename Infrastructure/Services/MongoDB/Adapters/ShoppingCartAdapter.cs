@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.FluentValidations.Validators;
-using Application.DTOs;
+using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Services;
 using AutoMapper;

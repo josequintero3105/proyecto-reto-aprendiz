@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Text;
 using Application.DTOs;
-using Application.DTOs.Entries;
 using Application.DTOs.Responses;
+using Application.DTOs.ApiEntities.Input;
 using Application.Interfaces.Common;
 using Application.Interfaces.Services;
 using Core.Entities.MongoDB;

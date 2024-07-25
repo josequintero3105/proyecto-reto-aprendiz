@@ -5,9 +5,7 @@ using System.Net;
 using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Commands;
-using Application.DTOs.Entries;
 using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
@@ -15,6 +13,8 @@ using AutoMapper;
 using Core.Entities.MongoDB;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using Application.DTOs.ApiEntities.Output;
+using Application.DTOs.ApiEntities.Input;
 
 namespace Infrastructure.Services.MongoDB.Adapters
 {

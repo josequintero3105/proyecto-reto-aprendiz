@@ -25,7 +25,6 @@ namespace Infrastructure
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<ICreateRepository, CreateAdapter>();
             services.AddScoped<IGetRepository, GetAdapter>();
-            services.AddScoped<ITokenRepository, TokenAdapter>();
             return services;
         }
     }

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Application;
 using Application.Common.Utilities;
-using Application.DTOs;
+using Application.DTOs.Responses;
 using Infrastructure;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Filters;

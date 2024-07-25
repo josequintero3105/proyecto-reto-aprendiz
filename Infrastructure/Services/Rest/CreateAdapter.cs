@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Commands;
-using Application.DTOs.Entries;
+using Application.DTOs.ApiEntities.Input;
 using Application.Interfaces.Infrastructure.RestService;
 using Newtonsoft.Json;
 
