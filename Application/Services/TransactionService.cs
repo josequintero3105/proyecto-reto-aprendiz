@@ -50,7 +50,12 @@ namespace Application.Services
             _logger = logger;
             _httpClient = httpClientFactory.CreateClient("Pasarela");
         }
-
+        /// <summary>
+        /// Process Transaction
+        /// </summary>
+        /// <param name="transactionInput"></param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException"></exception>
         public async Task<TransactionOutput> ProcessTransaction(TransactionInput transactionInput)
         {
             var options = new JsonSerializerOptions { PropertyNamingPolicy = new LowerCaseNamingPolicy(), WriteIndented = true };
@@ -64,18 +69,28 @@ namespace Application.Services
             if (responseMessage.IsSuccessStatusCode)
                 return System.Text.Json.JsonSerializer.Deserialize<TransactionOutput>(data, options)!;
             else
-                throw new HttpRequestException();
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
+                    nameof(GateWayBusinessException.TransactionAttemptFailed));
         }
 
+        /// <summary>
+        /// Get Transaction Response
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        /// <exception cref="HttpRequestException"></exception>
         public async Task<TransactionResponse> GetTransaction(string _id)
         {
             var options = new JsonSerializerOptions { PropertyNamingPolicy = new LowerCaseNamingPolicy(), WriteIndented = true };
             var responseMessage = await _httpClient.GetAsync($"GetTransactionResponse?transactionId={_id}");
             var response = await responseMessage.Content.ReadAsStringAsync();
+            var jsonObject = JObject.Parse(response);
+            var data = jsonObject["data"]!.ToString();
             if (responseMessage.IsSuccessStatusCode)
-                return System.Text.Json.JsonSerializer.Deserialize<TransactionResponse>(response, options)!;
+                return System.Text.Json.JsonSerializer.Deserialize<TransactionResponse>(data, options)!;
             else
-                throw new HttpRequestException();
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
+                    nameof(GateWayBusinessException.TransactionAttemptFailed));
         }
     }
 }

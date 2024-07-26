@@ -12,7 +12,17 @@ namespace Application.Interfaces.Services
 {
     public interface ITransactionService
     {
+        /// <summary>
+        /// Process Transaction
+        /// </summary>
+        /// <param name="transactionInput"></param>
+        /// <returns></returns>
         Task<TransactionOutput> ProcessTransaction(TransactionInput transactionInput);
+        /// <summary>
+        /// Get Transaction Response
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
         Task<TransactionResponse> GetTransaction(string _id);
     }
 }

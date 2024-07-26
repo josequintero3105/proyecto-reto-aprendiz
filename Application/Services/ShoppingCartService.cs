@@ -20,8 +20,6 @@ using Core.Entities.MongoDB;
 using Core.Enumerations;
 using DnsClient.Internal;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
-using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
@@ -61,7 +59,7 @@ namespace Application.Services
                 ShoppingCart shoppingCart = new()
                 {
                     ProductsInCart = shoppingCartInput.ProductsInCart,
-                    Status = "Pending"
+                    Status = ShoppingCartStatus.Pending.ToString(),
                 };
                 await GetAtLeastOneProduct(shoppingCart);
                 return await _shoppingCartRepository.CreateAsync(shoppingCart);
@@ -226,11 +224,6 @@ namespace Application.Services
                 await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(resultShopping);
             }
             shoppingCart.PriceTotal = resultCart.PriceTotal;
-        }
-
-        private async Task ChangeStatusToApproved(ShoppingCartCollection shoppingCartCollection)
-        {
-            await _shoppingCartRepository.UpdatePriceTotalFromShoppingCart(shoppingCartCollection);
         }
         
         /// <summary>
@@ -576,16 +569,31 @@ namespace Application.Services
         /// <exception cref="BusinessException"></exception>
         public async Task<TransactionOutput> GetCartForTransaction(TransactionInput transactionInput)
         {
-            var shoppingCart = await _shoppingCartRepository.GetShoppingCartAsync(transactionInput.Invoice!);
-            if (shoppingCart != null && shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
+            try
             {
-                var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
-                await DefineFinalStatus(shoppingCart, transactionOutput, transactionInput.Invoice!);
-                return transactionOutput;
+                var shoppingCart = await _shoppingCartRepository.GetShoppingCartAsync(transactionInput.Invoice!);
+                if (shoppingCart != null && shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
+                {
+                    var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
+                    await DefineFinalStatus(shoppingCart, transactionOutput, transactionInput.Invoice!);
+                    return transactionOutput;
+                }
+                else
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
+                        nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
             }
-            else
-                throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartNotExists),
-                    nameof(GateWayBusinessException.ShoppingCartNotExists));
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
+                    nameof(GateWayBusinessException.TransactionAttemptFailed));
+            }
         }
 
         /// <summary>
@@ -597,22 +605,21 @@ namespace Application.Services
         /// <returns></returns>
         private async Task DefineFinalStatus(ShoppingCart shoppingCart, TransactionOutput transactionOutput, string _id)
         {
-            while (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending))
+            do
             {
+                await Task.Delay(120000);
                 var transactionResponse = await _transactionService.GetTransaction(transactionOutput._id!);
-                if (transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.Approved.ToString()))
+                if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Approved.ToString()))
                 {
                     shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
                     await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
-                    break;
                 }
-                else if (!transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.Pending.ToString()))
+                else if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
                 {
                     shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
                     await ResetShoppingCart(_id);
-                    break;
                 }
-            }
+            } while (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()));
         }
     }
 }

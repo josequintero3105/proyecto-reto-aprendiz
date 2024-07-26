@@ -67,8 +67,8 @@ namespace Infrastructure.Services.Rest
             }
             catch (BusinessException)
             {
-                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdNotFound),
-                    nameof(GateWayBusinessException.TransactionIdNotFound));
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
+                    nameof(GateWayBusinessException.TransactionAttemptFailed));
             }
         }
 
@@ -101,8 +101,8 @@ namespace Infrastructure.Services.Rest
             }
             catch (BusinessException)
             {
-                throw new BusinessException(nameof(GateWayBusinessException.TransactionIdNotFound),
-                    nameof(GateWayBusinessException.TransactionIdNotFound));
+                throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
+                    nameof(GateWayBusinessException.TransactionAttemptFailed));
             }
         }
 

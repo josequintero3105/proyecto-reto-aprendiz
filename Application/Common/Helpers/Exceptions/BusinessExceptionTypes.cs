@@ -214,10 +214,6 @@ public enum GateWayBusinessException
     [Description("Characters Lenght")]
     CharactersLenghtNotValid = 465,
 
-    [Description("Transaction Id Not Found")]
-    TransactionIdNotFound = 466,
-
-    [Description("Transaction Id Cannot Be Null")]
-    TransactionIdCannotBeNull = 467
-    
+    [Description("Transaction Attempt Failed")]
+    TransactionAttemptFailed = 466,
 }
