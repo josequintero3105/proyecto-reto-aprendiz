@@ -98,5 +98,10 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// <param name="shoppingCartToCreate"></param>
         /// <returns></returns>
         Task<ShoppingCartCollection> CreateAsync(ShoppingCart shoppingCartToCreate);
+        /// <summary>
+        /// List All Shopping Carts
+        /// </summary>
+        /// <returns></returns>
+        Task<List<ShoppingCartCollection>> ListAllCarts();
     }
 }

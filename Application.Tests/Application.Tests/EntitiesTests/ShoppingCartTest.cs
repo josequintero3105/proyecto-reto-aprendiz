@@ -179,5 +179,63 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             // Assert
             Assert.Equal(result.Message, GateWayBusinessException.NotAllowSpecialCharacters.ToString());
         }
+
+        [Fact]
+        public async void ListShoppingCarts_When_CartStatusIsPending_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            ShoppingCartInput shoppingCartInput = ShoppingCartHelperModel.GetShoppingCartForCreation();
+            var shoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
+            shoppingCart._id = "66574ea38d0535a677a3e029";
+            var listCarts = ShoppingCartHelperModel.shoppingCartCollections();
+            _shoppingCartRepositoryMock.Setup(x => x.ListAllCarts())
+                .Throws(new BusinessException(GateWayBusinessException.ShoppingCartIdIsNotValid.ToString(),
+                GateWayBusinessException.ShoppingCartIdIsNotValid.ToString())).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.AddToShoppingCart(shoppingCartInput, shoppingCart._id));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void ResetShoppingCart_When_CartIdIsNull_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            var shoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
+            shoppingCart._id = "66574ea38d0535a677a3e029";
+
+            _shoppingCartRepositoryMock.Setup(x => x.GetShoppingCartForReset(shoppingCart._id))
+                .Throws(new BusinessException(GateWayBusinessException.ShoppingCartIdIsNotValid.ToString(),
+                GateWayBusinessException.ShoppingCartIdIsNotValid.ToString())).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.ResetShoppingCart(shoppingCart._id));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void ProcessTransaction_When_ShoppingCartIsInvalid_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            var shoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
+            shoppingCart._id = "66574ea38d0535a677a3e029";
+
+            _shoppingCartRepositoryMock.Setup(x => x.GetShoppingCartForReset(shoppingCart._id))
+                .Throws(new BusinessException(GateWayBusinessException.ShoppingCartIdIsNotValid.ToString(),
+                GateWayBusinessException.ShoppingCartIdIsNotValid.ToString())).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.GetCartForTransaction(null!));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
     }
 }

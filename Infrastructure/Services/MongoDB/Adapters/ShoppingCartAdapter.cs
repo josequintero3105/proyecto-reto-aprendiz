@@ -73,6 +73,16 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
+        /// List All Shopping Carts
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<ShoppingCartCollection>> ListAllCarts()
+        {
+            var result = await _context.ShoppingCartCollection.FindAsync(Builders<ShoppingCartCollection>.Filter.Empty);
+            return _mapper.Map<List<ShoppingCartCollection>>(result.ToList());
+        }
+
+        /// <summary>
         /// Get a shopping cart by id
         /// </summary>
         /// <param name="_id"></param>

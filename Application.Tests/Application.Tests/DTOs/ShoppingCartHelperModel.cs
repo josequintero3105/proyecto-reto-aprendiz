@@ -15,6 +15,48 @@ namespace Application.Tests.Application.Tests.DTOs
 {
     public class ShoppingCartHelperModel
     {
+        public static List<ShoppingCartCollection> shoppingCartCollections() => new List<ShoppingCartCollection>()
+        {
+            new ShoppingCartCollection
+            {
+                _id = "66574ea38d0535a677a3e029",
+                ProductsInCart = new List<ProductInCartCollection>
+                {
+                    new ProductInCartCollection
+                    {
+                        _id = "661805457b1da8ba4cb52995",
+                        QuantityInCart = 4
+                    },
+                    new ProductInCartCollection
+                    {
+                        _id = "66185655155f38e1afb9fd29",
+                        QuantityInCart = 3
+                    },
+                },
+                PriceTotal = 10000,
+                Status = "Pending"
+            },
+            new ShoppingCartCollection
+            {
+                _id = "",
+                ProductsInCart = new List<ProductInCartCollection>
+                {
+                    new ProductInCartCollection
+                    {
+                        _id = "661805457b1da8ba4cb52995",
+                        QuantityInCart = 4
+                    },
+                    new ProductInCartCollection
+                    {
+                        _id = "66185655155f38e1afb9fd29",
+                        QuantityInCart = 3
+                    },
+                },
+                PriceTotal = 20000,
+                Status = "Approved"
+            }
+        };
+
         public static ShoppingCartInput GetShoppingCartForCreation()
         {
             return new ShoppingCartInput()
@@ -102,17 +144,17 @@ namespace Application.Tests.Application.Tests.DTOs
             }
         };
 
-        public static List<WriteModel<ProductCollection>> writeModels() => new List<WriteModel<ProductCollection>>()
-        {
-            
-        };
-
         public static ProductInCart productInCart() => new ProductInCart()
         {
             _id = "",
             Name = "",
             UnitPrice = 10,
             QuantityInCart = 3
+        };
+
+        public static List<WriteModel<ProductCollection>> writeModels() => new List<WriteModel<ProductCollection>>()
+        {
+            
         };
     }
 }

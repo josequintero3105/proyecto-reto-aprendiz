@@ -349,7 +349,8 @@ namespace Application.Services
                     };
                     await shoppingCart.ValidateAndThrowsAsync<ShoppingCart, ShoppingCartValidator>();
                     var result = _shoppingCartRepository.GetShoppingCart(shoppingCart);
-                    if (result != null)
+                    var listCarts = await _shoppingCartRepository.ListAllCarts();
+                    if (result != null && !listCarts.Any(s => s.Status == ShoppingCartStatus.Pending.ToString()))
                     {
                         await GetAtLeastOneProduct(shoppingCart);
                         return await _shoppingCartRepository.GetShoppingCartAsync(_id);
