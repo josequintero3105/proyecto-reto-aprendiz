@@ -11,35 +11,35 @@ namespace Application.DTOs.ApiEntities.Response
         /// <summary>
         ///     transactionId
         /// </summary>
-        public string? transactionId { get; set; }
+        public string? TransactionId { get; set; }
         /// <summary>
         ///     driverId
         /// </summary>
-        public string? driverId { get; set; }
+        public string? DriverId { get; set; }
         /// <summary>
         ///     statusResponse
         /// </summary>
-        public string? statusResponse { get; set; }
+        public string? StatusResponse { get; set; }
         /// <summary>
         ///     codeResponse
         /// </summary>
-        public string? codeResponse { get; set; }
+        public string? CodeResponse { get; set; }
         /// <summary>
         ///     description
         /// </summary>
-        public string? description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         ///     autorizationCode
         /// </summary>
-        public string? authorizationCode { get; set; }
+        public string? AuthorizationCode { get; set; }
         /// <summary>
         ///     approvalCode
         /// </summary>
-        public string? approvalCode { get; set; }
+        public string? ApprovalCode { get; set; }
         /// <summary>
         ///     receipt
         /// </summary>
-        public string? receipt { get; set; }
+        public string? Receipt { get; set; }
         /// <summary>
         ///     paymentRedirectUrl
         /// </summary>

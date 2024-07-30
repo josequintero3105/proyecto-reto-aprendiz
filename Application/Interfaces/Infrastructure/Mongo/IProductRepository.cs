@@ -17,7 +17,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<ProductInput> CreateProductAsync(ProductInput product);
+        Task<ProductOutput> CreateProductAsync(ProductInput product);
         /// <summary>
         /// Defining contract from update product in the database
         /// </summary>

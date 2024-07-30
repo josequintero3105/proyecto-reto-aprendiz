@@ -31,12 +31,14 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         /// Mocks
         /// </summary>
         private readonly Mock<ICustomerRepository> _customerRepositoryMock = new();
+        private readonly Mock<ICustomerService> _customerServiceMock = new();
         private readonly Mock<ILogger<CustomerService>> _loggerMock = new();
         private readonly Mock<IHandle> _handleMock = new();
 
         public CustomerTest()
         {
             _customerService = new CustomerService(_customerRepositoryMock.Object, _loggerMock.Object);
+            _customerServiceMock = new Mock<ICustomerService>();
             _customerController = new CustomerController(_customerService, _handleMock.Object);
             _customerController.ControllerContext.RouteData = new RouteData();
             _customerController.ControllerContext.RouteData.Values.Add("Controller", "Create");
@@ -56,6 +58,34 @@ namespace Application.Tests.Application.Tests.EntitiesTests
 
             // Assert
             Assert.IsType<CustomerOutput>(customerOutput);
+        }
+
+        [Fact]
+        public async void CreateCustomer_When_AllFieldsNotEmpty_Then_ExpectsVerifyResult()
+        {
+            // Arrange
+            CustomerInput customer = new CustomerInput()
+            {
+                Name = "name",
+                Document = "1000",
+                DocumentType = "CC",
+                Email = "email@email.com",
+                Phone = "123"
+            };
+
+            _customerRepositoryMock.Setup(x => x.CreateAsync(It.Is<CustomerOutput>
+                (x => x.Name == customer.Name &&
+                x.Document == customer.Document &&
+                x.DocumentType == customer.DocumentType &&
+                x.Email == customer.Email &&
+                x.Phone == customer.Phone
+                )));
+
+            // Act
+            await _customerService.CreateCustomer(customer);
+
+            // Assert
+            _customerServiceMock.Verify();
         }
 
         [Fact]
@@ -135,6 +165,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             CustomerInput customerInput = CustomerHelperModel.GetCustomerForCreation();
             CustomerOutput customer = CustomerHelperModel.GetCustomerFromMongo();
             customer._id = "6644d3d6a20a7c5dc4ed2680";
+            _customerRepositoryMock.Setup(x => x.GetCustomerByIdAsync(customer._id)).ReturnsAsync(customer).Verifiable();
             _customerRepositoryMock.Setup(x => x.UpdateCustomerDataAsync(customer)).ReturnsAsync(customer).Verifiable();
 
             // Act

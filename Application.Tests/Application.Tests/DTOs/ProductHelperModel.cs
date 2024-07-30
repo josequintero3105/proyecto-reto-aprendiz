@@ -41,6 +41,20 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
+        public static ProductCollection GetProductCollection()
+        {
+            return new ProductCollection
+            {
+                _id = "661feb4a110728200e31903e",
+                Name = "Test",
+                Price = 10000,
+                Quantity = 100,
+                Description = "Test Description",
+                Category = "Testing",
+                State = true
+            };
+        }
+
         public static List<ProductOutput> ListAllProducts() => new List<ProductOutput>
         {
             new ProductOutput
@@ -54,10 +68,7 @@ namespace Application.Tests.Application.Tests.DTOs
             }
         };
 
-        public static List<ProductOutput> ListAllProductsIsEmpty() => new List<ProductOutput>
-        {
-            
-        };
+        public static List<ProductOutput> ListAllProductsIsEmpty() => new List<ProductOutput>{};
         
 
         public static ProductInput GetProductForCreationWithProductNameEmpty() => new ProductInput()

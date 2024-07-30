@@ -144,30 +144,48 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_When_ProductFieldsNotEmpty_Then_ResultEqualProduct()
         {
             // Arrange
-            ProductInput product = ProductHelperModel.GetProductForCreation();
-            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(product))
-                .ReturnsAsync(product).Verifiable();
+            ProductInput productInput = ProductHelperModel.GetProductForCreation();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(productInput))
+                .ReturnsAsync(productOutput).Verifiable();
 
             // Act
-            await _productService.CreateProduct(product);
+            await _productService.CreateProduct(productInput);
 
             // Assert
-            Assert.IsType<ProductInput>(product);
+            Assert.IsType<ProductOutput>(productOutput);
         }
 
         [Fact]
         public async void CreateProduct_When_ProductPriceEqualToZero_Then_ExpectsVerifyToCreateNewProduct()
         {
             // Arrange
-            ProductInput product = ProductHelperModel.GetProductForCreationWithoutProductPrice();
-            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(product))
-                .ReturnsAsync(product).Verifiable();
+            ProductInput productInput = ProductHelperModel.GetProductForCreationWithoutProductPrice();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(productInput))
+                .ReturnsAsync(productOutput).Verifiable();
 
             // Act
-            await _productService.CreateProduct(product);
+            await _productService.CreateProduct(productInput);
 
             // Assert
-            Assert.True(product.Price == 0);
+            Assert.True(productInput.Price == 0);
+        }
+
+        [Fact]
+        public async void CreateProduct_Then_ExpectsResultEqualProductCollection()
+        {
+            // Arrange
+            ProductInput productInput = ProductHelperModel.GetProductForCreation();
+            ProductCollection productCollection = ProductHelperModel.GetProductCollection();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.CreateAsync(productOutput)).ReturnsAsync(productCollection).Verifiable();
+
+            // Act
+            await _productService.CreateProduct(productInput);
+
+            // Assert
+            Assert.IsType<ProductCollection>(productCollection);
         }
 
         [Fact]

@@ -50,11 +50,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="productToCreate"></param>
         /// <returns></returns>
-        public async Task<ProductInput> CreateProductAsync(ProductInput productToCreate)
+        public async Task<ProductOutput> CreateProductAsync(ProductInput productToCreate)
         {
             ProductCollection productCollectionToCreate = _mapper.Map<ProductCollection>(productToCreate);
             await _context.ProductCollection.InsertOneAsync(productCollectionToCreate);
-            return _mapper.Map<ProductInput>(productToCreate);
+            return _mapper.Map<ProductOutput>(productToCreate);
         }
 
         /// <summary>

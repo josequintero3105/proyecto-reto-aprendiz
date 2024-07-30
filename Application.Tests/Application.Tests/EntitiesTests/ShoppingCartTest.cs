@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
+using Application.DTOs.ApiEntities.Output;
 using Application.DTOs.Entries;
 using Application.DTOs.Responses;
 using Application.Interfaces.Common;
@@ -33,17 +34,20 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         /// Intances
         /// </summary>
         private IShoppingCartService _shoppingCartService;
+        private ITransactionService _transactionService;
         private readonly ShoppingCartController _shoppingCartController;
-        
+        private readonly TransactionController _transactionController;
         /// <summary>
         /// Mocks
         /// </summary>
         private readonly Mock<IShoppingCartRepository> _shoppingCartRepositoryMock = new();
         private readonly Mock<IShoppingCartService> _shoppingCartServiceMock = new();
         private readonly Mock<ITransactionService> _transacionServiceMock = new();
-        private readonly Mock<ILogger<ShoppingCartService>> _loggerMock = new();
+        private readonly Mock<ILogger<ShoppingCartService>> _loggerCartMock = new();
+        private readonly Mock<ILogger<TransactionService>> _loggerTransactionMock = new();
         private readonly Mock<IMapper> _mapperMock = new();
         private readonly Mock<IHandle> _handleMock = new();
+        private readonly Mock<IHttpClientFactory> _httpClientFactoryMock = new();
 
         /// <summary>
         /// Constructor
@@ -51,11 +55,15 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public ShoppingCartTest() 
         {
             _shoppingCartRepositoryMock = new Mock<IShoppingCartRepository>();
-            _shoppingCartService = new ShoppingCartService(_shoppingCartRepositoryMock.Object, _loggerMock.Object, _transacionServiceMock.Object);
+            _httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            _shoppingCartService = new ShoppingCartService(_shoppingCartRepositoryMock.Object, _loggerCartMock.Object, _transacionServiceMock.Object);
+            _transactionService = new TransactionService(_httpClientFactoryMock.Object, _loggerTransactionMock.Object);
             _shoppingCartController = new ShoppingCartController(_shoppingCartServiceMock.Object, _handleMock.Object);
-            
+            _transactionController = new TransactionController(_shoppingCartServiceMock.Object, _handleMock.Object);
             _shoppingCartController.ControllerContext.RouteData = new RouteData();
             _shoppingCartController.ControllerContext.RouteData.Values.Add("Controller", "Create");
+            _transactionController.ControllerContext.RouteData = new RouteData();
+            _transactionController.ControllerContext.RouteData.Values.Add("Controller", "Process");
             _mapperMock = new Mock<IMapper>();
         }
 
@@ -236,6 +244,43 @@ namespace Application.Tests.Application.Tests.EntitiesTests
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void GetTransactionResponse_When_TransactionIdIsNull_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            var transactionInput = ShoppingCartHelperModel.transactionInput();
+            var transactionOutput = ShoppingCartHelperModel.transactionOutput();
+            transactionOutput._id = "";
+
+            _transacionServiceMock.Setup(x => x.GetTransaction(transactionOutput._id))
+                .Throws(new BusinessException(GateWayBusinessException.TransactionAttemptFailed.ToString(),
+                GateWayBusinessException.TransactionAttemptFailed.ToString())).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.GetCartForTransaction(transactionInput));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void ProcessTransaction_When_HttpClientInstanceNull_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            var transactionInput = ShoppingCartHelperModel.transactionInput();
+            var transactionOutput = ShoppingCartHelperModel.transactionOutput();
+
+            _transacionServiceMock.Setup(x => x.ProcessTransaction(transactionInput)).ReturnsAsync(transactionOutput).Verifiable();
+            _shoppingCartServiceMock.Setup(x => x.GetCartForTransaction(transactionInput)).ReturnsAsync(transactionOutput).Verifiable();
+
+            // Act
+            var result = await _transactionService.ProcessTransaction(transactionInput);
+
+            // Assert
+            Assert.IsType<TransactionOutput>(result);
         }
     }
 }

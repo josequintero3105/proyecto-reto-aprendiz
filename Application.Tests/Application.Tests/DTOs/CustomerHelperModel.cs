@@ -16,9 +16,9 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 

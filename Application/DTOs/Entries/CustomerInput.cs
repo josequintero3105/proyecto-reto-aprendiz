@@ -21,36 +21,12 @@ namespace Application.DTOs.Entries
         /// </summary>
         public string? Name { get; set; }
         /// <summary>
-        ///     LastName
-        /// </summary>
-        public string? LastName { get; set; }
-        /// <summary>
         ///     Email
         /// </summary>
         public string? Email { get; set; }
         /// <summary>
-        ///     IndCountry
-        /// </summary>
-        public string? IndCountry { get; set; }
-        /// <summary>
         ///     Phone
         /// </summary>
         public string? Phone { get; set; }
-        /// <summary>
-        ///     Country
-        /// </summary>
-        public string? Country { get; set; }
-        /// <summary>
-        ///     City
-        /// </summary>
-        public string? City { get; set; }
-        /// <summary>
-        ///     Address
-        /// </summary>
-        public string? Address { get; set; }
-        /// <summary>
-        ///     IpAdress
-        /// </summary>
-        public string? IpAddress { get; set; }
     }
 }
