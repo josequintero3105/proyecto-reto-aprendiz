@@ -66,15 +66,15 @@ namespace Application.Services
 
                 if (shoppingCartCollection != null
                     && customerCollection != null
-                    && shoppingCartCollection.ProductsInCart.Count != 0)
+                    && shoppingCartCollection.ProductsInCart!.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
                     return await _invoiceRepository.GenerateInvoiceAsync(invoice);
                 }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
-                    nameof(GateWayBusinessException.NotProductsInCart));
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
+                    nameof(GateWayBusinessException.ShoppingCartIsEmpty));
             }
             catch (BusinessException bex)
             {
@@ -115,7 +115,7 @@ namespace Application.Services
 
                 if (shoppingCartCollection != null
                     && customerCollection != null
-                    && shoppingCartCollection.ProductsInCart.Count != 0)
+                    && shoppingCartCollection.ProductsInCart!.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
@@ -123,8 +123,8 @@ namespace Application.Services
                     return await _invoiceRepository.GenerateAsync(invoice);
                 }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
-                    nameof(GateWayBusinessException.NotProductsInCart));
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
+                    nameof(GateWayBusinessException.ShoppingCartIsEmpty));
             }
             catch (BusinessException bex)
             {

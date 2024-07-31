@@ -20,7 +20,6 @@ namespace Application.DTOs.Responses
             CreateMap<ProductInCart, ProductInCartCollection>().ReverseMap();
             CreateMap<InvoiceOutput, InvoiceCollection>().ReverseMap();
             CreateMap<CustomerOutput, CustomerCollection>().ReverseMap();
-            CreateMap<TransactionOutput, TransactionCollection>().ReverseMap();
         }
     }
 }

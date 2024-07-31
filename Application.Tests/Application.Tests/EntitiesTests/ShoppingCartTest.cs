@@ -240,7 +240,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _shoppingCartService.GetCartForTransaction(null!));
+                (async () => await _shoppingCartService.ProcessCartForTransaction(null!));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
@@ -260,7 +260,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
 
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
-                (async () => await _shoppingCartService.GetCartForTransaction(transactionInput));
+                (async () => await _shoppingCartService.ProcessCartForTransaction(transactionInput));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
@@ -272,9 +272,9 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             // Arrange
             var transactionInput = ShoppingCartHelperModel.transactionInput();
             var transactionOutput = ShoppingCartHelperModel.transactionOutput();
-
+            _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Verifiable();
             _transacionServiceMock.Setup(x => x.ProcessTransaction(transactionInput)).ReturnsAsync(transactionOutput).Verifiable();
-            _shoppingCartServiceMock.Setup(x => x.GetCartForTransaction(transactionInput)).ReturnsAsync(transactionOutput).Verifiable();
+            _shoppingCartServiceMock.Setup(x => x.ProcessCartForTransaction(transactionInput)).ReturnsAsync(transactionOutput).Verifiable();
 
             // Act
             var result = await _transactionService.ProcessTransaction(transactionInput);

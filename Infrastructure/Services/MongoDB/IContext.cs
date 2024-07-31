@@ -14,6 +14,5 @@ namespace Infrastructure.Services.MongoDB
         public IMongoCollection<ShoppingCartCollection> ShoppingCartCollection { get; }
         public IMongoCollection<InvoiceCollection> InvoiceCollection { get; }
         public IMongoCollection<CustomerCollection> CustomerCollection { get; }
-        public IMongoCollection<TransactionCollection> TransactionCollection { get; }
     }
 }

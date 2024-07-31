@@ -15,18 +15,16 @@ namespace Application.Common.Helpers.Commands
     public class CommandEvent : ICommandEventRepository
     {
         private readonly IProductRepository _productRepository;
-        private readonly ITransactionRepository _transactionRepository;
         private readonly ICreateRepository _createRepository;
         private readonly IGetRepository _getRepository;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="productRepository"></param>
-        public CommandEvent(IProductRepository productRepository, ITransactionRepository transactionRepository,
+        public CommandEvent(IProductRepository productRepository,
             IGetRepository getRepository, ICreateRepository createRepository)
         {
             _productRepository = productRepository;
-            _transactionRepository = transactionRepository;
             _getRepository = getRepository;
             _createRepository = createRepository;
         }

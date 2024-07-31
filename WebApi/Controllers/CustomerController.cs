@@ -40,7 +40,8 @@ namespace WebApi.Controllers
         [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] CustomerInput body)
         {
-            CustomerCollection customer = await _handle.HandleRequestContextException(_customerService.CreateCustomer, body);
+            //CustomerCollection customer = await _handle.HandleRequestContextException(_customerService.CreateCustomer, body);
+            CustomerCollection customer = await _customerService.CreateCustomer(body);
             return CreatedAtAction(nameof(Create), new { customer._id }, customer);
         }
         /// <summary>

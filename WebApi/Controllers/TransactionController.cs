@@ -33,8 +33,8 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Process([FromBody] TransactionInput transactionInput)
         {
-            var result = await _shoppingCartService.GetCartForTransaction(transactionInput);
-            return Ok($"To see the transaction details, search it by id: {result._id}");
+            var result = await _shoppingCartService.ProcessCartForTransaction(transactionInput);
+            return Ok($"The Transaction {result._id} has been { result.TransactionStatus }");
         }
     }
 }

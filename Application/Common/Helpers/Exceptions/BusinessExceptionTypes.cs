@@ -175,8 +175,8 @@ public enum GateWayBusinessException
     [Description("Customer Not Found")]
     CustomerNotExists = 452,
 
-    [Description("Not Products In Cart")]
-    NotProductsInCart = 453,
+    [Description("ShoppingCart Is Empty")]
+    ShoppingCartIsEmpty = 453,
 
     [Description("Cart And Customer Invalid")]
     CartAndCustomerInvalid = 454,
@@ -216,4 +216,7 @@ public enum GateWayBusinessException
 
     [Description("Transaction Attempt Failed")]
     TransactionAttemptFailed = 466,
+
+    [Description("Internal Server Error")]
+    InternalServerError = 500,
 }

@@ -68,6 +68,9 @@ namespace Application.Services
             var data = jsonObject["data"]!.ToString();
             if (responseMessage.IsSuccessStatusCode)
                 return System.Text.Json.JsonSerializer.Deserialize<TransactionOutput>(data, options)!;
+            else if (Convert.ToInt32(responseMessage.StatusCode) == 500)
+                throw new BusinessException(nameof(GateWayBusinessException.InternalServerError),
+                    nameof(GateWayBusinessException.InternalServerError));
             else
                 throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
                     nameof(GateWayBusinessException.TransactionAttemptFailed));

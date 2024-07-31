@@ -12,6 +12,9 @@ using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Application.Services;
 using Application.Tests.Application.Tests.DTOs;
+using AutoMapper;
+using Core.Entities.MongoDB;
+using Infrastructure.Services.MongoDB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
@@ -34,6 +37,8 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         private readonly Mock<ICustomerService> _customerServiceMock = new();
         private readonly Mock<ILogger<CustomerService>> _loggerMock = new();
         private readonly Mock<IHandle> _handleMock = new();
+        private readonly Mock<IMapper> _mapperMock = new();
+        private readonly Mock<IContext> _contextMock = new();
 
         public CustomerTest()
         {
@@ -240,14 +245,17 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void CreateCustomer_Then_CodeStatusIsCreated()
         {
             // Arrange
-            CustomerInput customer = CustomerHelperModel.GetCustomerForCreation();
+            CustomerInput customerInput = CustomerHelperModel.GetCustomerForCreation();
             CustomerOutput customerOutput = CustomerHelperModel.GetCustomerFromMongo();
-            customerOutput._id = "6644d3d6a20a7c5dc4ed2680";
+            CustomerCollection customerCollection = CustomerHelperModel.GetCustomerCollection();
+            _contextMock.Setup(x => x.CustomerCollection).Verifiable();
+            _mapperMock.Setup(x => x.Map<CustomerCollection>(customerOutput)).Verifiable();
             _customerController.ControllerContext.RouteData.Values.Add("action", "Post");
-            _customerRepositoryMock.Setup(x => x.CreateCustomerAsync(customerOutput)).Returns(Task.FromResult(customerOutput));
+            _customerServiceMock.Setup(x => x.CreateCustomer(customerInput)).ReturnsAsync(customerCollection).Verifiable();
+            _customerRepositoryMock.Setup(x => x.CreateAsync(customerOutput)).Returns(Task.FromResult(customerCollection));
 
             // Act
-            var result = await _customerController.Create(customer);
+            var result = await _customerController.Create(customerInput);
             var objectResult = result as CreatedResult;
 
             // Assert

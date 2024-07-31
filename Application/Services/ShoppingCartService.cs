@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
+using Application.DTOs.ApiEntities.Response;
 
 namespace Application.Services
 {
@@ -494,8 +495,8 @@ namespace Application.Services
                         return await _shoppingCartRepository.GetShoppingCartAsync(_id);
                     }
                     else
-                        throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
-                            nameof(GateWayBusinessException.NotProductsInCart));
+                        throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
+                            nameof(GateWayBusinessException.ShoppingCartIsEmpty));
                 }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
@@ -541,8 +542,8 @@ namespace Application.Services
                         return await _shoppingCartRepository.GetShoppingCartAsync(_id);
                     }
                     else
-                        throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
-                            nameof(GateWayBusinessException.NotProductsInCart));
+                        throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
+                            nameof(GateWayBusinessException.ShoppingCartIsEmpty));
                 }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
@@ -568,20 +569,27 @@ namespace Application.Services
         /// <param name="transactionInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<TransactionOutput> GetCartForTransaction(TransactionInput transactionInput)
+        public async Task<TransactionOutput> ProcessCartForTransaction(TransactionInput transactionInput)
         {
             try
             {
                 var shoppingCart = await _shoppingCartRepository.GetShoppingCartAsync(transactionInput.Invoice!);
-                if (shoppingCart != null && shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
+                if (shoppingCart != null)
                 {
-                    var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
-                    await DefineFinalStatus(shoppingCart, transactionOutput, transactionInput.Invoice!);
-                    return transactionOutput;
+                    if (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
+                    {
+                        var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
+                        string finalStatus = await DefineFinalStatus(shoppingCart, transactionOutput, transactionInput.Invoice!);
+                        transactionOutput.TransactionStatus = finalStatus;
+                        return transactionOutput;
+                    }
+                    else
+                        throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
+                            nameof(GateWayBusinessException.ShoppingCartIsEmpty));
                 }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdIsNotValid),
-                        nameof(GateWayBusinessException.ShoppingCartIdIsNotValid));
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdNotFound),
+                        nameof(GateWayBusinessException.ShoppingCartIdNotFound));
             }
             catch (BusinessException bex)
             {
@@ -604,8 +612,9 @@ namespace Application.Services
         /// <param name="transactionOutput"></param>
         /// <param name="_id"></param>
         /// <returns></returns>
-        private async Task DefineFinalStatus(ShoppingCart shoppingCart, TransactionOutput transactionOutput, string _id)
+        private async Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionOutput transactionOutput, string _id)
         {
+            string finalStatus = "";
             do
             {
                 await Task.Delay(120000);
@@ -615,12 +624,14 @@ namespace Application.Services
                     shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
                     await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                 }
-                else if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
+                else if (!transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
                 {
                     shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
                     await ResetShoppingCart(_id);
                 }
+                finalStatus = transactionResponse.TransactionStatus.ToString();
             } while (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()));
+            return finalStatus;
         }
     }
 }

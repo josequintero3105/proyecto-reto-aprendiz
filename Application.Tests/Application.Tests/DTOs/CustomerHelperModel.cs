@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Entries;
 using Application.DTOs.Responses;
+using Core.Entities.MongoDB;
 
 namespace Application.Tests.Application.Tests.DTOs
 {
@@ -28,9 +29,9 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "name",
                 Document = "",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -41,8 +42,8 @@ namespace Application.Tests.Application.Tests.DTOs
                 Name = "name",
                 Document = "111",
                 DocumentType = "",
-                Email = "email",
-                Phone = "phone"
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -52,9 +53,9 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "",
                 Document = "111",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -64,9 +65,9 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
+                DocumentType = "CC",
                 Email = "",
-                Phone = "phone"
+                Phone = "12345"
             };
         }
 
@@ -86,12 +87,12 @@ namespace Application.Tests.Application.Tests.DTOs
         {
             return new CustomerOutput
             {
-                _id = "6644d3d6a20a7c5dc4ed2680",
+                _id = "",
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -100,6 +101,19 @@ namespace Application.Tests.Application.Tests.DTOs
             return new CustomerOutput
             {
                 _id = "6644d3d6a20a7c5dc4ed2680"
+            };
+        }
+
+        public static CustomerCollection GetCustomerCollection()
+        {
+            return new CustomerCollection
+            {
+                _id = "6644d3d6a20a7c5dc4ed2680",
+                Name = "name",
+                Document = "111",
+                DocumentType = "Cedula",
+                Email = "email",
+                Phone = "12345"
             };
         }
     }
