@@ -36,7 +36,7 @@ namespace Application.Common.Helpers.Commands
         /// <returns></returns>
         public async Task<CommandResponse<T>> ExecuteProductMongo<T>(dynamic data)
         {
-            CommandResponse<T> response = new();
+            _ = new CommandResponse<T>();
             return await _productRepository.CreateProductAsync(data);
         }
 

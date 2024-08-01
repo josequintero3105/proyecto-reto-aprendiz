@@ -52,13 +52,14 @@ namespace Application.Services
             try
             {
                 await invoiceInput.ValidateAndThrowsAsync<InvoiceInput, InvoiceValidator>();
-                InvoiceOutput invoice = new InvoiceOutput();
-                invoice.ShoppingCartId = invoiceInput.ShoppingCartId;
-                invoice.CustomerId = invoiceInput.CustomerId;
-                invoice.CreatedAt = DateTime.Now;
-
-                CustomerOutput customer = new CustomerOutput();
-                ShoppingCart shoppingCart = new ShoppingCart();
+                InvoiceOutput invoice = new()
+                {
+                    ShoppingCartId = invoiceInput.ShoppingCartId,
+                    CustomerId = invoiceInput.CustomerId,
+                    CreatedAt = DateTime.Now
+                };
+                CustomerOutput customer = new();
+                ShoppingCart shoppingCart = new();
                 customer._id = invoice.CustomerId;
                 shoppingCart._id = invoice.ShoppingCartId;
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
@@ -100,14 +101,15 @@ namespace Application.Services
             try
             {
                 await invoiceInput.ValidateAndThrowsAsync<InvoiceInput, InvoiceValidator>();
-                InvoiceOutput invoice = new InvoiceOutput();
-                
-                invoice.ShoppingCartId = invoiceInput.ShoppingCartId;
-                invoice.CustomerId = invoiceInput.CustomerId;
-                invoice.CreatedAt = DateTime.Now;
+                InvoiceOutput invoice = new()
+                {
+                    ShoppingCartId = invoiceInput.ShoppingCartId,
+                    CustomerId = invoiceInput.CustomerId,
+                    CreatedAt = DateTime.Now
+                };
 
-                CustomerOutput customer = new CustomerOutput();
-                ShoppingCart shoppingCart = new ShoppingCart();
+                CustomerOutput customer = new();
+                ShoppingCart shoppingCart = new();
                 customer._id = invoice.CustomerId;
                 shoppingCart._id = invoice.ShoppingCartId;
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);

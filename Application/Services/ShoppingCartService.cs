@@ -198,7 +198,7 @@ namespace Application.Services
         /// <param name="shoppingCartCollection"></param>
         /// <param name="products"></param>
         /// <returns></returns>
-        private int GetNewCountForCurrentProduct(ShoppingCart shoppingCart, ShoppingCartCollection shoppingCartCollection, ProductCollection products)
+        private static int GetNewCountForCurrentProduct(ShoppingCart shoppingCart, ShoppingCartCollection shoppingCartCollection, ProductCollection products)
         {
             var productToAdd = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
             var productObjectToFind = shoppingCartCollection.ProductsInCart!.First(s => s._id == products._id); 
@@ -614,7 +614,7 @@ namespace Application.Services
         /// <returns></returns>
         private async Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionOutput transactionOutput, string _id)
         {
-            string finalStatus = "";
+            string finalStatus;
             do
             {
                 await Task.Delay(120000);

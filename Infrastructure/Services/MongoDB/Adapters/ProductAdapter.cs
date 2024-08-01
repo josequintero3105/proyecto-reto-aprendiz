@@ -113,8 +113,8 @@ namespace Infrastructure.Services.MongoDB.Adapters
         {
             ProductCollection CollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
             var IdFound = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(CollectionToUpdate._id));
-            var result = _context.ProductCollection.Find(IdFound).FirstOrDefault();
-            var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFound, CollectionToUpdate);
+            _context.ProductCollection.Find(IdFound).FirstOrDefault();
+            await _context.ProductCollection.ReplaceOneAsync(IdFound, CollectionToUpdate);
             return _mapper.Map<ProductOutput>(productToUpdate);
         }
     }

@@ -18,12 +18,10 @@ namespace WebApi.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly IShoppingCartService _shoppingCartService;
-        private readonly IHandle _handle;
 
-        public TransactionController(IShoppingCartService shoppingCartService, IHandle handle)
+        public TransactionController(IShoppingCartService shoppingCartService)
         {
             _shoppingCartService = shoppingCartService;
-            _handle = handle;
         }
         /// <summary>
         /// Process Transaction
@@ -34,7 +32,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> Process([FromBody] TransactionInput transactionInput)
         {
             var result = await _shoppingCartService.ProcessCartForTransaction(transactionInput);
-            return Ok($"The Transaction {result._id} has been { result.TransactionStatus }");
+            return Ok($"The Transaction {result._id} has been {result.TransactionStatus}");
         }
     }
 }

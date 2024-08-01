@@ -34,8 +34,7 @@ namespace Application.Tests.Application.Tests.Services
     public class ProductTest
     {
         
-        private IProductService _productService;
-        private readonly ProductController _productController;
+        private IProductService _productService;        
         /// <summary>
         /// Mocks
         /// </summary>
@@ -43,7 +42,6 @@ namespace Application.Tests.Application.Tests.Services
         private readonly Mock<IProductService> _productServiceMock = new();
         private readonly Mock<IMapper> _mapperMock = new();
         private readonly Mock<ILogger<ProductService>> _loggerMock = new();
-        private readonly Mock<IHandle> _handleMock = new();
         /// <summary>
         /// Constructor
         /// </summary>
@@ -52,7 +50,6 @@ namespace Application.Tests.Application.Tests.Services
             _productRepositoryMock = new Mock<IProductRepository>();
             _productService = new ProductService(_productRepositoryMock.Object, _loggerMock.Object);
             _productServiceMock = new Mock<IProductService>();
-            _productController = new ProductController(_productServiceMock.Object, _handleMock.Object);
             _mapperMock = new Mock<IMapper>();
         }
         
@@ -192,14 +189,15 @@ namespace Application.Tests.Application.Tests.Services
         public async void CreateProduct_With_NoFieldsEmpty_Then_ExpectsVerify()
         {
             // Arrange
-            ProductInput product = new ProductInput();
-            product.Name = "Producto de prueba";
-            product.Price = 10.000;
-            product.Quantity = 10;
-            product.Description = "Descripcion de prueba";
-            product.Category = "Categoria";
-            product.State = true;
-
+            ProductInput product = new()
+            {
+                Name = "Producto de prueba",
+                Price = 10.000,
+                Quantity = 10,
+                Description = "Descripcion de prueba",
+                Category = "Categoria",
+                State = true
+            };
             _productRepositoryMock.Setup(x => x.CreateProductAsync(It.Is<ProductInput>
                 (x => x.Name == product.Name &&
                 x.Price == product.Price &&
@@ -222,14 +220,28 @@ namespace Application.Tests.Application.Tests.Services
             // Arrange
             ProductInput productInput = ProductHelperModel.GetProductForCreation();
             ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
-            productOutput._id = "661feb4a110728200e31903e";
             _productRepositoryMock.Setup(repo => repo.UpdateProductAsync(productOutput)).ReturnsAsync(productOutput).Verifiable();
 
             // Act
-            await _productService.UpdateProduct(productInput, productOutput._id);
+            await _productService.UpdateProduct(productInput, productOutput._id!);
 
             // Assert
             Assert.IsType<ProductOutput>(productOutput);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_Then_ExpectsResultEqualNull()
+        {
+            // Arrange
+            ProductInput productInput = ProductHelperModel.GetProductForCreation();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.GetProductByIdAsync(productOutput._id!)).ReturnsAsync(productOutput).Verifiable();
+
+            // Act
+            var result = await _productService.UpdateProduct(productInput, productOutput._id!);
+
+            // Assert
+            Assert.True(result == null);
         }
 
         [Fact]
@@ -238,7 +250,7 @@ namespace Application.Tests.Application.Tests.Services
             // Arrange
             ProductInput productInput = ProductHelperModel.GetProductForUpdateWithProductNameEmpty();
             ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
-            ProductCollection productCollection = new ProductCollection();
+            ProductCollection productCollection = new();
             productOutput._id = "661805457b1da8ba4cb52995";
             _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductOutput>())).Returns(productCollection);
 
@@ -256,7 +268,7 @@ namespace Application.Tests.Application.Tests.Services
             // Arrange
             ProductInput productInput = ProductHelperModel.GetProductForUpdateWithProductDescriptionEmpty();
             ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
-            ProductCollection productCollection = new ProductCollection();
+            ProductCollection productCollection = new();
             productOutput._id = "661805457b1da8ba4cb52995";
 
             _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductOutput>())).Returns(productCollection);
@@ -275,7 +287,7 @@ namespace Application.Tests.Application.Tests.Services
             // Arrange
             ProductInput productInput = ProductHelperModel.GetProductForUpdateWithProductCategoryEmpty();
             ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
-            ProductCollection productCollection = new ProductCollection();
+            ProductCollection productCollection = new();
             productOutput._id = "661805457b1da8ba4cb52995";
 
             _mapperMock.Setup(x => x.Map<ProductCollection>(It.IsAny<ProductOutput>())).Returns(productCollection);

@@ -17,19 +17,19 @@ namespace Application.Tests.Application.Tests.DTOs
 {
     public class ShoppingCartHelperModel
     {
-        public static List<ShoppingCartCollection> shoppingCartCollections() => new List<ShoppingCartCollection>()
+        public static List<ShoppingCartCollection> shoppingCartCollections() => new()
         {
             new ShoppingCartCollection
             {
                 _id = "66574ea38d0535a677a3e029",
                 ProductsInCart = new List<ProductInCartCollection>
                 {
-                    new ProductInCartCollection
+                    new()
                     {
                         _id = "661805457b1da8ba4cb52995",
                         QuantityInCart = 4
                     },
-                    new ProductInCartCollection
+                    new()
                     {
                         _id = "66185655155f38e1afb9fd29",
                         QuantityInCart = 3
@@ -43,12 +43,12 @@ namespace Application.Tests.Application.Tests.DTOs
                 _id = "",
                 ProductsInCart = new List<ProductInCartCollection>
                 {
-                    new ProductInCartCollection
+                    new()
                     {
                         _id = "661805457b1da8ba4cb52995",
                         QuantityInCart = 4
                     },
-                    new ProductInCartCollection
+                    new()
                     {
                         _id = "66185655155f38e1afb9fd29",
                         QuantityInCart = 3
@@ -65,12 +65,12 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 ProductsInCart = new List<ProductInCart>()
                 {
-                    new ProductInCart
+                    new()
                     {
                         _id = "661805457b1da8ba4cb52995",
                         QuantityInCart = 4
                     },
-                    new ProductInCart
+                    new()
                     {
                         _id = "66185655155f38e1afb9fd29",
                         QuantityInCart = 3
@@ -79,17 +79,17 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static ShoppingCart GetShoppingCartFromMongo() => new ShoppingCart()
+        public static ShoppingCart GetShoppingCartFromMongo() => new()
         {
             _id = "664f40fed44e5362205a9381",
             ProductsInCart = new List<ProductInCart>()
             {
-                new ProductInCart
+                new()
                 {
                     _id = "661805457b1da8ba4cb52995",
                     QuantityInCart = 4
                 },
-                new ProductInCart
+                new()
                 {
                     _id = "66185655155f38e1afb9fd29",
                     QuantityInCart = 3
@@ -98,17 +98,17 @@ namespace Application.Tests.Application.Tests.DTOs
             PriceTotal = 40000,
         };
 
-        public static ShoppingCartCollection GetShoppingCartCollectionFromMongo() => new ShoppingCartCollection()
+        public static ShoppingCartCollection GetShoppingCartCollectionFromMongo() => new()
         {
             _id = "664f40fed44e5362205a9381",
             ProductsInCart = new List<ProductInCartCollection>()
             {
-                new ProductInCartCollection
+                new()
                 {
                     _id = "661805457b1da8ba4cb52995",
                     QuantityInCart = 4
                 },
-                new ProductInCartCollection
+                new()
                 {
                     _id = "66185655155f38e1afb9fd29",
                     QuantityInCart = 3
@@ -117,22 +117,22 @@ namespace Application.Tests.Application.Tests.DTOs
             PriceTotal = 40000,
         };
 
-        public static ShoppingCart GetShoppingCartForRemoveProducts() => new ShoppingCart()
+        public static ShoppingCart GetShoppingCartForRemoveProducts() => new()
         {
             _id = "6644d077042e0563da8a5600",
             ProductsInCart = new List<ProductInCart>()
             {
-                new ProductInCart {_id = "661805457b1da8ba4cb52995"}
+                new() {_id = "661805457b1da8ba4cb52995"}
             },
         };
 
-        public static List<string> GetProductIds() => new List<string>()
+        public static List<string> GetProductIds() => new()
         {
             "66185655155f38e1afb9fd29",
             "6619511d6f2b5851d852c0d8"
         };
 
-        public static List<ProductCollection> productCollections() => new List<ProductCollection>()
+        public static List<ProductCollection> productCollections() => new()
         {
             new ProductCollection
             {
@@ -146,7 +146,7 @@ namespace Application.Tests.Application.Tests.DTOs
             }
         };
 
-        public static ProductInCart productInCart() => new ProductInCart()
+        public static ProductInCart productInCart() => new()
         {
             _id = "",
             Name = "",
@@ -154,7 +154,7 @@ namespace Application.Tests.Application.Tests.DTOs
             QuantityInCart = 3
         };
 
-        public static List<WriteModel<ProductCollection>> writeModels() => new List<WriteModel<ProductCollection>>(){};
+        public static List<WriteModel<ProductCollection>> writeModels() => new(){};
 
         public static TransactionInput transactionInput() => new()
         {
@@ -208,7 +208,7 @@ namespace Application.Tests.Application.Tests.DTOs
             TransactionStatus = "PendingForPaymentMethod",
             Currency = "COP",
             Value = 10000,
-            sandbox = new SandboxInactive()
+            Sandbox = new SandboxInactive()
             {
                 Status = "Pending"
             },

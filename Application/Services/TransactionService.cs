@@ -39,15 +39,13 @@ namespace Application.Services
         /// <summary>
         /// Variables
         /// </summary>
-        private readonly ILogger<TransactionService> _logger;
         private readonly HttpClient _httpClient;
         /// <summary>
         /// Constructor
         /// </summary>
         
-        public TransactionService(IHttpClientFactory httpClientFactory, ILogger<TransactionService> logger)
+        public TransactionService(IHttpClientFactory httpClientFactory)
         {
-            _logger = logger;
             _httpClient = httpClientFactory.CreateClient("Pasarela");
         }
         /// <summary>
@@ -64,11 +62,13 @@ namespace Application.Services
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             var responseMessage = await _httpClient.PostAsync("create", content);
             var response = await responseMessage.Content.ReadAsStringAsync();
-            var jsonObject = JObject.Parse(response);
-            var data = jsonObject["data"]!.ToString();
             if (responseMessage.IsSuccessStatusCode)
+            {
+                var jsonObject = JObject.Parse(response);
+                var data = jsonObject["data"]!.ToString();
                 return System.Text.Json.JsonSerializer.Deserialize<TransactionOutput>(data, options)!;
-            else if (Convert.ToInt32(responseMessage.StatusCode) == 500)
+            }
+            else if (responseMessage.StatusCode.Equals(200))
                 throw new BusinessException(nameof(GateWayBusinessException.InternalServerError),
                     nameof(GateWayBusinessException.InternalServerError));
             else

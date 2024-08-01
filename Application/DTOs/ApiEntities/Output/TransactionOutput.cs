@@ -47,7 +47,7 @@ namespace Application.DTOs.ApiEntities.Output
         /// <summary>
         ///     Sandbox
         /// </summary>
-        public SandboxInactive? sandbox { get; set; }
+        public SandboxInactive? Sandbox { get; set; }
         /// <summary>
         ///     CreationDate
         /// </summary>

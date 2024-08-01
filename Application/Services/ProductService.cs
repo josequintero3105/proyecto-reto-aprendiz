@@ -215,7 +215,7 @@ namespace Application.Services
             try
             {
                 await product.ValidateAndThrowsAsync<ProductInput, ProductValidator>();
-                ProductOutput productOutput = new ProductOutput()
+                ProductOutput productOutput = new()
                 {
                     _id = _id,
                     Name = product.Name,

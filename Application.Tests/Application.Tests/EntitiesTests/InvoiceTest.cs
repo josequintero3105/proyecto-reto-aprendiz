@@ -49,7 +49,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         {
             // Arrange
             InvoiceInput invoice = InvoiceHelperModel.GetInvoiceFromCreation();
-            InvoiceOutput invoiceOutput = new InvoiceOutput();
+            InvoiceOutput invoiceOutput = new();
             _invoiceRepositoryMock.Setup(x => x.GenerateInvoiceAsync(invoiceOutput))
                 .ReturnsAsync(invoiceOutput).Verifiable();
 

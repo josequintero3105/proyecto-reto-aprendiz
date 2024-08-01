@@ -43,6 +43,6 @@ namespace Application.DTOs.ApiEntities.Response
         /// <summary>
         ///     paymentRedirectUrl
         /// </summary>
-        public string? paymentRedirectUrl { get; set; }
+        public string? PaymentRedirectUrl { get; set; }
     }
 }
