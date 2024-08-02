@@ -68,9 +68,9 @@ namespace Application.Services
                 var data = jsonObject["data"]!.ToString();
                 return System.Text.Json.JsonSerializer.Deserialize<TransactionOutput>(data, options)!;
             }
-            else if (responseMessage.StatusCode.Equals(200))
-                throw new BusinessException(nameof(GateWayBusinessException.InternalServerError),
-                    nameof(GateWayBusinessException.InternalServerError));
+            else if (responseMessage.StatusCode == HttpStatusCode.InternalServerError)
+                throw new BusinessException(nameof(HttpStatusCode.InternalServerError),
+                    nameof(HttpStatusCode.InternalServerError));
             else
                 throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
                     nameof(GateWayBusinessException.TransactionAttemptFailed));

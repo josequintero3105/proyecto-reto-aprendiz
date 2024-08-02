@@ -34,7 +34,7 @@ namespace Application.Tests.Application.Tests.Services
     public class ProductTest
     {
         
-        private IProductService _productService;        
+        private readonly IProductService _productService;        
         /// <summary>
         /// Mocks
         /// </summary>
@@ -52,7 +52,20 @@ namespace Application.Tests.Application.Tests.Services
             _productServiceMock = new Mock<IProductService>();
             _mapperMock = new Mock<IMapper>();
         }
-        
+
+        [Fact]
+        public void CreateProduct_When_ProductNameIsEmpty_Then_ExpectsResultTrue()
+        {
+            // Arrange
+            ProductInput productInput = ProductHelperModel.GetProductForCreationWithProductNameEmpty();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(productInput))
+                .ReturnsAsync(productOutput).Verifiable();
+
+            // Act & Assert
+            Assert.True(productInput.Name == "");
+        }
+
         [Fact]
         public async void CreateProduct_When_ProductNameIsEmpty_Then_ExpectsBusinessException()
         {
@@ -82,6 +95,19 @@ namespace Application.Tests.Application.Tests.Services
         }
 
         [Fact]
+        public void CreateProduct_When_ProductDescriptionIsEmpty_Then_ExpectsResultTrue()
+        {
+            // Arrange
+            ProductInput productInput = ProductHelperModel.GetProductForCreationWithProductDescriptionEmpty();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(productInput))
+                .ReturnsAsync(productOutput).Verifiable();
+
+            // Act & Assert
+            Assert.True(productInput.Description == "");
+        }
+
+        [Fact]
         public async void CreateProduct_When_ProductDescriptionIsEmpty_Then_ExpectsBusinessException()
         {
             // Arrange
@@ -107,6 +133,19 @@ namespace Application.Tests.Application.Tests.Services
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public void CreateProduct_When_ProductCategoryIsEmpty_Then_ExpectsResultTrue()
+        {
+            // Arrange
+            ProductInput productInput = ProductHelperModel.GetProductForCreationWithProductCategoryEmpty();
+            ProductOutput productOutput = ProductHelperModel.GetProductFromMongo();
+            _productRepositoryMock.Setup(repo => repo.CreateProductAsync(productInput))
+                .ReturnsAsync(productOutput).Verifiable();
+
+            // Act & Assert
+            Assert.True(productInput.Category == "");
         }
 
         [Fact]

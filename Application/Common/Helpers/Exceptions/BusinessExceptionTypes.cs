@@ -215,8 +215,5 @@ public enum GateWayBusinessException
     CharactersLenghtNotValid = 465,
 
     [Description("Transaction Attempt Failed")]
-    TransactionAttemptFailed = 466,
-
-    [Description("Internal Server Error")]
-    InternalServerError = 500,
+    TransactionAttemptFailed = 466
 }

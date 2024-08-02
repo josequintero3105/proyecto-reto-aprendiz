@@ -11,7 +11,7 @@ namespace Application.Tests.Application.Tests.DTOs
 {
     public static class CustomerHelperModel
     {
-        public static CustomerInput GetCustomerForCreation()
+        public static CustomerInput CustomerImput()
         {
             return new CustomerInput
             {
@@ -77,13 +77,58 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
+                DocumentType = "CC",
                 Email = "email",
                 Phone = ""
             };
         }
 
-        public static CustomerOutput GetCustomerFromMongo()
+        public static CustomerInput GetCustomerForCreationOrUpdateWithNameWrongFormat() => new()
+        {
+            Name = "+,-.'?",
+            Document = "111",
+            DocumentType = "CC",
+            Email = "email",
+            Phone = "12345"
+        };
+
+        public static CustomerInput GetCustomerForCreationOrUpdateWithDocumentWrongFormat()
+        {
+            return new CustomerInput
+            {
+                Name = "name",
+                Document = "abc",
+                DocumentType = "CC",
+                Email = "email",
+                Phone = "12345"
+            };
+        }
+
+        public static CustomerInput GetCustomerForCreationOrUpdateWithEmailWrongFormat()
+        {
+            return new CustomerInput
+            {
+                Name = "name",
+                Document = "111",
+                DocumentType = "CC",
+                Email = "email",
+                Phone = "12345"
+            };
+        }
+
+        public static CustomerInput GetCustomerForCreationOrUpdateWithPhoneWrongFormat()
+        {
+            return new CustomerInput
+            {
+                Name = "name",
+                Document = "111",
+                DocumentType = "CC",
+                Email = "email",
+                Phone = "abc"
+            };
+        }
+
+        public static CustomerOutput CustomerOutput()
         {
             return new CustomerOutput
             {
@@ -104,7 +149,7 @@ namespace Application.Tests.Application.Tests.DTOs
             };
         }
 
-        public static CustomerCollection GetCustomerCollection()
+        public static CustomerCollection GetCustomerCollectionFromMongo()
         {
             return new CustomerCollection
             {

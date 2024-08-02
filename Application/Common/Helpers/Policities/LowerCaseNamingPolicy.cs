@@ -15,7 +15,7 @@ namespace Application.Common.Helpers.Policities
             if (string.IsNullOrEmpty(name) || !char.IsUpper(name[0]))
                 return name;
             
-            return char.ToLower(name[0]) + name.Substring(1);
+            return char.ToLower(name[0]) + name[1..];
         }
     }
 }

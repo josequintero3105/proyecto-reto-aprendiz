@@ -24,7 +24,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         /// <summary>
         /// Intances
         /// </summary>
-        private IInvoiceService _invoiceService;
+        private readonly IInvoiceService _invoiceService;
 
         /// <summary>
         /// Mocks
@@ -92,7 +92,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void DeleteCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            CustomerOutput customer = CustomerHelperModel.GetCustomerFromMongo();
+            CustomerOutput customer = CustomerHelperModel.CustomerOutput();
             customer._id = "";
             _customerRepositoryMock.Setup(x => x.DeleteCustomerAsync(customer._id)).ReturnsAsync(false).Verifiable();
 

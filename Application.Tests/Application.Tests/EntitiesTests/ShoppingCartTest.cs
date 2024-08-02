@@ -33,7 +33,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         /// <summary>
         /// Intances
         /// </summary>
-        private IShoppingCartService _shoppingCartService;
+        private readonly IShoppingCartService _shoppingCartService;
         private readonly ShoppingCartController _shoppingCartController;
         private readonly TransactionController _transactionController;
         /// <summary>
@@ -68,10 +68,10 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             // Arrange
             ShoppingCartInput shoppingCartInput = ShoppingCartHelperModel.GetShoppingCartForCreation();
             List<string> strings = ShoppingCartHelperModel.GetProductIds();
-            List<WriteModel<ProductCollection>> writeModels = ShoppingCartHelperModel.writeModels();
-            List<ProductCollection> productCollections = ShoppingCartHelperModel.productCollections();
+            List<WriteModel<ProductCollection>> writeModels = ShoppingCartHelperModel.WriteModels();
+            List<ProductCollection> productCollections = ShoppingCartHelperModel.ProductCollections();
             ShoppingCartCollection shoppingCartCollection = ShoppingCartHelperModel.GetShoppingCartCollectionFromMongo();
-            ProductInCart productInCart = ShoppingCartHelperModel.productInCart();
+            ProductInCart productInCart = ShoppingCartHelperModel.ProductInCart();
             ShoppingCart shoppingCartOutPut = new()
             {
                 ProductsInCart = shoppingCartInput.ProductsInCart
@@ -190,7 +190,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             ShoppingCartInput shoppingCartInput = ShoppingCartHelperModel.GetShoppingCartForCreation();
             var shoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
             shoppingCart._id = "66574ea38d0535a677a3e029";
-            var listCarts = ShoppingCartHelperModel.shoppingCartCollections();
+            var listCarts = ShoppingCartHelperModel.ShoppingCartCollections();
             _shoppingCartRepositoryMock.Setup(x => x.ListAllCarts())
                 .Throws(new BusinessException(GateWayBusinessException.ShoppingCartIdIsNotValid.ToString(),
                 GateWayBusinessException.ShoppingCartIdIsNotValid.ToString())).Verifiable();
@@ -245,8 +245,8 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void GetTransactionResponse_When_TransactionIdIsNull_Then_ExpectsBusinessException()
         {
             // Arrange
-            var transactionInput = ShoppingCartHelperModel.transactionInput();
-            var transactionOutput = ShoppingCartHelperModel.transactionOutput();
+            var transactionInput = ShoppingCartHelperModel.TransactionInput();
+            var transactionOutput = ShoppingCartHelperModel.TransactionOutput();
             transactionOutput._id = "";
 
             _transacionServiceMock.Setup(x => x.GetTransaction(transactionOutput._id))

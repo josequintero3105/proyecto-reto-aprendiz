@@ -17,7 +17,7 @@ namespace Application.Tests.Application.Tests.DTOs
 {
     public class ShoppingCartHelperModel
     {
-        public static List<ShoppingCartCollection> shoppingCartCollections() => new()
+        public static List<ShoppingCartCollection> ShoppingCartCollections() => new()
         {
             new ShoppingCartCollection
             {
@@ -132,7 +132,7 @@ namespace Application.Tests.Application.Tests.DTOs
             "6619511d6f2b5851d852c0d8"
         };
 
-        public static List<ProductCollection> productCollections() => new()
+        public static List<ProductCollection> ProductCollections() => new()
         {
             new ProductCollection
             {
@@ -146,7 +146,7 @@ namespace Application.Tests.Application.Tests.DTOs
             }
         };
 
-        public static ProductInCart productInCart() => new()
+        public static ProductInCart ProductInCart() => new()
         {
             _id = "",
             Name = "",
@@ -154,9 +154,9 @@ namespace Application.Tests.Application.Tests.DTOs
             QuantityInCart = 3
         };
 
-        public static List<WriteModel<ProductCollection>> writeModels() => new(){};
+        public static List<WriteModel<ProductCollection>> WriteModels() => new(){};
 
-        public static TransactionInput transactionInput() => new()
+        public static TransactionInput TransactionInput() => new()
         {
             Invoice = "66574ea38d0535a677a3e028",
             Description = "Description",
@@ -192,7 +192,7 @@ namespace Application.Tests.Application.Tests.DTOs
             }
         };
 
-        public static TransactionOutput transactionOutput() => new()
+        public static TransactionOutput TransactionOutput() => new()
         {
             _id = "66a1511084783ca7c052634b",
             Invoice = "66574ea38d0535a677a3e028",
