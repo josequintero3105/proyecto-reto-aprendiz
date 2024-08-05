@@ -13,7 +13,9 @@ namespace Infrastructure.Helpers.MongoProvider;
 [ExcludeFromCodeCoverage]
 public class DataBaseSettings
 {
-    public string ProductCollectionName {  get; set; }
-    public string ShoppingCartCollectionName { get; set; }
-    public string InvoiceCollectionName { get; set; }
+    public string? ProductCollectionName {  get; set; }
+    public string? ShoppingCartCollectionName { get; set; }
+    public string? InvoiceCollectionName { get; set; }
+    public string? CustomerCollectioName { get; set; }
+    public string? TransactionCollectionName { get; set; }
 }

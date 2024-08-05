@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Application.Interfaces.Common;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
@@ -24,7 +24,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         /// <summary>
         /// Intances
         /// </summary>
-        private IInvoiceService _invoiceService;
+        private readonly IInvoiceService _invoiceService;
 
         /// <summary>
         /// Mocks
@@ -49,7 +49,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         {
             // Arrange
             InvoiceInput invoice = InvoiceHelperModel.GetInvoiceFromCreation();
-            InvoiceOutput invoiceOutput = new InvoiceOutput();
+            InvoiceOutput invoiceOutput = new();
             _invoiceRepositoryMock.Setup(x => x.GenerateInvoiceAsync(invoiceOutput))
                 .ReturnsAsync(invoiceOutput).Verifiable();
 
@@ -92,7 +92,7 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         public async void DeleteCustomer_When_CustomerIdIsEmpty_ExpectsBusinessException()
         {
             // Arrange
-            CustomerOutput customer = CustomerHelperModel.GetCustomerFromMongo();
+            CustomerOutput customer = CustomerHelperModel.CustomerOutput();
             customer._id = "";
             _customerRepositoryMock.Setup(x => x.DeleteCustomerAsync(customer._id)).ReturnsAsync(false).Verifiable();
 

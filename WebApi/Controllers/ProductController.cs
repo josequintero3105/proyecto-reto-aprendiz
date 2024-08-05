@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Application.Interfaces.Services;
 using Application.Common.Utilities;
 using Newtonsoft.Json;
-using Application.DTOs;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Core.Entities.MongoDB;
@@ -11,6 +10,7 @@ using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Common;
 using Application.Services;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 
 namespace WebApiHttp.Controllers
 {

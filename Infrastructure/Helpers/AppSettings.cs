@@ -16,10 +16,10 @@ public class AppSettings
     /// <summary>
     ///     Name of de mongo data base
     /// </summary>
-    public string DatabaseName { get; set; }
+    public string? DatabaseName { get; set; }
 
     /// <summary>
     ///     Name of de mongo collection
     /// </summary>
-    public string CollectionName { get; set; }
+    public string? CollectionName { get; set; }
 }

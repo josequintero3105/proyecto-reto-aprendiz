@@ -94,69 +94,126 @@ public enum GateWayBusinessException
     [Description("Customer Name Cannot Be Very Long")]
     CustomerNameCannotBeVeryLong = 425,
 
+    [Description("Customer Last Name Cannot Be Empty")]
+    CustomerLastNameCannotBeEmpty = 426,
+
+    [Description("Customer Last Name Is Not Valid")]
+    CustomerLastNameIsNotValid = 427,
+
+    [Description("Customer Last Name Cannot Be Very Lon")]
+    CustomerLastNameCannotBeVeryLong = 428,
+
     [Description("Customer Email Cannot Be Empty")]
-    CustomerEmailCannotBeEmpty = 426,
+    CustomerEmailCannotBeEmpty = 429,
 
     [Description("Customer Email Not Valid")]
-    CustomerEmailNotValid = 427,
+    CustomerEmailNotValid = 430,
+
+    [Description("IndCountry Cannot Be Null")]
+    IndCountryCannotBeNull = 431,
+
+    [Description("IndCountry Is Not Valid")]
+    IndCountryIsNotValid = 432,
+
+    [Description("IndCountry Cannot Be Very Long")]
+    IndCountryCannotBeVeryLong = 433,
 
     [Description("Customer Phone Cannot Be Empty")]
-    CustomerPhoneCannotBeEmpty = 428,
+    CustomerPhoneCannotBeEmpty = 434,
 
     [Description("Customer Phone Is Not Valid")]
-    CustomerPhoneIsNotValid = 429,
+    CustomerPhoneIsNotValid = 435,
 
     [Description("Customer Phone Cannot Be Very Long")]
-    CustomerPhoneCannotBeVeryLong = 430,
+    CustomerPhoneCannotBeVeryLong = 436,
+
+    [Description("Country Cannot Be Null")]
+    CountryCannotBeNull = 437,
+
+    [Description("Country Is Not Valid")]
+    CountryIsNotValid = 438,
+
+    [Description("Country Cannot Be Very Long")]
+    CountryCannotBeVeryLong = 439,
+
+    [Description("City Cannot Be Null")]
+    CityCannotBeNull = 440,
+
+    [Description("City Is Not Valid")]
+    CityIsNotValid = 441,
+
+    [Description("City Cannot Be Very Long")]
+    CityCannotBeVeryLong = 442,
+
+    [Description("Customer Address Cannot Be Null")]
+    CustomerAddressCannotBeNull = 443,
+
+    [Description("Customer Address Is Not Valid")]
+    CustomerAddressIsNotValid = 444,
+
+    [Description("Customer Address Cannot Be Very Long")]
+    CustomerAddressCannotBeVeryLong = 445,
+
+    [Description("Customer Ip Address Cannot Be Null")]
+    CustomerIpAddressCannotBeNull = 446,
+
+    [Description("Customer Ip Address Is Not Valid")]
+    CustomerIpAddressIsNotValid = 447,
+
+    [Description("Customer Ip Address Cannot Be Very Long")]
+    CustomerIpAddressCannotBeVeryLong = 448,
 
     [Description("The Object Cannot Be Empty")]
-    ObjectCannotBeEmpty = 431,
+    ObjectCannotBeEmpty = 449,
 
     [Description("The List of Products Cannot Be Null")]
-    ProductListCannotBeNull = 432,
+    ProductListCannotBeNull = 450,
 
     [Description("Product Quantity or Price Invalid")]
-    ProductQuantityOrPriceInvalid = 433,
+    ProductQuantityOrPriceInvalid = 451,
 
     [Description("Customer Not Found")]
-    CustomerNotExists = 434,
+    CustomerNotExists = 452,
 
-    [Description("Not Products In Cart")]
-    NotProductsInCart = 435,
+    [Description("ShoppingCart Is Empty")]
+    ShoppingCartIsEmpty = 453,
 
     [Description("Cart And Customer Invalid")]
-    CartAndCustomerInvalid = 436,
+    CartAndCustomerInvalid = 454,
 
     [Description("Customer Id Cannot Be Null")]
-    CustomerIdCannotBeNull = 437,
+    CustomerIdCannotBeNull = 455,
 
     [Description("Products Unavailable")]
-    ProductsUnavailable = 438,
+    ProductsUnavailable = 456,
 
     [Description("Product Id Cannot Be Null")]
-    ProductIdCannotBeNull = 439,
+    ProductIdCannotBeNull = 457,
 
     [Description("Product Not Exists In The Cart")]
-    ProductNotExistsInTheCart = 440,
+    ProductNotExistsInTheCart = 458,
 
     [Description("Invoice Id Cannot Be Null")]
-    InvoiceIdCannotBeNull = 441,
+    InvoiceIdCannotBeNull = 459,
 
     [Description("Invoice Id Is Invalid")]
-    InvoiceIdIsNotValid = 442,
+    InvoiceIdIsNotValid = 460,
 
     [Description("Invoice Id Not Found")]
-    InvoiceIdNotFound = 443,
+    InvoiceIdNotFound = 461,
 
     [Description("Pagination Parameters Cannot Be Null")]
-    PaginationParametersCannotBeNull = 444,
+    PaginationParametersCannotBeNull = 462,
 
     [Description("Pagination Parameters Not Valid")]
-    PaginationParametersNotValid = 445,
+    PaginationParametersNotValid = 463,
 
     [Description("Not Allow Special Characters")]
-    NotAllowSpecialCharacters = 446,
+    NotAllowSpecialCharacters = 464,
 
     [Description("Characters Lenght")]
-    CharactersLenghtNotValid = 447,
+    CharactersLenghtNotValid = 465,
+
+    [Description("Transaction Attempt Failed")]
+    TransactionAttemptFailed = 466
 }

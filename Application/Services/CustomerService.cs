@@ -9,8 +9,8 @@ using Amazon.Runtime.SharedInterfaces;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -40,9 +40,9 @@ namespace Application.Services
         /// Get the document types
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, string> GetDocumentTypes()
+        public static Dictionary<string, string> GetDocumentTypes()
         {
-            Dictionary<string, string> keyValues = new Dictionary<string, string>()
+            Dictionary<string, string> keyValues = new()
             {
                 {"TI", ""},
                 {"CC", ""},
@@ -71,7 +71,7 @@ namespace Application.Services
                     Email = customerInput.Email,
                     Phone = customerInput.Phone
                 };
-                if (keyValues.ContainsKey(customerInput.DocumentType))
+                if (keyValues.ContainsKey(customerInput.DocumentType!))
                     return await _customerRepository.CreateAsync(customer);
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),
@@ -155,7 +155,7 @@ namespace Application.Services
                     var result = await _customerRepository.GetCustomerByIdAsync(_id);
                     if (result != null)
                     {
-                        if (keyValues.ContainsKey(customerInput.DocumentType))
+                        if (keyValues.ContainsKey(customerInput.DocumentType!))
                             return await _customerRepository.UpdateCustomerDataAsync(customer);
                         else
                             throw new BusinessException(nameof(GateWayBusinessException.CustomerDocumentTypeIsInvalid),

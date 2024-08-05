@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
+using Application.DTOs.ApiEntities.Input;
+using Application.DTOs.ApiEntities.Output;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Services
@@ -24,11 +26,11 @@ namespace Application.Interfaces.Services
         /// <returns></returns>
         Task<ShoppingCart> GetShoppingCartById(string _id);
         /// <summary>
-        /// Get shopping collection from mongo
+        /// Reset Shopping Cart
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        Task<bool> GetShoppingCartCollectionMongo(string _id);
+        Task<ShoppingCart> ResetShoppingCart(string _id);
         /// <summary>
         /// Add products from shopping cart
         /// </summary>
@@ -43,5 +45,11 @@ namespace Application.Interfaces.Services
         /// <param name="_id"></param>
         /// <returns></returns>
         Task<ShoppingCart> RemoveFromShoppingCart(ShoppingCartInput shoppingCartInput, string _id);
+        /// <summary>
+        /// Process Transaction
+        /// </summary>
+        /// <param name="transactionInput"></param>
+        /// <returns></returns>
+        Task<TransactionOutput> ProcessCartForTransaction(TransactionInput transactionInput);
     }
 }

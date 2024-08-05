@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
 using Application.Interfaces.Services;
 using Application.Interfaces.Common;
 using Core.Entities.MongoDB;
 using System.Net;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 
 namespace WebApi.Controllers
 {
@@ -40,7 +40,8 @@ namespace WebApi.Controllers
         [ProducesResponseType(201)]
         public async Task<IActionResult> Create([FromBody] CustomerInput body)
         {
-            CustomerCollection customer = await _handle.HandleRequestContextException(_customerService.CreateCustomer, body);
+            //CustomerCollection customer = await _handle.HandleRequestContextException(_customerService.CreateCustomer, body);
+            CustomerCollection customer = await _customerService.CreateCustomer(body);
             return CreatedAtAction(nameof(Create), new { customer._id }, customer);
         }
         /// <summary>

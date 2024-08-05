@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Commands;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Infrastructure.Mongo
@@ -17,7 +17,7 @@ namespace Application.Interfaces.Infrastructure.Mongo
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<ProductInput> CreateProductAsync(ProductInput product);
+        Task<ProductOutput> CreateProductAsync(ProductInput product);
         /// <summary>
         /// Defining contract from update product in the database
         /// </summary>

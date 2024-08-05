@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
+using Core.Entities.MongoDB;
 
 namespace Application.Tests.Application.Tests.DTOs
 {
     public static class CustomerHelperModel
     {
-        public static CustomerInput GetCustomerForCreation()
+        public static CustomerInput CustomerImput()
         {
             return new CustomerInput
             {
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -28,9 +29,9 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "name",
                 Document = "",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -41,8 +42,8 @@ namespace Application.Tests.Application.Tests.DTOs
                 Name = "name",
                 Document = "111",
                 DocumentType = "",
-                Email = "email",
-                Phone = "phone"
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -52,9 +53,9 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "",
                 Document = "111",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -64,9 +65,9 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
+                DocumentType = "CC",
                 Email = "",
-                Phone = "phone"
+                Phone = "12345"
             };
         }
 
@@ -76,22 +77,67 @@ namespace Application.Tests.Application.Tests.DTOs
             {
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
+                DocumentType = "CC",
                 Email = "email",
                 Phone = ""
             };
         }
 
-        public static CustomerOutput GetCustomerFromMongo()
+        public static CustomerInput GetCustomerForCreationOrUpdateWithNameWrongFormat() => new()
+        {
+            Name = "+,-.'?",
+            Document = "111",
+            DocumentType = "CC",
+            Email = "email",
+            Phone = "12345"
+        };
+
+        public static CustomerInput GetCustomerForCreationOrUpdateWithDocumentWrongFormat()
+        {
+            return new CustomerInput
+            {
+                Name = "name",
+                Document = "abc",
+                DocumentType = "CC",
+                Email = "email",
+                Phone = "12345"
+            };
+        }
+
+        public static CustomerInput GetCustomerForCreationOrUpdateWithEmailWrongFormat()
+        {
+            return new CustomerInput
+            {
+                Name = "name",
+                Document = "111",
+                DocumentType = "CC",
+                Email = "email",
+                Phone = "12345"
+            };
+        }
+
+        public static CustomerInput GetCustomerForCreationOrUpdateWithPhoneWrongFormat()
+        {
+            return new CustomerInput
+            {
+                Name = "name",
+                Document = "111",
+                DocumentType = "CC",
+                Email = "email",
+                Phone = "abc"
+            };
+        }
+
+        public static CustomerOutput CustomerOutput()
         {
             return new CustomerOutput
             {
                 _id = "6644d3d6a20a7c5dc4ed2680",
                 Name = "name",
                 Document = "111",
-                DocumentType = "Cedula",
-                Email = "email",
-                Phone = "phone"
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
 
@@ -100,6 +146,19 @@ namespace Application.Tests.Application.Tests.DTOs
             return new CustomerOutput
             {
                 _id = "6644d3d6a20a7c5dc4ed2680"
+            };
+        }
+
+        public static CustomerCollection GetCustomerCollectionFromMongo()
+        {
+            return new CustomerCollection
+            {
+                _id = "6644d3d6a20a7c5dc4ed2680",
+                Name = "name",
+                Document = "111",
+                DocumentType = "CC",
+                Email = "email@gmail.com",
+                Phone = "12345"
             };
         }
     }

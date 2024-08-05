@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.FluentValidations.Validators;
-using Application.DTOs;
+using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Services;
 using AutoMapper;
@@ -73,6 +73,16 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
+        /// List All Shopping Carts
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<ShoppingCartCollection>> ListAllCarts()
+        {
+            var result = await _context.ShoppingCartCollection.FindAsync(Builders<ShoppingCartCollection>.Filter.Empty);
+            return _mapper.Map<List<ShoppingCartCollection>>(result.ToList());
+        }
+
+        /// <summary>
         /// Get a shopping cart by id
         /// </summary>
         /// <param name="_id"></param>
@@ -85,15 +95,14 @@ namespace Infrastructure.Services.MongoDB.Adapters
         }
 
         /// <summary>
-        /// Method created from unit testing
+        /// Get Shopping Cart For Reset
         /// </summary>
         /// <param name="_id"></param>
         /// <returns></returns>
-        public async Task<bool> GetShoppingCartFromMongo(string _id)
+        public ShoppingCartCollection GetShoppingCartForReset(string _id)
         {
             var filter = Builders<ShoppingCartCollection>.Filter.Eq(s => s._id, _id);
-            var shoppingCartCollection = await _context.ShoppingCartCollection.Find(filter).FirstOrDefaultAsync();
-            return shoppingCartCollection != null;
+            return _context.ShoppingCartCollection.Find(filter).FirstOrDefault();
         }
 
         /// <summary>
@@ -104,10 +113,7 @@ namespace Infrastructure.Services.MongoDB.Adapters
         public ShoppingCartCollection GetShoppingCart(ShoppingCart shoppingCartToFind)
         {
             ShoppingCartCollection shoppingCartCollectionToFind = _mapper.Map<ShoppingCartCollection>(shoppingCartToFind);
-            var filter = Builders<ShoppingCartCollection>.Filter.And(
-                Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id)),
-                Builders<ShoppingCartCollection>.Filter.Eq(x => x.Active, true)
-            );
+            var filter = Builders<ShoppingCartCollection>.Filter.Eq("_id", ObjectId.Parse(shoppingCartCollectionToFind._id));
             return _context.ShoppingCartCollection.Find(filter).FirstOrDefault();
         }
 

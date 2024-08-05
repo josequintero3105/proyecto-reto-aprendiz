@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -52,13 +52,14 @@ namespace Application.Services
             try
             {
                 await invoiceInput.ValidateAndThrowsAsync<InvoiceInput, InvoiceValidator>();
-                InvoiceOutput invoice = new InvoiceOutput();
-                invoice.ShoppingCartId = invoiceInput.ShoppingCartId;
-                invoice.CustomerId = invoiceInput.CustomerId;
-                invoice.CreatedAt = DateTime.Now;
-
-                CustomerOutput customer = new CustomerOutput();
-                ShoppingCart shoppingCart = new ShoppingCart();
+                InvoiceOutput invoice = new()
+                {
+                    ShoppingCartId = invoiceInput.ShoppingCartId,
+                    CustomerId = invoiceInput.CustomerId,
+                    CreatedAt = DateTime.Now
+                };
+                CustomerOutput customer = new();
+                ShoppingCart shoppingCart = new();
                 customer._id = invoice.CustomerId;
                 shoppingCart._id = invoice.ShoppingCartId;
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
@@ -66,15 +67,15 @@ namespace Application.Services
 
                 if (shoppingCartCollection != null
                     && customerCollection != null
-                    && shoppingCartCollection.ProductsInCart.Count != 0)
+                    && shoppingCartCollection.ProductsInCart!.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
                     return await _invoiceRepository.GenerateInvoiceAsync(invoice);
                 }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
-                    nameof(GateWayBusinessException.NotProductsInCart));
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
+                    nameof(GateWayBusinessException.ShoppingCartIsEmpty));
             }
             catch (BusinessException bex)
             {
@@ -100,14 +101,15 @@ namespace Application.Services
             try
             {
                 await invoiceInput.ValidateAndThrowsAsync<InvoiceInput, InvoiceValidator>();
-                InvoiceOutput invoice = new InvoiceOutput();
-                
-                invoice.ShoppingCartId = invoiceInput.ShoppingCartId;
-                invoice.CustomerId = invoiceInput.CustomerId;
-                invoice.CreatedAt = DateTime.Now;
+                InvoiceOutput invoice = new()
+                {
+                    ShoppingCartId = invoiceInput.ShoppingCartId,
+                    CustomerId = invoiceInput.CustomerId,
+                    CreatedAt = DateTime.Now
+                };
 
-                CustomerOutput customer = new CustomerOutput();
-                ShoppingCart shoppingCart = new ShoppingCart();
+                CustomerOutput customer = new();
+                ShoppingCart shoppingCart = new();
                 customer._id = invoice.CustomerId;
                 shoppingCart._id = invoice.ShoppingCartId;
                 CustomerCollection customerCollection = _customerRepository.GetCustomer(customer);
@@ -115,17 +117,16 @@ namespace Application.Services
 
                 if (shoppingCartCollection != null
                     && customerCollection != null
-                    && shoppingCartCollection.ProductsInCart.Count != 0)
+                    && shoppingCartCollection.ProductsInCart!.Count != 0)
                 {
                     invoice.CustomerName = customerCollection.Name;
                     invoice.Total = shoppingCartCollection.PriceTotal;
-                    shoppingCart.Active = true;
                     await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                     return await _invoiceRepository.GenerateAsync(invoice);
                 }
                 else
-                    throw new BusinessException(nameof(GateWayBusinessException.NotProductsInCart),
-                    nameof(GateWayBusinessException.NotProductsInCart));
+                    throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
+                    nameof(GateWayBusinessException.ShoppingCartIsEmpty));
             }
             catch (BusinessException bex)
             {

@@ -24,7 +24,7 @@ namespace Core.Entities.MongoDB
         [BsonElement("PriceTotal")]
         public double PriceTotal { get; set; }
 
-        [BsonElement("Active")]
-        public bool Active {  get; set; }
+        [BsonElement("Status")]
+        public string? Status { get; set; }
     }
 }

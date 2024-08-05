@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs;
 using Application.DTOs.Commands;
 using Application.Interfaces.Infrastructure.Mongo;
 using Core.Entities.MongoDB;
@@ -12,6 +11,7 @@ using AutoMapper;
 using MongoDB.Driver;
 using System.Drawing;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 
 namespace Infrastructure.Services.MongoDB.Adapters
 {
@@ -50,11 +50,11 @@ namespace Infrastructure.Services.MongoDB.Adapters
         /// </summary>
         /// <param name="productToCreate"></param>
         /// <returns></returns>
-        public async Task<ProductInput> CreateProductAsync(ProductInput productToCreate)
+        public async Task<ProductOutput> CreateProductAsync(ProductInput productToCreate)
         {
             ProductCollection productCollectionToCreate = _mapper.Map<ProductCollection>(productToCreate);
             await _context.ProductCollection.InsertOneAsync(productCollectionToCreate);
-            return _mapper.Map<ProductInput>(productToCreate);
+            return _mapper.Map<ProductOutput>(productToCreate);
         }
 
         /// <summary>
@@ -113,8 +113,8 @@ namespace Infrastructure.Services.MongoDB.Adapters
         {
             ProductCollection CollectionToUpdate = _mapper.Map<ProductCollection>(productToUpdate); 
             var IdFound = Builders<ProductCollection>.Filter.Eq("_id", ObjectId.Parse(CollectionToUpdate._id));
-            var result = _context.ProductCollection.Find(IdFound).FirstOrDefault();
-            var resultUpdate = await _context.ProductCollection.ReplaceOneAsync(IdFound, CollectionToUpdate);
+            _context.ProductCollection.Find(IdFound).FirstOrDefault();
+            await _context.ProductCollection.ReplaceOneAsync(IdFound, CollectionToUpdate);
             return _mapper.Map<ProductOutput>(productToUpdate);
         }
     }

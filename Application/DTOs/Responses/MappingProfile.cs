@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Entries;
+using Application.DTOs.ApiEntities.Output;
 using AutoMapper;
 using Core.Entities.MongoDB;
 
-namespace Application.DTOs
+namespace Application.DTOs.Responses
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile() 
+        public MappingProfile()
         {
             CreateMap<ProductInput, ProductCollection>().ReverseMap();
             CreateMap<ProductOutput, ProductCollection>().ReverseMap();

@@ -11,7 +11,7 @@ namespace Infrastructure.Services.MongoDB
     public class DataBaseContext : IContext
     {
         private static volatile DataBaseContext? _instance;
-        private static readonly object SyncLock = new object();
+        private static readonly object SyncLock = new();
         
         private readonly IMongoDatabase _databaseName;
 

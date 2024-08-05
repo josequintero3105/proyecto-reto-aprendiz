@@ -12,8 +12,8 @@ using Amazon.Runtime.Internal.Util;
 using Application.Common.FluentValidations.Extentions;
 using Application.Common.FluentValidations.Validators;
 using Application.Common.Helpers.Exceptions;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Application.Interfaces.Infrastructure.Mongo;
 using Application.Interfaces.Services;
 using Common.Helpers.Exceptions;
@@ -215,7 +215,7 @@ namespace Application.Services
             try
             {
                 await product.ValidateAndThrowsAsync<ProductInput, ProductValidator>();
-                ProductOutput productOutput = new ProductOutput()
+                ProductOutput productOutput = new()
                 {
                     _id = _id,
                     Name = product.Name,

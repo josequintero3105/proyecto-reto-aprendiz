@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Metadata;
-using Application.DTOs;
 using Application.DTOs.Entries;
+using Application.DTOs.Responses;
 using Core.Entities.MongoDB;
 
 namespace Application.Interfaces.Services
