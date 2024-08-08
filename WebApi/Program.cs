@@ -10,11 +10,15 @@ using WebApi.Configuration;
 using Application.Interfaces.Infrastructure.Mongo;
 using Infrastructure.Services.MongoDB.Adapters;
 using Application.Interfaces.Common;
+using Microsoft.AspNetCore.Mvc;
 using Application.Common.Helpers.Handle;
 using Application.Interfaces.Infrastructure.Commands;
 using Application.Common.Helpers.Commands;
 using Application.Common.FluentValidations.Extentions;
 using System.Reflection.PortableExecutable;
+using Application.DTOs.ApiEntities.Response;
+using Application.DTOs.ApiEntities.Output;
+using Core.Enumerations;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -83,6 +87,13 @@ builder.Services.AddHealthChecks();
 
 // Application configures
 var app = builder.Build();
+app.MapPost("/Confirmation", async ([FromBody] TransactionResponse response, HttpRequest request) =>
+{
+    Console.WriteLine($"Data: {response._id} Status: {response.TransactionStatus}");    
+    foreach (var header in request.Headers)
+        Console.WriteLine(header.ToString());
+    return Results.Ok(response);
+});
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -90,19 +101,4 @@ ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.Run();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
 app.Run();

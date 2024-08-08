@@ -15,7 +15,7 @@ public class SuccessFilter : ActionFilterAttribute
             var details = new
             {
                 Function = context.HttpContext.Request.Path.Value,
-                ErrorCode = context.HttpContext.Response.StatusCode,
+                ErrorCode = 0,
                 Message = string.Empty,
                 Country = "co",
                 Data = resultValue

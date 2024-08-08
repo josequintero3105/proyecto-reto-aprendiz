@@ -69,7 +69,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -97,7 +97,7 @@ namespace Application.Services
                     else
                         throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdNotFound),
                         nameof(GateWayBusinessException.ShoppingCartIdNotFound));
-                }   
+                }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
                     nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull));
@@ -133,7 +133,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -175,7 +175,7 @@ namespace Application.Services
         /// <param name="productInCart"></param>
         /// <param name="productCollection"></param>
         /// <returns></returns>
-        private async Task SearchIfExistsAProductInCart(ShoppingCartCollection shoppingCartCollection, ShoppingCart shoppingCart, 
+        private async Task SearchIfExistsAProductInCart(ShoppingCartCollection shoppingCartCollection, ShoppingCart shoppingCart,
             ProductInCart productInCart, ProductCollection productCollection)
         {
             if (shoppingCart._id != null)
@@ -201,7 +201,7 @@ namespace Application.Services
         private static int GetNewCountForCurrentProduct(ShoppingCart shoppingCart, ShoppingCartCollection shoppingCartCollection, ProductCollection products)
         {
             var productToAdd = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
-            var productObjectToFind = shoppingCartCollection.ProductsInCart!.First(s => s._id == products._id); 
+            var productObjectToFind = shoppingCartCollection.ProductsInCart!.First(s => s._id == products._id);
             products.Quantity -= (int)productToAdd.QuantityInCart;
             productToAdd.QuantityInCart += productObjectToFind.QuantityInCart;
             return (int)productToAdd.QuantityInCart;
@@ -226,7 +226,7 @@ namespace Application.Services
             }
             shoppingCart.PriceTotal = resultCart.PriceTotal;
         }
-        
+
         /// <summary>
         /// Define if shopping cart is new or not
         /// </summary>
@@ -269,7 +269,7 @@ namespace Application.Services
                     nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
         }
-        
+
         /// <summary>
         /// Calculate Total For Pay
         /// </summary>
@@ -369,7 +369,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -439,14 +439,14 @@ namespace Application.Services
             var resultCart = _shoppingCartRepository.GetShoppingCartForReset(_id);
             var specificProducts = await ListProductsInCart(resultCart);
             var listModelProducts = new List<WriteModel<ProductCollection>>();
-            resultCart.Status = ShoppingCartStatus.Unprocessing.ToString();
             foreach (var products in specificProducts)
-            {                
+            {
                 resultCart.PriceTotal = DiscountTotalPrice(resultCart, products, resultCart.PriceTotal);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
                 await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id!);
-                await ConfirmChanges(listModelProducts, shoppingCart, resultCart);
+                await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
             }
+            await RestoreShoppingCart(shoppingCart);
         }
 
         /// <summary>
@@ -474,6 +474,18 @@ namespace Application.Services
                 throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
                     nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
+        }
+        /// <summary>
+        /// Logic for transaction rejected
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        private async Task RestoreShoppingCart(ShoppingCart shoppingCart)
+        {
+            shoppingCart.ProductsInCart = new List<ProductInCart>();
+            shoppingCart.PriceTotal = 0;
+            shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
+            await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
         }
 
         /// <summary>
@@ -553,7 +565,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
