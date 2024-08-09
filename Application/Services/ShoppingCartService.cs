@@ -581,7 +581,7 @@ namespace Application.Services
         /// <param name="transactionInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<TransactionOutput> ProcessCartForTransaction(TransactionInput transactionInput)
+        public async Task<TransactionResponse> ProcessCartForTransaction(TransactionInput transactionInput)
         {
             try
             {
@@ -591,9 +591,8 @@ namespace Application.Services
                     if (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
                     {
                         var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
-                        string finalStatus = await DefineFinalStatus(shoppingCart, transactionOutput, transactionInput.Invoice!);
-                        transactionOutput.TransactionStatus = finalStatus;
-                        return transactionOutput;
+                        var transactionResponse = await _transactionService.GetTransaction(transactionOutput._id!);
+                        return transactionResponse;
                     }
                     else
                         throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
@@ -621,29 +620,27 @@ namespace Application.Services
         /// Define Final Status For Transaction
         /// </summary>
         /// <param name="shoppingCart"></param>
-        /// <param name="transactionOutput"></param>
-        /// <param name="_id"></param>
+        /// <param name="transactionResult"></param>
         /// <returns></returns>
-        private async Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionOutput transactionOutput, string _id)
+        public async Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionResponse transactionResult)
         {
-            string finalStatus;
-            do
+            var transactionResponse = await _transactionService.GetTransaction(transactionResult._id!);
+            if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Approved.ToString()))
             {
-                await Task.Delay(120000);
-                var transactionResponse = await _transactionService.GetTransaction(transactionOutput._id!);
-                if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Approved.ToString()))
-                {
-                    shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
-                    await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
-                }
-                else if (!transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
-                {
-                    shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
-                    await ResetShoppingCart(_id);
-                }
-                finalStatus = transactionResponse.TransactionStatus.ToString();
-            } while (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()));
-            return finalStatus;
+                shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
+                await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
+            }
+            else if (transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.PendingForPaymentMethod.ToString()))
+            {
+                throw new BusinessException(nameof(TransactionCoreStatus.PendingForPaymentMethod),
+                    nameof(TransactionCoreStatus.PendingForPaymentMethod));
+            }
+            else if (!transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
+            {
+                shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
+                await ResetShoppingCart(transactionResponse.Invoice!);
+            }
+            return transactionResponse.TransactionStatus.ToString();
         }
     }
 }

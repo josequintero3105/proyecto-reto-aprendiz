@@ -8,6 +8,7 @@ using Application.DTOs.Responses;
 using Application.DTOs.ApiEntities.Input;
 using Application.DTOs.ApiEntities.Output;
 using Core.Entities.MongoDB;
+using Application.DTOs.ApiEntities.Response;
 
 namespace Application.Interfaces.Services
 {
@@ -50,6 +51,13 @@ namespace Application.Interfaces.Services
         /// </summary>
         /// <param name="transactionInput"></param>
         /// <returns></returns>
-        Task<TransactionOutput> ProcessCartForTransaction(TransactionInput transactionInput);
+        Task<TransactionResponse> ProcessCartForTransaction(TransactionInput transactionInput);
+        /// <summary>
+        /// Define Final Status
+        /// </summary>
+        /// <param name="shoppingCart"></param>
+        /// <param name="transactionOutput"></param>
+        /// <returns></returns>
+        Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionResponse transactionResponse);
     }
 }

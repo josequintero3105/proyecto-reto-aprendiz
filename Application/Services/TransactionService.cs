@@ -68,12 +68,12 @@ namespace Application.Services
                 var data = jsonObject["data"]!.ToString();
                 return System.Text.Json.JsonSerializer.Deserialize<TransactionOutput>(data, options)!;
             }
-            else if (responseMessage.StatusCode == HttpStatusCode.InternalServerError)
-                throw new BusinessException(nameof(HttpStatusCode.InternalServerError),
-                    nameof(HttpStatusCode.InternalServerError));
             else
-                throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
-                    nameof(GateWayBusinessException.TransactionAttemptFailed));
+            {
+                var jsonObject = JObject.Parse(response);
+                var data = jsonObject["message"]!.ToString();
+                throw new BusinessException(data, responseMessage.StatusCode.ToString());
+            }
         }
 
         /// <summary>
@@ -87,13 +87,18 @@ namespace Application.Services
             var options = new JsonSerializerOptions { PropertyNamingPolicy = new LowerCaseNamingPolicy(), WriteIndented = true };
             var responseMessage = await _httpClient.GetAsync($"GetTransactionResponse?transactionId={_id}");
             var response = await responseMessage.Content.ReadAsStringAsync();
-            var jsonObject = JObject.Parse(response);
-            var data = jsonObject["data"]!.ToString();
             if (responseMessage.IsSuccessStatusCode)
+            {
+                var jsonObject = JObject.Parse(response);
+                var data = jsonObject["data"]!.ToString();
                 return System.Text.Json.JsonSerializer.Deserialize<TransactionResponse>(data, options)!;
+            }
             else
-                throw new BusinessException(nameof(GateWayBusinessException.TransactionAttemptFailed),
-                    nameof(GateWayBusinessException.TransactionAttemptFailed));
+            {
+                var jsonObject = JObject.Parse(response);
+                var data = jsonObject["message"]!.ToString();
+                throw new BusinessException(data, responseMessage.StatusCode.ToString());
+            }
         }
     }
 }
