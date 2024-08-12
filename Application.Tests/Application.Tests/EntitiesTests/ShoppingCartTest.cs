@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Helpers.Exceptions;
+using Application.DTOs.ApiEntities.Input;
 using Application.DTOs.ApiEntities.Output;
 using Application.DTOs.Entries;
 using Application.DTOs.Responses;
@@ -164,6 +165,24 @@ namespace Application.Tests.Application.Tests.EntitiesTests
         }
 
         [Fact]
+        public async void GetShoppingCartById_When_IdIsNull_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            ShoppingCart shoppingCart = ShoppingCartHelperModel.GetShoppingCartForRemoveProducts();
+            ShoppingCartCollection shoppingCartCollection = new();
+            shoppingCart._id = "";
+
+            _mapperMock.Setup(x => x.Map<ShoppingCartCollection>(It.IsAny<ShoppingCart>())).Returns(shoppingCartCollection);
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.GetShoppingCartById(shoppingCart._id));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
         public async void GetShoppingCartById_When_IdWrongFormat_Then_ExpectsBusinessException()
         {
             // Arrange
@@ -256,6 +275,24 @@ namespace Application.Tests.Application.Tests.EntitiesTests
             // Act
             var result = await Assert.ThrowsAsync<BusinessException>
                 (async () => await _shoppingCartService.ProcessCartForTransaction(transactionInput));
+
+            // Assert
+            Assert.Equal(typeof(BusinessException), result.GetType());
+        }
+
+        [Fact]
+        public async void GetFinalStatusForTransaction_When_TransactionResponseIsNull_Then_ExpectsBusinessException()
+        {
+            // Arrange
+            var transactionResponse = ShoppingCartHelperModel.TransactionResponse();
+            var shoppingCart = ShoppingCartHelperModel.GetShoppingCartFromMongo();
+            _transacionServiceMock.Setup(x => x.GetTransaction(transactionResponse._id!))
+                .Throws(new BusinessException(GateWayBusinessException.TransactionAttemptFailed.ToString(),
+                GateWayBusinessException.TransactionAttemptFailed.ToString())).Verifiable();
+
+            // Act
+            var result = await Assert.ThrowsAsync<BusinessException>
+                (async () => await _shoppingCartService.DefineFinalStatus(shoppingCart, transactionResponse));
 
             // Assert
             Assert.Equal(typeof(BusinessException), result.GetType());

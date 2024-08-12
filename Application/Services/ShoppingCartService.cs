@@ -24,6 +24,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
 using Application.DTOs.ApiEntities.Response;
+using System.Net;
 
 namespace Application.Services
 {
@@ -624,23 +625,38 @@ namespace Application.Services
         /// <returns></returns>
         public async Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionResponse transactionResult)
         {
-            var transactionResponse = await _transactionService.GetTransaction(transactionResult._id!);
-            if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Approved.ToString()))
+            try
             {
-                shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
-                await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
+                var transactionResponse = await _transactionService.GetTransaction(transactionResult._id!);
+                if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Approved.ToString()))
+                {
+                    shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
+                    await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
+                }
+                else if (transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.PendingForPaymentMethod.ToString()))
+                {
+                    throw new BusinessException(nameof(TransactionCoreStatus.PendingForPaymentMethod),
+                        nameof(TransactionCoreStatus.PendingForPaymentMethod));
+                }
+                else if (!transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
+                {
+                    shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
+                    await ResetShoppingCart(transactionResponse.Invoice!);
+                }
+                return transactionResponse.TransactionStatus.ToString();
             }
-            else if (transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.PendingForPaymentMethod.ToString()))
+            catch (BusinessException bex)
             {
-                throw new BusinessException(nameof(TransactionCoreStatus.PendingForPaymentMethod),
-                    nameof(TransactionCoreStatus.PendingForPaymentMethod));
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
             }
-            else if (!transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
+            catch (Exception ex)
             {
-                shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
-                await ResetShoppingCart(transactionResponse.Invoice!);
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(HttpStatusCode.BadRequest),
+                    nameof(HttpStatusCode.BadRequest));
             }
-            return transactionResponse.TransactionStatus.ToString();
         }
     }
 }

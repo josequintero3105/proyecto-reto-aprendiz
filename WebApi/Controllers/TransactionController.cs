@@ -34,7 +34,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> Process([FromBody] TransactionInput transactionInput)
         {
             var result = await _shoppingCartService.ProcessCartForTransaction(transactionInput);
-            return Ok($"TransactionId: {result._id}, PaymentRedirectUrl: {result.PaymentMethodResponse!.PaymentRedirectUrl}");
+            return Ok(result);
         }
 
         /// <summary>
