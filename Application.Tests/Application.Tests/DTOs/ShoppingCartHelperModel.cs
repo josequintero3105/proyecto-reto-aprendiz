@@ -12,6 +12,7 @@ using Application.DTOs.Responses;
 using Core.Entities.MongoDB;
 using MongoDB.Driver;
 using Application.DTOs.ApiEntities.Input;
+using Application.DTOs.ApiEntities.Response;
 
 namespace Application.Tests.Application.Tests.DTOs
 {
@@ -96,6 +97,7 @@ namespace Application.Tests.Application.Tests.DTOs
                 },
             },
             PriceTotal = 40000,
+            Status = "Pending"
         };
 
         public static ShoppingCartCollection GetShoppingCartCollectionFromMongo() => new()
@@ -115,6 +117,7 @@ namespace Application.Tests.Application.Tests.DTOs
                 },
             },
             PriceTotal = 40000,
+            Status = "Pending"
         };
 
         public static ShoppingCart GetShoppingCartForRemoveProducts() => new()
@@ -223,7 +226,45 @@ namespace Application.Tests.Application.Tests.DTOs
                 ApprovalCode = "0",
                 Receipt = "0"
             },
-            UrlConfirmation = "MyPersonalWebHook",
+            UrlConfirmation = "https://localhost:7083/api/Transaction/Confirm",
+            UrlResponse = "https://8266-179-15-14-38.ngrok.io/prueba",
+            MethodConfirmation = "POST"
+        };
+
+        public static TransactionResponse TransactionResponse() => new()
+        {
+            _id = "66b686b2023d9e0f8b2a6846",
+            Invoice = "66b686a30f620bb30aa0aa80",
+            StoreId = "6099675acae5400001387631",
+            VendorId = "609966e0a39cd000012cc490",
+            Description = "Description",
+            PaymentMethod = new PaymentMethodOutput()
+            {
+                PaymentMethodId = "1",
+                BankCode = 1077,
+                BankName = "BANKA"
+            },
+            TransactionStatus = "Rejected",
+            Currency = "COP",
+            Value = 10000,
+            Sandbox = new SandboxInactive()
+            {
+                Status = "Pending"
+            },
+            CreationDate = DateTime.Now,
+            PaymentMethodResponse = new PaymentMethodResponse()
+            {
+                TransactionId = "66b686b2023d9e0f8b2a6846",
+                DriverId = "66b686b52b2b2d6bc98232fa",
+                StatusResponse = "Pending",
+                CodeResponse = "5",
+                Description = "Description",
+                AuthorizationCode= "4299141",
+                ApprovalCode = "0",
+                Receipt = "66b686a30f620bb30aa0aa80",
+                PaymentRedirectUrl = "https://registro.desarrollo.pse.com.co/PSENF/index.html?enc=PVhiEwh69xvY9YfF6Jwlj%2bPDzmG%2fOtLYNaPTA7W%2b8eg%3d",
+            },
+            UrlConfirmation = "https://localhost:7083/api/Transaction/Confirm",
             UrlResponse = "https://8266-179-15-14-38.ngrok.io/prueba",
             MethodConfirmation = "POST"
         };

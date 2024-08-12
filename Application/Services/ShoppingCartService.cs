@@ -24,6 +24,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
 using Application.DTOs.ApiEntities.Response;
+using System.Net;
 
 namespace Application.Services
 {
@@ -69,7 +70,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -97,7 +98,7 @@ namespace Application.Services
                     else
                         throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdNotFound),
                         nameof(GateWayBusinessException.ShoppingCartIdNotFound));
-                }   
+                }
                 else
                     throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull),
                     nameof(GateWayBusinessException.ShoppingCartIdCannotBeNull));
@@ -133,7 +134,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -175,7 +176,7 @@ namespace Application.Services
         /// <param name="productInCart"></param>
         /// <param name="productCollection"></param>
         /// <returns></returns>
-        private async Task SearchIfExistsAProductInCart(ShoppingCartCollection shoppingCartCollection, ShoppingCart shoppingCart, 
+        private async Task SearchIfExistsAProductInCart(ShoppingCartCollection shoppingCartCollection, ShoppingCart shoppingCart,
             ProductInCart productInCart, ProductCollection productCollection)
         {
             if (shoppingCart._id != null)
@@ -201,7 +202,7 @@ namespace Application.Services
         private static int GetNewCountForCurrentProduct(ShoppingCart shoppingCart, ShoppingCartCollection shoppingCartCollection, ProductCollection products)
         {
             var productToAdd = shoppingCart.ProductsInCart!.First(s => s._id == products._id);
-            var productObjectToFind = shoppingCartCollection.ProductsInCart!.First(s => s._id == products._id); 
+            var productObjectToFind = shoppingCartCollection.ProductsInCart!.First(s => s._id == products._id);
             products.Quantity -= (int)productToAdd.QuantityInCart;
             productToAdd.QuantityInCart += productObjectToFind.QuantityInCart;
             return (int)productToAdd.QuantityInCart;
@@ -226,7 +227,7 @@ namespace Application.Services
             }
             shoppingCart.PriceTotal = resultCart.PriceTotal;
         }
-        
+
         /// <summary>
         /// Define if shopping cart is new or not
         /// </summary>
@@ -269,7 +270,7 @@ namespace Application.Services
                     nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
         }
-        
+
         /// <summary>
         /// Calculate Total For Pay
         /// </summary>
@@ -369,7 +370,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -439,14 +440,14 @@ namespace Application.Services
             var resultCart = _shoppingCartRepository.GetShoppingCartForReset(_id);
             var specificProducts = await ListProductsInCart(resultCart);
             var listModelProducts = new List<WriteModel<ProductCollection>>();
-            resultCart.Status = ShoppingCartStatus.Unprocessing.ToString();
             foreach (var products in specificProducts)
-            {                
+            {
                 resultCart.PriceTotal = DiscountTotalPrice(resultCart, products, resultCart.PriceTotal);
                 _shoppingCartRepository.FilterToGetProduct(listModelProducts, products);
                 await _shoppingCartRepository.RemoveProductFromCartAsync(resultCart, products._id!);
-                await ConfirmChanges(listModelProducts, shoppingCart, resultCart);
+                await _shoppingCartRepository.UpdateQuantitiesForProducts(listModelProducts);
             }
+            await RestoreShoppingCart(shoppingCart);
         }
 
         /// <summary>
@@ -474,6 +475,18 @@ namespace Application.Services
                 throw new BusinessException(nameof(GateWayBusinessException.ProductIdCannotBeNull),
                     nameof(GateWayBusinessException.ProductIdCannotBeNull));
             }
+        }
+        /// <summary>
+        /// Logic for transaction rejected
+        /// </summary>
+        /// <param name="_id"></param>
+        /// <returns></returns>
+        private async Task RestoreShoppingCart(ShoppingCart shoppingCart)
+        {
+            shoppingCart.ProductsInCart = new List<ProductInCart>();
+            shoppingCart.PriceTotal = 0;
+            shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
+            await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
         }
 
         /// <summary>
@@ -553,7 +566,7 @@ namespace Application.Services
             {
                 _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
                     , bex.Code, bex.Message);
-                    throw new BusinessException(bex.Message, bex.Code);
+                throw new BusinessException(bex.Message, bex.Code);
             }
             catch (Exception ex)
             {
@@ -569,7 +582,7 @@ namespace Application.Services
         /// <param name="transactionInput"></param>
         /// <returns></returns>
         /// <exception cref="BusinessException"></exception>
-        public async Task<TransactionOutput> ProcessCartForTransaction(TransactionInput transactionInput)
+        public async Task<TransactionResponse> ProcessCartForTransaction(TransactionInput transactionInput)
         {
             try
             {
@@ -579,9 +592,9 @@ namespace Application.Services
                     if (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
                     {
                         var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
-                        string finalStatus = await DefineFinalStatus(shoppingCart, transactionOutput, transactionInput.Invoice!);
-                        transactionOutput.TransactionStatus = finalStatus;
-                        return transactionOutput;
+                        await Task.Delay(2000);
+                        var transactionResponse = await _transactionService.GetTransaction(transactionOutput._id!);
+                        return transactionResponse;
                     }
                     else
                         throw new BusinessException(nameof(GateWayBusinessException.ShoppingCartIsEmpty),
@@ -609,29 +622,42 @@ namespace Application.Services
         /// Define Final Status For Transaction
         /// </summary>
         /// <param name="shoppingCart"></param>
-        /// <param name="transactionOutput"></param>
-        /// <param name="_id"></param>
+        /// <param name="transactionResult"></param>
         /// <returns></returns>
-        private async Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionOutput transactionOutput, string _id)
+        public async Task<string> DefineFinalStatus(ShoppingCart shoppingCart, TransactionResponse transactionResult)
         {
-            string finalStatus;
-            do
+            try
             {
-                await Task.Delay(120000);
-                var transactionResponse = await _transactionService.GetTransaction(transactionOutput._id!);
+                var transactionResponse = await _transactionService.GetTransaction(transactionResult._id!);
                 if (transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Approved.ToString()))
                 {
                     shoppingCart.Status = ShoppingCartStatus.Approved.ToString();
                     await _shoppingCartRepository.UpdateShoppingCartAsync(shoppingCart);
                 }
+                else if (transactionResponse.TransactionStatus!.Equals(TransactionCoreStatus.PendingForPaymentMethod.ToString()))
+                {
+                    throw new BusinessException(nameof(TransactionCoreStatus.PendingForPaymentMethod),
+                        nameof(TransactionCoreStatus.PendingForPaymentMethod));
+                }
                 else if (!transactionResponse.TransactionStatus!.Equals(ShoppingCartStatus.Pending.ToString()))
                 {
                     shoppingCart.Status = ShoppingCartStatus.Unprocessing.ToString();
-                    await ResetShoppingCart(_id);
+                    await ResetShoppingCart(transactionResponse.Invoice!);
                 }
-                finalStatus = transactionResponse.TransactionStatus.ToString();
-            } while (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()));
-            return finalStatus;
+                return transactionResponse.TransactionStatus.ToString();
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogError(bex, "Error: {message} Error Code: {code-message}"
+                    , bex.Code, bex.Message);
+                throw new BusinessException(bex.Message, bex.Code);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error: {message}", ex.Message);
+                throw new BusinessException(nameof(HttpStatusCode.BadRequest),
+                    nameof(HttpStatusCode.BadRequest));
+            }
         }
     }
 }

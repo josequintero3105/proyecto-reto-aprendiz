@@ -23,6 +23,12 @@ namespace Core.Enumerations
 
         [Description("Transaction is Approved")]
         Approved = 6,
+
+        [Description("Transaction is Failed")]
+        Failed = 7,
+
+        [Description("Transaction is Pending for Payment Method")]
+        PendingForPaymentMethod = 8,
     }
 
     public enum ShoppingCartStatus

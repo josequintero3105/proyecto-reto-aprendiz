@@ -215,5 +215,8 @@ public enum GateWayBusinessException
     CharactersLenghtNotValid = 465,
 
     [Description("Transaction Attempt Failed")]
-    TransactionAttemptFailed = 466
+    TransactionAttemptFailed = 466,
+
+    [Description("Payment Method Not Defined")]
+    PaymentMethodNotDefined = 467,
 }
