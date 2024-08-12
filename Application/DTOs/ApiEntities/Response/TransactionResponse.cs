@@ -55,20 +55,20 @@ namespace Application.DTOs.ApiEntities.Response
         /// </summary>
         public DateTime? CreationDate { get; set; }
         /// <summary>
-        ///     UrlResponse
+        ///     PaymentMethodResponse
         /// </summary>
-        public string? UrlResponse { get; set; }
+        public PaymentMethodResponse? PaymentMethodResponse { get; set; }
         /// <summary>
         ///     UrlConfirmation
         /// </summary>
         public string? UrlConfirmation { get; set; }
         /// <summary>
+        ///     UrlResponse
+        /// </summary>
+        public string? UrlResponse { get; set; }
+        /// <summary>
         ///     MethodConfirmation
         /// </summary>
         public string? MethodConfirmation { get; set; }
-        /// <summary>
-        ///     PaymentMethodResponse
-        /// </summary>
-        public PaymentMethodResponse? PaymentMethodResponse { get; set; }
     }
 }

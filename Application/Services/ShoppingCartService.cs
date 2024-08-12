@@ -592,6 +592,7 @@ namespace Application.Services
                     if (shoppingCart.Status!.Equals(ShoppingCartStatus.Pending.ToString()))
                     {
                         var transactionOutput = await _transactionService.ProcessTransaction(transactionInput);
+                        await Task.Delay(2000);
                         var transactionResponse = await _transactionService.GetTransaction(transactionOutput._id!);
                         return transactionResponse;
                     }
